@@ -1,0 +1,423 @@
+```html
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Scorat - 2v2 Score Tracker</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
+    <!-- Material 3 & Tailwind Config -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: 'var(--md-sys-color-primary)',
+                        'on-primary': 'var(--md-sys-color-on-primary)',
+                        'primary-container': 'var(--md-sys-color-primary-container)',
+                        'on-primary-container': 'var(--md-sys-color-on-primary-container)',
+                        secondary: 'var(--md-sys-color-secondary)',
+                        'on-secondary': 'var(--md-sys-color-on-secondary)',
+                        'secondary-container': 'var(--md-sys-color-secondary-container)',
+                        'on-secondary-container': 'var(--md-sys-color-on-secondary-container)',
+                        surface: 'var(--md-sys-color-surface)',
+                        'on-surface': 'var(--md-sys-color-on-surface)',
+                        'surface-variant': 'var(--md-sys-color-surface-variant)',
+                        'on-surface-variant': 'var(--md-sys-color-on-surface-variant)',
+                        error: 'var(--md-sys-color-error)',
+                        'on-error': 'var(--md-sys-color-on-error)'
+                    },
+                    borderRadius: {
+                        '4xl': '32px',
+                        '5xl': '40px'
+                    },
+                    animation: {
+                        'celebrate': 'pulse-fast 1.5s ease-in-out infinite',
+                        'slide-up': 'slide-up 0.3s cubic-bezier(0.2, 1, 0.3, 1) forwards',
+                    },
+                    keyframes: {
+                        'pulse-fast': {
+                            '0%, 100%': { transform: 'scale(1)', opacity: '1' },
+                            '50%': { transform: 'scale(1.05)', opacity: '0.8' },
+                        },
+                        'slide-up': {
+                            '0%': { transform: 'translateY(100%)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Material Design 3 Expressive Tokens */
+        :root {
+            --md-sys-color-primary: #006874;
+            --md-sys-color-on-primary: #ffffff;
+            --md-sys-color-primary-container: #97f0ff;
+            --md-sys-color-on-primary-container: #001f24;
+            --md-sys-color-secondary: #ff5449;
+            --md-sys-color-on-secondary: #ffffff;
+            --md-sys-color-secondary-container: #ffdad6;
+            --md-sys-color-on-secondary-container: #410002;
+            --md-sys-color-surface: #fbfdfd;
+            --md-sys-color-on-surface: #191c1d;
+            --md-sys-color-surface-variant: #dbe4e6;
+            --md-sys-color-on-surface-variant: #3f484a;
+            --md-sys-color-error: #ba1a1a;
+            --md-sys-color-on-error: #ffffff;
+        }
+
+        .dark {
+            --md-sys-color-primary: #4fd8eb;
+            --md-sys-color-on-primary: #00363d;
+            --md-sys-color-primary-container: #004f58;
+            --md-sys-color-on-primary-container: #97f0ff;
+            --md-sys-color-secondary: #ffb4ab;
+            --md-sys-color-on-secondary: #690005;
+            --md-sys-color-secondary-container: #93000a;
+            --md-sys-color-on-secondary-container: #ffdad6;
+            --md-sys-color-surface: #191c1d;
+            --md-sys-color-on-surface: #e1e3e3;
+            --md-sys-color-surface-variant: #3f484a;
+            --md-sys-color-on-surface-variant: #bfc8ca;
+            --md-sys-color-error: #ffb4ab;
+            --md-sys-color-on-error: #690005;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Hide Scrollbar but keep functionality */
+        ::-webkit-scrollbar { display: none; }
+        * { scrollbar-width: none; }
+
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        
+        .confetti-piece {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background-color: var(--md-sys-color-primary);
+            top: -10px;
+            z-index: 9999;
+            animation: fall 3s linear forwards;
+        }
+
+        @keyframes fall {
+            to { transform: translateY(100vh) rotate(720deg); }
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface transition-colors duration-300 pb-28 min-h-screen">
+
+    <!-- App Container -->
+    <div id="app" class="max-w-md mx-auto relative min-h-screen flex flex-col pt-4 px-4">
+        
+        <!-- Header -->
+        <header class="flex justify-between items-center mb-6">
+            <h1 class="text-3xl font-bold tracking-tight text-primary flex items-center gap-2">
+                <i class="ph-fill ph-trophy"></i> Scorat
+            </h1>
+            <button id="btn-settings" class="p-3 rounded-full bg-surface-variant text-on-surface-variant hover:bg-primary-container hover:text-on-primary-container transition-colors shadow-sm">
+                <i class="ph ph-gear text-xl"></i>
+            </button>
+        </header>
+
+        <!-- Main Content Area -->
+        <main id="content" class="flex-1 w-full flex flex-col gap-4"></main>
+
+        <!-- Navigation FAB -->
+        <nav class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-[400px] bg-surface-variant/95 backdrop-blur-md rounded-[40px] shadow-lg flex justify-between items-center px-4 py-2 z-40 border border-on-surface/5">
+            <button data-tab="stats" class="nav-btn flex flex-col items-center justify-center w-12 h-12 rounded-full text-on-surface-variant transition-colors hover:text-primary">
+                <i class="ph ph-chart-bar text-2xl"></i>
+            </button>
+            <button data-tab="players" class="nav-btn flex flex-col items-center justify-center w-12 h-12 rounded-full text-on-surface-variant transition-colors hover:text-primary">
+                <i class="ph ph-users text-2xl"></i>
+            </button>
+            
+            <!-- Prominent Add Round -->
+            <button id="btn-add-round" class="relative -top-6 bg-primary text-on-primary w-16 h-16 rounded-[24px] shadow-xl flex items-center justify-center hover:scale-105 active:scale-95 transition-transform border-4 border-surface">
+                <i class="ph ph-plus text-3xl font-bold"></i>
+            </button>
+            
+            <button data-tab="history" class="nav-btn flex flex-col items-center justify-center w-12 h-12 rounded-full text-on-surface-variant transition-colors hover:text-primary">
+                <i class="ph ph-clock-counter-clockwise text-2xl"></i>
+            </button>
+            <button id="btn-reset-game" class="nav-btn flex flex-col items-center justify-center w-12 h-12 rounded-full text-error transition-colors hover:bg-error/10">
+                <i class="ph ph-arrow-counter-clockwise text-2xl"></i>
+            </button>
+        </nav>
+    </div>
+
+    <!-- Modals Container -->
+    <div id="modal-container" class="fixed inset-0 z-50 hidden bg-on-surface/40 backdrop-blur-sm flex items-end sm:items-center justify-center pb-0 sm:pb-0">
+        <div id="modal-content" class="bg-surface w-full max-w-md rounded-t-[32px] sm:rounded-[32px] p-6 shadow-2xl transform transition-transform translate-y-full max-h-[85vh] overflow-y-auto">
+            <!-- Modal inner content -->
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="fixed bottom-28 left-1/2 -translate-x-1/2 z-50 flex flex-col gap-2 w-[calc(100%-2rem)] max-w-[400px]"></div>
+
+    <!-- Onboarding Container -->
+    <div id="onboarding-container" class="fixed inset-0 z-[100] hidden bg-surface flex flex-col items-center justify-center p-6">
+        <div class="w-full max-w-sm text-center">
+            <h2 class="text-3xl font-black text-primary mb-2">Welcome to Scorat!</h2>
+            <p class="text-on-surface-variant mb-8">Create your player profile to join the global roster.</p>
+            
+            <div class="flex flex-col gap-4">
+                <div class="flex justify-center mb-2">
+                    <div id="ob-avatar-preview" class="w-24 h-24 rounded-full bg-surface-variant border-4 border-dashed border-on-surface/30 flex items-center justify-center overflow-hidden relative">
+                        <i class="ph ph-camera text-3xl opacity-50"></i>
+                    </div>
+                </div>
+                <label class="bg-surface-variant px-4 py-2 rounded-full font-bold cursor-pointer text-sm hover:bg-surface-variant/80 transition-colors border border-on-surface/10 mx-auto w-max">
+                    Upload Photo
+                    <input type="file" accept="image/*" class="hidden" onchange="previewOnboardingAvatar(event)">
+                </label>
+                
+                <input type="text" id="ob-player-name" placeholder="Your Nickname" class="w-full mt-4 bg-surface-variant text-on-surface-variant px-4 py-4 rounded-[24px] font-bold focus:ring-2 focus:ring-primary outline-none text-center">
+                
+                <button onclick="saveUserProfile()" class="w-full mt-6 bg-primary text-on-primary py-4 rounded-full font-bold text-lg shadow-md hover:scale-[1.02] transition-transform">Start Playing</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase Scripts -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, collection, query, onSnapshot, addDoc, updateDoc, deleteDoc, orderBy } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        /* --- Global State --- */
+        let db, auth, currentUser, appId;
+        const state = {
+            currentTab: 'main',
+            settings: { darkMode: true, m1: 351, m2: 551, m1Audio: null, m2Audio: null },
+            players: [],
+            history: [],
+            activeGame: {
+                team1: [null, null], 
+                team2: [null, null], 
+                rounds: [], 
+                m1Triggered: false, 
+                m2Triggered: false,
+                gameOver: false
+            },
+            tempHistoryId: null, // For undo
+            lastActiveState: null // For undo
+        };
+
+        let debounceTimer;
+        let onboardingAvatarBase64 = null;
+
+        /* --- Initialization --- */
+        async function init() {
+            try {
+                const configStr = typeof __firebase_config !== 'undefined' ? __firebase_config : '{}';
+                const firebaseConfig = JSON.parse(configStr);
+                
+                if(!firebaseConfig.projectId) throw new Error("Firebase config missing");
+
+                const app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+                appId = typeof __app_id !== 'undefined' ? __app_id : 'scorat-app-id';
+
+                // Auth First Rule
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+
+                onAuthStateChanged(auth, async (user) => {
+                    if (user) {
+                        currentUser = user;
+                        await checkUserProfile(user.uid);
+                    }
+                });
+            } catch (error) {
+                console.error("Firebase Init Error:", error);
+                showToast("Failed to connect to database. Operating locally.");
+            }
+            bindEvents();
+        }
+
+        async function checkUserProfile(uid) {
+            try {
+                const userDoc = await getDoc(doc(db, 'artifacts', appId, 'public', 'data', 'users', uid));
+                if (!userDoc.exists()) {
+                    document.getElementById('onboarding-container').classList.remove('hidden');
+                } else {
+                    document.getElementById('onboarding-container').classList.add('hidden');
+                    setupListeners();
+                }
+            } catch(e) {
+                console.error("Error checking profile", e);
+            }
+        }
+
+        window.previewOnboardingAvatar = function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const MAX_SIZE = 150;
+                    let width = img.width; let height = img.height;
+                    if (width > height) { if (width > MAX_SIZE) { height *= MAX_SIZE / width; width = MAX_SIZE; } } 
+                    else { if (height > MAX_SIZE) { width *= MAX_SIZE / height; height = MAX_SIZE; } }
+                    canvas.width = width; canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+                    onboardingAvatarBase64 = canvas.toDataURL('image/jpeg', 0.7);
+                    document.getElementById('ob-avatar-preview').innerHTML = `<img src="${onboardingAvatarBase64}" class="w-full h-full object-cover">`;
+                };
+                img.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        window.saveUserProfile = async function() {
+            const name = document.getElementById('ob-player-name').value.trim();
+            if (!name) return showToast("Nickname is required!");
+            
+            try {
+                const userRef = doc(db, 'artifacts', appId, 'public', 'data', 'users', currentUser.uid);
+                await setDoc(userRef, {
+                    name,
+                    avatar: onboardingAvatarBase64,
+                    joinedAt: Date.now()
+                });
+                document.getElementById('onboarding-container').classList.add('hidden');
+                showToast("Profile created successfully!");
+                setupListeners();
+            } catch (error) {
+                console.error("Error saving profile", error);
+                showToast("Error creating profile.");
+            }
+        }
+
+        /* --- Database Listeners (Strict Paths) --- */
+        function setupListeners() {
+            if (!currentUser) return;
+            const uid = currentUser.uid;
+
+            // 1. Settings
+            const settingsRef = doc(db, 'artifacts', appId, 'users', uid, 'state', 'settings');
+            onSnapshot(settingsRef, (snap) => {
+                if (snap.exists()) {
+                    state.settings = { ...state.settings, ...snap.data() };
+                    applyTheme(state.settings.darkMode);
+                } else {
+                    setDoc(settingsRef, state.settings);
+                }
+                renderActiveTab();
+            }, (err) => console.error("Settings listener error", err));
+
+            // 2. Active Game
+            const activeRef = doc(db, 'artifacts', appId, 'users', uid, 'state', 'activeGame');
+            onSnapshot(activeRef, (snap) => {
+                if (snap.exists()) {
+                    state.activeGame = snap.data();
+                    checkMilestones(); // Audio checks
+                } else {
+                    setDoc(activeRef, state.activeGame);
+                }
+                if (state.currentTab === 'main') renderMain();
+            }, (err) => console.error("ActiveGame listener error", err));
+
+            // 3. Players (Now reading from PUBLIC registered users)
+            const playersRef = collection(db, 'artifacts', appId, 'public', 'data', 'users');
+            onSnapshot(playersRef, (snap) => {
+                state.players = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                if (['players', 'main', 'history', 'stats'].includes(state.currentTab)) renderActiveTab();
+            }, (err) => console.error("Players listener error", err));
+
+            // 4. History
+            const historyRef = collection(db, 'artifacts', appId, 'users', uid, 'history');
+            onSnapshot(historyRef, (snap) => {
+                // Sorting manually in JS to avoid index requirement errors
+                state.history = snap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a,b) => b.date - a.date);
+                if (['history', 'stats'].includes(state.currentTab)) renderActiveTab();
+            }, (err) => console.error("History listener error", err));
+        }
+
+        /* --- Core Logic & Database Writes --- */
+        function saveActiveGame() {
+            if (!currentUser) return;
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => {
+                const activeRef = doc(db, 'artifacts', appId, 'users', currentUser.uid, 'state', 'activeGame');
+                setDoc(activeRef, state.activeGame).catch(e => console.error("Save Active", e));
+            }, 300);
+        }
+
+        function saveSettings() {
+            if (!currentUser) return;
+            const settingsRef = doc(db, 'artifacts', appId, 'users', currentUser.uid, 'state', 'settings');
+            setDoc(settingsRef, state.settings).catch(e => console.error("Save Settings", e));
+            applyTheme(state.settings.darkMode);
+        }
+
+        function checkMilestones() {
+            let t1Total = 0; let t2Total = 0;
+            (state.activeGame.rounds || []).forEach(r => {
+                t1Total += (parseInt(r.t1) || 0);
+                t2Total += (parseInt(r.t2) || 0);
+            });
+
+            const { m1, m2 } = state.settings;
+            
+            // Check M1
+            if ((t1Total >= m1 || t2Total >= m1) && !state.activeGame.m1Triggered) {
+                state.activeGame.m1Triggered = true;
+                playAlertSound('m1');
+                saveActiveGame();
+            }
+
+            // Check M2 (Game Over)
+            if ((t1Total >= m2 || t2Total >= m2) && !state.activeGame.gameOver) {
+                state.activeGame.m2Triggered = true;
+                state.activeGame.gameOver = true;
+                playAlertSound('m2');
+                triggerCelebration();
+                saveActiveGame();
+            }
+        }
+
+        async function resetGame() {
+            if (!currentUser) return;
+            
+            // Validate if there's anything to reset
+            if (!state.activeGame.rounds || state.activeGame.rounds.length === 0) {
+                showToast("Board is already clear.");
+                return;
+            }
+
+            state.lastActiveState = JSON.parse(JSON.stringify(state.activeGame)); // Deep copy
+            
+            // 1. Add to history
+            const historyRef = collection(db, 'artifacts', appId, 'users', currentUser.uid, 'history');
+            const newHistory = {
+                date: Date.now(),
+                team1: state.activeGame.team1,
+   
