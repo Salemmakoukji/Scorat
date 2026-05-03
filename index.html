@@ -229,8 +229,15 @@
         /* --- Initialization --- */
         async function init() {
             try {
-                const configStr = typeof __firebase_config !== 'undefined' ? __firebase_config : '{}';
-                const firebaseConfig = JSON.parse(configStr);
+                const firebaseConfig = {
+  apiKey: "AIzaSyAiX6ipa161rB1o715EfmtzfrHiz9zgChQ",
+  authDomain: "dottech-scorat.firebaseapp.com",
+  projectId: "dottech-scorat",
+  storageBucket: "dottech-scorat.firebasestorage.app",
+  messagingSenderId: "324240314924",
+  appId: "1:324240314924:web:12866f2c25908f82fb7789",
+  measurementId: "G-Y945QFFG3G"
+};
                 
                 if(!firebaseConfig.projectId) throw new Error("Firebase config missing");
 
