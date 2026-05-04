@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="ar" dir="ltr" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Scorat - لوحة التحكم</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts & Material Symbols -->
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Tajawal', 'sans-serif'] },
+                    colors: { primary: '#1a73e8', googleBg: '#f8f9fa' }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { font-family: 'Tajawal', sans-serif; background-color: #f1f3f4; -webkit-tap-highlight-color: transparent; }
+        .material-symbols-outlined { vertical-align: middle; }
+        ::-webkit-scrollbar { display: none; }
+        * { scrollbar-width: none; }
+    </style>
+</head>
+<body class="text-gray-800 h-screen overflow-hidden bg-gray-100">
+
+    <!-- شاشة تسجيل الدخول -->
+    <div id="login-screen" class="fixed inset-0 bg-white z-[100] flex flex-col items-center justify-center p-6">
+        <div class="w-full max-w-sm bg-white p-8 rounded-[32px] shadow-lg border border-gray-100 text-center">
+            <span class="material-symbols-outlined text-6xl text-primary mb-4">admin_panel_settings</span>
+            <h1 class="text-2xl font-bold text-gray-800 mb-2">لوحة الإدارة</h1>
+            <p class="text-sm text-gray-500 mb-6">الرجاء إدخال كلمة المرور للوصول إلى البيانات.</p>
+            
+            <input type="password" id="password-input" placeholder="كلمة المرور" class="w-full bg-gray-50 border border-gray-200 text-center px-4 py-3 rounded-xl font-bold focus:border-primary focus:ring-1 focus:ring-primary outline-none mb-4" onkeypress="if(event.key==='Enter') checkPassword()">
+            <button onclick="checkPassword()" class="w-full bg-primary text-white py-3 rounded-xl font-bold shadow-md hover:bg-blue-600 transition-colors">دخول</button>
+        </div>
+    </div>
+
+    <!-- التطبيق (مخفي حتى تسجيل الدخول) -->
+    <div id="admin-app" class="hidden h-screen flex flex-col md:flex-row w-full">
+        
+        <!-- الشريط الجانبي (لشاشات الكمبيوتر) -->
+        <aside class="w-64 bg-white border-r border-gray-200 flex-col hidden md:flex">
+            <div class="p-6 border-b border-gray-200 flex items-center gap-2 text-primary">
+                <span class="material-symbols-outlined text-3xl">shield</span>
+                <h1 class="text-xl font-bold">Scorat Admin</h1>
+            </div>
+            <nav class="flex-1 p-4 space-y-2">
+                <button onclick="switchTab('users')" id="tab-users" class="w-full flex items-center justify-between px-4 py-3 text-sm font-medium rounded-xl text-primary bg-blue-50 transition-colors">
+                    <div class="flex items-center gap-2"><span class="material-symbols-outlined">group</span> المستخدمين</div>
+                </button>
+                <button onclick="switchTab('live')" id="tab-live" class="w-full flex items-center justify-between px-4 py-3 text-sm font-medium rounded-xl text-gray-600 hover:bg-gray-100 transition-colors">
+                    <div class="flex items-center gap-2"><span class="material-symbols-outlined">podcasts</span> المباشر</div>
+                </button>
+                <button onclick="switchTab('matches')" id="tab-matches" class="w-full flex items-center justify-between px-4 py-3 text-sm font-medium rounded-xl text-gray-600 hover:bg-gray-100 transition-colors">
+                    <div class="flex items-center gap-2"><span class="material-symbols-outlined">history</span> السجل</div>
+                </button>
+            </nav>
+        </aside>
+
+        <!-- المحتوى الرئيسي -->
+        <main class="flex-1 flex flex-col h-screen overflow-hidden">
+            
+            <!-- الهيدر للموبايل -->
+            <header class="md:hidden bg-white border-b border-gray-200 p-4 flex justify-between items-center z-10 shadow-sm">
+                <h1 class="text-lg font-bold text-primary flex items-center gap-1"><span class="material-symbols-outlined">shield</span> Admin</h1>
+            </header>
+
+            <!-- التبويبات العلوية (للموبايل) -->
+            <div class="md:hidden bg-white border-b border-gray-200 flex overflow-x-auto p-2 gap-2 z-10 shadow-sm">
+                <button onclick="switchTab('users')" id="mobile-tab-users" class="flex-1 py-2 px-3 rounded-lg text-sm font-bold text-primary bg-blue-50 text-center flex items-center justify-center gap-1"><span class="material-symbols-outlined text-[18px]">group</span></button>
+                <button onclick="switchTab('live')" id="mobile-tab-live" class="flex-1 py-2 px-3 rounded-lg text-sm font-bold text-gray-500 bg-gray-50 text-center flex items-center justify-center gap-1"><span class="material-symbols-outlined text-[18px]">podcasts</span></button>
+                <button onclick="switchTab('matches')" id="mobile-tab-matches" class="flex-1 py-2 px-3 rounded-lg text-sm font-bold text-gray-500 bg-gray-50 text-center flex items-center justify-center gap-1"><span class="material-symbols-outlined text-[18px]">history</span></button>
+            </div>
+
+            <!-- شريط الأدوات العلوي -->
+            <div class="bg-white border-b border-gray-200 px-4 py-3 flex justify-between items-center shadow-sm z-10">
+                <h2 id="page-title" class="text-lg font-bold text-gray-800">إدارة المستخدمين</h2>
+                <button onclick="loadData()" class="flex items-center justify-center w-10 h-10 bg-gray-50 border border-gray-200 rounded-full text-gray-600 hover:bg-gray-100 transition-colors shadow-sm active:scale-95">
+                    <span class="material-symbols-outlined text-[20px]">refresh</span>
+                </button>
+            </div>
+
+            <!-- منطقة المحتوى -->
+            <div class="flex-1 overflow-y-auto p-4 bg-gray-100" id="main-scroll-area">
+                
+                <!-- مؤشر التحميل -->
+                <div id="loading" class="flex flex-col items-center justify-center h-64 text-primary">
+                    <span class="material-symbols-outlined animate-spin text-4xl mb-2">sync</span>
+                    <p class="font-medium text-sm">جاري جلب البيانات...</p>
+                </div>
+
+                <!-- تبويب المستخدمين -->
+                <div id="view-users" class="hidden space-y-3 pb-20">
+                    <div id="users-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3"></div>
+                </div>
+
+                <!-- تبويب المباريات المباشرة -->
+                <div id="view-live" class="hidden space-y-3 pb-20">
+                    <div id="live-container" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
+                </div>
+
+                <!-- تبويب سجل المباريات -->
+                <div id="view-matches" class="hidden space-y-3 pb-20">
+                    <div id="matches-container" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- النوافذ المنبثقة (Modals) -->
+    <div id="modal-container" class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-sm flex items-end md:items-center justify-center p-0 md:p-4 pb-0">
+        <div id="modal-content" class="bg-white w-full max-w-lg rounded-t-3xl md:rounded-2xl shadow-2xl transform transition-transform translate-y-full md:translate-y-0 md:scale-95 md:opacity-0 max-h-[85vh] flex flex-col">
+            <!-- سيتم حقن المحتوى هنا -->
+        </div>
+    </div>
+
+    <!-- الإشعارات (Toast) -->
+    <div id="toast-container" class="fixed bottom-6 right-1/2 translate-x-1/2 md:translate-x-0 md:right-6 z-50 flex flex-col gap-2 w-[calc(100%-2rem)] max-w-sm"></div>
+
+    <!-- سكربتات Firebase والمنطق -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, getDocs, doc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAiX6ipa161rB1o715EfmtzfrHiz9zgChQ",
+            authDomain: "dottech-scorat.firebaseapp.com",
+            projectId: "dottech-scorat",
+            storageBucket: "dottech-scorat.firebasestorage.app",
+            messagingSenderId: "324240314924",
+            appId: "1:324240314924:web:12866f2c25908f82fb7789",
+            measurementId: "G-Y945QFFG3G"
+        };
+
+        const appId = 'scorat-app';
+        let db, auth;
+        let tempEditAvatarBase64 = null; // متغير لحفظ الصورة الجديدة مؤقتاً
+        
+        // حالة التطبيق
+        const state = {
+            currentTab: 'users',
+            users: [],
+            matches: [],
+            liveGames: []
+        };
+        window.adminState = state;
+
+        // التحقق من كلمة المرور
+        window.checkPassword = function() {
+            const input = document.getElementById('password-input').value;
+            if (input === '1996') {
+                document.getElementById('login-screen').classList.add('hidden');
+                document.getElementById('admin-app').classList.remove('hidden');
+                initFirebase();
+            } else {
+                showToast("كلمة المرور غير صحيحة", "error");
+                document.getElementById('password-input').value = '';
+            }
+        }
+
+        async function initFirebase() {
+            try {
+                const app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+                await signInAnonymously(auth);
+                await loadData();
+            } catch (error) {
+                console.error("Firebase Init Error:", error);
+                showToast("فشل الاتصال بقاعدة البيانات", "error");
+            }
+        }
+
+        window.loadData = async function() {
+            document.getElementById('loading').classList.remove('hidden');
+            ['users', 'live', 'matches'].forEach(t => document.getElementById(`view-${t}`).classList.add('hidden'));
+            
+            try {
+                // 1. جلب المستخدمين
+                const usersSnap = await getDocs(collection(db, 'artifacts', appId, 'public', 'data', 'users'));
+                state.users = usersSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+                // 2. جلب المباريات المباشرة
+                const liveSnap = await getDocs(collection(db, 'artifacts', appId, 'public', 'data', 'liveGames'));
+                state.liveGames = liveSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+                // 3. جلب سجل المباريات لجميع المستخدمين
+                let allMatches = [];
+                for (const user of state.users) {
+                    try {
+                        const historySnap = await getDocs(collection(db, 'artifacts', appId, 'users', user.id, 'history'));
+                        historySnap.docs.forEach(d => {
+                            allMatches.push({ matchId: d.id, hostId: user.id, hostName: user.name, ...d.data() });
+                        });
+                    } catch (e) {}
+                }
+                state.matches = allMatches.sort((a,b) => b.date - a.date);
+
+                renderData();
+                showToast("تم تحديث البيانات!");
+            } catch (error) {
+                console.error("Error loading data:", error);
+                showToast("حدث خطأ أثناء جلب البيانات", "error");
+            } finally {
+                document.getElementById('loading').classList.add('hidden');
+                document.getElementById(`view-${state.currentTab}`).classList.remove('hidden');
+            }
+        }
+
+        /* --- التنقل بين التبويبات --- */
+        window.switchTab = function(tabName) {
+            state.currentTab = tabName;
+            
+            const titles = { 'users': 'إدارة المستخدمين', 'live': 'المباريات المباشرة', 'matches': 'سجل المباريات' };
+            document.getElementById('page-title').innerText = titles[tabName];
+            
+            // تحديث ألوان الأزرار
+            ['users', 'live', 'matches'].forEach(t => {
+                // Sidebar
+                const sBtn = document.getElementById(`tab-${t}`);
+                if(sBtn) {
+                    if(t === tabName) { sBtn.classList.add('text-primary', 'bg-blue-50'); sBtn.classList.remove('text-gray-600', 'hover:bg-gray-100'); }
+                    else { sBtn.classList.remove('text-primary', 'bg-blue-50'); sBtn.classList.add('text-gray-600', 'hover:bg-gray-100'); }
+                }
+                // Mobile
+                const mBtn = document.getElementById(`mobile-tab-${t}`);
+                if(mBtn) {
+                    if(t === tabName) { mBtn.classList.add('text-primary', 'bg-blue-50'); mBtn.classList.remove('text-gray-500', 'bg-gray-50'); }
+                    else { mBtn.classList.remove('text-primary', 'bg-blue-50'); mBtn.classList.add('text-gray-500', 'bg-gray-50'); }
+                }
+                
+                document.getElementById(`view-${t}`).classList.add('hidden');
+            });
+
+            document.getElementById(`view-${tabName}`).classList.remove('hidden');
+        }
+
+        function renderData() {
+            renderUsers();
+            renderLiveGames();
+            renderMatches();
+        }
+
+        /* --- عرض المستخدمين --- */
+        function renderUsers() {
+            const container = document.getElementById('users-container');
+            container.innerHTML = state.users.map(u => `
+                <div class="bg-white p-4 rounded-[20px] shadow-sm border border-gray-200 flex flex-col">
+                    <div class="flex items-center gap-3 mb-3">
+                        <img src="${u.avatar || 'https://api.dicebear.com/7.x/initials/svg?seed=' + u.name}" class="w-12 h-12 rounded-full object-cover border border-gray-100">
+                        <div class="flex-1">
+                            <h3 class="font-bold text-gray-800 text-sm">${u.name}</h3>
+                            <p class="text-[10px] text-gray-400 font-mono select-all">${u.id}</p>
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-center bg-gray-50 p-2 rounded-xl text-xs font-bold mb-3">
+                        <span class="text-primary">${u.wins || 0} فوز</span>
+                        <span class="text-gray-300">|</span>
+                        <span class="text-red-500">${u.losses || 0} خسارة</span>
+                    </div>
+                    <div class="flex gap-2 mt-auto">
+                        <button onclick="openEditUser('${u.id}')" class="flex-1 bg-blue-50 text-primary py-2 rounded-xl text-xs font-bold hover:bg-blue-100 transition-colors">تعديل</button>
+                        <button onclick="confirmDeleteUser('${u.id}')" class="bg-red-50 text-red-600 px-3 py-2 rounded-xl text-xs font-bold hover:bg-red-100 transition-colors"><span class="material-symbols-outlined text-[16px]">delete</span></button>
+                    </div>
+                </div>
+            `).join('') || `<div class="col-span-full text-center text-gray-500 py-10 text-sm">لا يوجد مستخدمين.</div>`;
+        }
+
+        /* --- تعديل صورة المستخدم --- */
+        window.previewAdminAvatar = function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const MAX_SIZE = 150;
+                    let w = img.width; let h = img.height;
+                    if (w > h) { if (w > MAX_SIZE) { h *= MAX_SIZE / w; w = MAX_SIZE; } } 
+                    else { if (h > MAX_SIZE) { w *= MAX_SIZE / h; h = MAX_SIZE; } }
+                    canvas.width = w; canvas.height = h;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, w, h);
+                    tempEditAvatarBase64 = canvas.toDataURL('image/jpeg', 0.7);
+                    document.getElementById('edit-u-avatar-preview').src = tempEditAvatarBase64;
+                };
+                img.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        /* --- تعديل/حذف المستخدمين --- */
+        window.openEditUser = function(uid) {
+            const user = state.users.find(u => u.id === uid); if(!user) return;
+            
+            // إعادة ضبط متغير الصورة المؤقت
+            tempEditAvatarBase64 = user.avatar || null;
+            const currentAvatarSrc = user.avatar || 'https://api.dicebear.com/7.x/initials/svg?seed=' + user.name;
+
+            showModal("تعديل بيانات المستخدم", `
+                <div class="space-y-4 p-5 flex flex-col items-center">
+                    
+                    <!-- تعديل الصورة -->
+                    <div class="relative w-24 h-24 mb-2">
+                        <img id="edit-u-avatar-preview" src="${currentAvatarSrc}" class="w-24 h-24 rounded-full object-cover border-4 border-gray-100 shadow-sm">
+                        <label class="absolute bottom-0 right-0 bg-primary text-white p-1.5 rounded-full cursor-pointer shadow-md hover:bg-blue-600 transition-colors flex items-center justify-center">
+                            <span class="material-symbols-outlined text-[16px]">edit</span>
+                            <input type="file" accept="image/*" class="hidden" onchange="previewAdminAvatar(event)">
+                        </label>
+                    </div>
+
+                    <div class="w-full">
+                        <label class="block text-[10px] font-bold text-gray-500 mb-1">الاسم (Nickname)</label>
+                        <input type="text" id="edit-u-name" value="${user.name}" class="w-full border border-gray-200 bg-gray-50 rounded-xl px-3 py-2 focus:border-primary outline-none text-sm">
+                    </div>
+                    <div class="grid grid-cols-2 gap-3 w-full">
+                        <div>
+                            <label class="block text-[10px] font-bold text-gray-500 mb-1">مرات الفوز</label>
+                            <input type="number" id="edit-u-wins" value="${user.wins || 0}" class="w-full border border-gray-200 bg-gray-50 rounded-xl px-3 py-2 outline-none text-primary font-bold text-center">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-gray-500 mb-1">مرات الخسارة</label>
+                            <input type="number" id="edit-u-losses" value="${user.losses || 0}" class="w-full border border-gray-200 bg-gray-50 rounded-xl px-3 py-2 outline-none text-red-500 font-bold text-center">
+                        </div>
+                    </div>
+                </div>
+                <div class="p-4 border-t border-gray-100 flex gap-2">
+                    <button onclick="closeModal()" class="flex-1 bg-gray-100 py-3 rounded-xl text-sm font-bold text-gray-600">إلغاء</button>
+                    <button onclick="saveUser('${uid}')" class="flex-1 bg-primary py-3 rounded-xl text-sm font-bold text-white shadow-md">حفظ</button>
+                </div>
+            `);
+        }
+
+        window.saveUser = async function(uid) {
+            const name = document.getElementById('edit-u-name').value.trim();
+            const wins = parseInt(document.getElementById('edit-u-wins').value) || 0;
+            const losses = parseInt(document.getElementById('edit-u-losses').value) || 0;
+            if(!name) return showToast("الاسم مطلوب", "error");
+
+            try {
+                let updateData = { name, wins, losses };
+                // حفظ الصورة إذا تم تغييرها
+                if (tempEditAvatarBase64) {
+                    updateData.avatar = tempEditAvatarBase64;
+                }
+
+                await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'users', uid), updateData);
+                showToast("تم التحديث بنجاح!"); closeModal(); loadData();
+            } catch (e) { showToast("حدث خطأ", "error"); }
+        }
+
+        window.confirmDeleteUser = function(uid) {
+            showModal("تأكيد الحذف", `
+                <div class="p-5 text-center text-sm text-gray-600">هل أنت متأكد من حذف هذا المستخدم نهائياً؟ هذا الإجراء لا يمكن التراجع عنه.</div>
+                <div class="p-4 border-t border-gray-100 flex gap-2">
+                    <button onclick="closeModal()" class="flex-1 bg-gray-100 py-3 rounded-xl text-sm font-bold text-gray-600">إلغاء</button>
+                    <button onclick="executeDeleteUser('${uid}')" class="flex-1 bg-red-500 py-3 rounded-xl text-sm font-bold text-white shadow-md">نعم، احذف</button>
+                </div>
+            `);
+        }
+
+        window.executeDeleteUser = async function(uid) {
+            try { await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'users', uid)); showToast("تم الحذف."); closeModal(); loadData(); } 
+            catch (e) { showToast("خطأ في الحذف", "error"); }
+        }
+
+        /* --- عرض المباريات المباشرة وإنهائها --- */
+        function renderLiveGames() {
+            const container = document.getElementById('live-container');
+            container.innerHTML = state.liveGames.map(live => {
+                let t1 = 0; let t2 = 0; (live.game.rounds || []).forEach(r => { t1 += (r.t1||0); t2 += (r.t2||0); });
+                return `
+                <div class="bg-white p-4 rounded-[20px] shadow-sm border border-red-100 relative overflow-hidden">
+                    <div class="absolute top-3 left-3 flex items-center gap-1 text-[9px] font-black text-red-500 uppercase tracking-widest animate-pulse px-2 py-1 bg-red-50 rounded-full"><span class="w-1.5 h-1.5 bg-red-500 rounded-full"></span> Live</div>
+                    <div class="text-xs font-bold text-gray-500 mb-3">${live.hostName}</div>
+                    <div class="flex justify-between items-center bg-gray-50 p-3 rounded-xl mb-3">
+                        <div class="text-center w-1/3"><div class="font-black text-xl">${t1}</div><div class="text-[9px] text-gray-400">Team 1</div></div>
+                        <div class="text-gray-300 font-black text-sm">VS</div>
+                        <div class="text-center w-1/3"><div class="font-black text-xl text-primary">${t2}</div><div class="text-[9px] text-gray-400">Team 2</div></div>
+                    </div>
+                    <button onclick="confirmEndLive('${live.id}')" class="w-full bg-red-50 text-red-600 py-2 rounded-xl text-xs font-bold hover:bg-red-100 transition-colors flex justify-center items-center gap-1"><span class="material-symbols-outlined text-[16px]">cancel</span> إجبار الإنهاء</button>
+                </div>
+            `}).join('') || `<div class="col-span-full text-center text-gray-500 py-10 text-sm">لا يوجد مباريات مباشرة الآن.</div>`;
+        }
+
+        window.confirmEndLive = function(hostId) {
+            showModal("إنهاء المباراة؟", `
+                <div class="p-5 text-center text-sm text-gray-600">هل تريد إغلاق هذه المباراة المباشرة بالقوة وإزالتها من شاشات المشاهدين؟</div>
+                <div class="p-4 border-t border-gray-100 flex gap-2">
+                    <button onclick="closeModal()" class="flex-1 bg-gray-100 py-3 rounded-xl text-sm font-bold text-gray-600">إلغاء</button>
+                    <button onclick="executeEndLive('${hostId}')" class="flex-1 bg-red-500 py-3 rounded-xl text-sm font-bold text-white shadow-md">إنهاء بالقوة</button>
+                </div>
+            `);
+        }
+
+        window.executeEndLive = async function(hostId) {
+            try { await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'liveGames', hostId)); showToast("تم إنهاء المباراة."); closeModal(); loadData(); } 
+            catch (e) { showToast("خطأ", "error"); }
+        }
+
+        /* --- عرض سجل المباريات --- */
+        function renderMatches() {
+            const container = document.getElementById('matches-container');
+            container.innerHTML = state.matches.map(m => {
+                let t1 = 0; let t2 = 0; (m.rounds || []).forEach(r => { t1 += (r.t1||0); t2 += (r.t2||0); });
+                return `
+                <div class="bg-white p-4 rounded-[20px] shadow-sm border border-gray-200">
+                    <div class="flex justify-between items-center text-[10px] font-bold text-gray-400 mb-3 border-b border-gray-50 pb-2">
+                        <span>${new Date(m.date).toLocaleString('ar-EG', {dateStyle:'short', timeStyle:'short'})}</span>
+                        <span class="bg-gray-100 px-2 py-0.5 rounded-md">${m.hostName}</span>
+                    </div>
+                    <div class="flex justify-between items-center bg-gray-50 p-3 rounded-xl mb-3">
+                        <div class="text-center w-1/3"><div class="font-black text-xl ${t1>t2 ? 'text-gray-400' : 'text-primary'}">${t1}</div><div class="text-[9px] text-gray-400">Team 1</div></div>
+                        <div class="text-gray-300 font-black text-sm">VS</div>
+                        <div class="text-center w-1/3"><div class="font-black text-xl ${t2>t1 ? 'text-gray-400' : 'text-primary'}">${t2}</div><div class="text-[9px] text-gray-400">Team 2</div></div>
+                    </div>
+                    <div class="flex gap-2 mt-auto">
+                        <button onclick="openEditMatch('${m.hostId}', '${m.matchId}')" class="flex-1 bg-gray-50 text-gray-600 py-2 rounded-xl text-xs font-bold hover:bg-gray-100 transition-colors flex justify-center items-center gap-1"><span class="material-symbols-outlined text-[16px]">edit_square</span> الجولات</button>
+                        <button onclick="confirmDeleteMatch('${m.hostId}', '${m.matchId}')" class="bg-red-50 text-red-600 px-3 py-2 rounded-xl text-xs font-bold hover:bg-red-100 transition-colors"><span class="material-symbols-outlined text-[16px]">delete</span></button>
+                    </div>
+                </div>
+            `}).join('') || `<div class="col-span-full text-center text-gray-500 py-10 text-sm">لا يوجد سجل للمباريات.</div>`;
+        }
+
+        /* --- تعديل/حذف السجل --- */
+        window.openEditMatch = function(hostId, matchId) {
+            const match = state.matches.find(m => m.hostId === hostId && m.matchId === matchId); if(!match) return;
+            let html = (match.rounds || []).map((r, i) => `
+                <div class="flex items-center gap-2 mb-2 bg-gray-50 p-2 rounded-xl border border-gray-100">
+                    <span class="text-[10px] font-bold text-gray-400 w-5">R${i+1}</span>
+                    <input type="number" id="edit-m-${i}-t1" value="${r.t1 !== null ? r.t1 : ''}" class="w-full bg-white border border-gray-200 rounded-lg py-2 outline-none focus:border-primary text-center font-bold text-sm">
+                    <input type="number" id="edit-m-${i}-t2" value="${r.t2 !== null ? r.t2 : ''}" class="w-full bg-white border border-gray-200 rounded-lg py-2 outline-none focus:border-primary text-center font-bold text-sm text-primary">
+                </div>
+            `).join('');
+
+            showModal("تعديل النقاط", `
+                <div class="p-4 flex-1 overflow-y-auto max-h-[40vh] bg-white">${html || '<p class="text-xs text-center text-gray-400">لا توجد جولات.</p>'}</div>
+                <div class="p-4 border-t border-gray-100 flex gap-2 bg-gray-50">
+                    <button onclick="closeModal()" class="flex-1 bg-white border border-gray-200 py-3 rounded-xl text-sm font-bold text-gray-600">إلغاء</button>
+                    <button onclick="saveMatch('${hostId}', '${matchId}')" class="flex-1 bg-primary py-3 rounded-xl text-sm font-bold text-white shadow-md">حفظ</button>
+                </div>
+            `);
+        }
+
+        window.saveMatch = async function(hostId, matchId) {
+            const match = state.matches.find(m => m.hostId === hostId && m.matchId === matchId); if(!match) return;
+            let newRounds = [];
+            for (let i = 0; i < match.rounds.length; i++) {
+                const t1Val = document.getElementById(`edit-m-${i}-t1`).value;
+                const t2Val = document.getElementById(`edit-m-${i}-t2`).value;
+                newRounds.push({ t1: t1Val === '' ? null : parseInt(t1Val), t2: t2Val === '' ? null : parseInt(t2Val) });
+            }
+            try {
+                await updateDoc(doc(db, 'artifacts', appId, 'users', hostId, 'history', matchId), { rounds: newRounds });
+                showToast("تم الحفظ!"); closeModal(); loadData();
+            } catch (e) { showToast("خطأ", "error"); }
+        }
+
+        window.confirmDeleteMatch = function(hostId, matchId) {
+            showModal("حذف المباراة؟", `
+                <div class="p-5 text-center">
+                    <p class="text-sm text-gray-600 mb-3">سيتم حذف هذه المباراة نهائياً من السجل.</p>
+                    <p class="text-[10px] text-orange-600 bg-orange-50 p-2 rounded-lg border border-orange-100 leading-relaxed">ملاحظة: هذا الحذف لا يقوم تلقائياً بإنقاص عدد مرات الفوز/الخسارة من حسابات اللاعبين، يجب تعديلها يدوياً من قسم المستخدمين.</p>
+                </div>
+                <div class="p-4 border-t border-gray-100 flex gap-2">
+                    <button onclick="closeModal()" class="flex-1 bg-gray-100 py-3 rounded-xl text-sm font-bold text-gray-600">إلغاء</button>
+                    <button onclick="executeDeleteMatch('${hostId}', '${matchId}')" class="flex-1 bg-red-500 py-3 rounded-xl text-sm font-bold text-white shadow-md">حذف</button>
+                </div>
+            `);
+        }
+
+        window.executeDeleteMatch = async function(hostId, matchId) {
+            try { await deleteDoc(doc(db, 'artifacts', appId, 'users', hostId, 'history', matchId)); showToast("تم الحذف."); closeModal(); loadData(); } 
+            catch (e) { showToast("خطأ", "error"); }
+        }
+
+        /* --- الدوال المساعدة (Modals & Toasts) --- */
+        function showModal(title, content) {
+            const container = document.getElementById('modal-container'); const modContent = document.getElementById('modal-content');
+            modContent.innerHTML = `
+                <div class="px-5 py-4 flex justify-between items-center bg-white rounded-t-3xl md:rounded-t-2xl border-b border-gray-50">
+                    <h2 class="text-base font-bold text-gray-800">${title}</h2>
+                    <button onclick="closeModal()" class="w-8 h-8 flex items-center justify-center rounded-full bg-gray-50 hover:bg-gray-100 text-gray-500 transition-colors"><span class="material-symbols-outlined text-[18px]">close</span></button>
+                </div>
+                ${content}
+            `;
+            container.classList.remove('hidden');
+            setTimeout(() => {
+                modContent.classList.remove('translate-y-full', 'md:scale-95', 'md:opacity-0');
+            }, 10);
+        }
+
+        window.closeModal = function() {
+            const container = document.getElementById('modal-container'); const modContent = document.getElementById('modal-content');
+            modContent.classList.add('translate-y-full', 'md:scale-95', 'md:opacity-0');
+            setTimeout(() => { container.classList.add('hidden'); }, 300);
+        }
+
+        window.showToast = function(msg, type = 'success') {
+            const container = document.getElementById('toast-container'); const toast = document.createElement('div');
+            const bgColor = type === 'success' ? 'bg-green-600' : 'bg-red-600';
+            const icon = type === 'success' ? 'check_circle' : 'error';
+            toast.className = `${bgColor} text-white px-4 py-3 rounded-xl shadow-lg flex items-center gap-2 transform transition-all duration-300 translate-y-10 opacity-0`;
+            toast.innerHTML = `<span class="material-symbols-outlined text-[18px]">${icon}</span> <span class="font-bold text-xs">${msg}</span>`;
+            container.appendChild(toast);
+            requestAnimationFrame(() => toast.classList.remove('translate-y-10', 'opacity-0'));
+            setTimeout(() => { toast.classList.add('translate-y-10', 'opacity-0'); setTimeout(() => toast.remove(), 300); }, 3000);
+        }
+
+    </script>
+</body>
+</html>
