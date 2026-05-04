@@ -225,6 +225,16 @@
             return localStorage.getItem('scorat_uid') || (currentUser ? currentUser.uid : null);
         };
 
+        /* --- UI Logic Utilities --- */
+        function getTeamName(teamIds, defaultName) {
+            if (!teamIds || teamIds.length === 0) return defaultName;
+            const names = teamIds.filter(id => id).map(id => {
+                const p = state.players.find(x => x.id === id);
+                return p ? p.name : '';
+            });
+            return names.length > 0 ? names.join(' + ') : defaultName;
+        }
+
         /* --- PWA Setup --- */
         let deferredPrompt;
         const manifest = { "name": "Scorat", "short_name": "Scorat", "start_url": ".", "display": "standalone", "background_color": "#f8f9fa", "theme_color": "#1a73e8", "icons": [{ "src": ".logo.png", "sizes": "512x512", "type": "image/svg+xml", "purpose": "any maskable" }] };
@@ -527,6 +537,9 @@
                 `;
             }).join('');
 
+            const t1Name = getTeamName(state.activeGame.team1, 'Team 1');
+            const t2Name = getTeamName(state.activeGame.team2, 'Team 2');
+
             document.getElementById('content').innerHTML = `
                 <div class="flex justify-between items-center mb-2 px-2">
                     <span class="text-xs font-bold text-google-textMuted uppercase tracking-wider">Targets: ${state.settings.m1} / ${state.settings.m2}</span>
@@ -539,12 +552,12 @@
                     <div class="bg-google-surfaceLight dark:bg-google-surfaceDark p-5 rounded-[24px] flex flex-col items-center justify-between shadow-google border ${t1 >= state.settings.m2 ? 'border-google-red' : 'border-google-borderLight dark:border-google-borderDark'} transition-colors">
                         <div class="flex mb-3 justify-center pl-3">${getPlayerAvatarHTML(state.activeGame.team1[0], 1, 0)}${getPlayerAvatarHTML(state.activeGame.team1[1], 1, 1)}</div>
                         <h2 id="t1-total" class="text-5xl font-black text-google-textLight dark:text-google-textDark">${t1}</h2>
-                        <span class="text-[10px] text-google-textMuted mt-1 uppercase font-bold tracking-widest">Team 1</span>
+                        <span class="text-[10px] text-google-textMuted mt-1 uppercase font-bold tracking-widest text-center truncate w-full px-1">${t1Name}</span>
                     </div>
                     <div class="bg-google-surfaceLight dark:bg-google-surfaceDark p-5 rounded-[24px] flex flex-col items-center justify-between shadow-google border ${t2 >= state.settings.m2 ? 'border-google-red' : 'border-google-borderLight dark:border-google-borderDark'} transition-colors">
                         <div class="flex mb-3 justify-center pl-3">${getPlayerAvatarHTML(state.activeGame.team2[0], 2, 0)}${getPlayerAvatarHTML(state.activeGame.team2[1], 2, 1)}</div>
                         <h2 id="t2-total" class="text-5xl font-black text-primary dark:text-primary-dark">${t2}</h2>
-                        <span class="text-[10px] text-google-textMuted mt-1 uppercase font-bold tracking-widest">Team 2</span>
+                        <span class="text-[10px] text-google-textMuted mt-1 uppercase font-bold tracking-widest text-center truncate w-full px-1">${t2Name}</span>
                     </div>
                 </div>
                 <div class="flex-1 overflow-y-auto pb-6 px-1" id="rounds-container">
@@ -582,14 +595,17 @@
             let html = state.liveGames.map(live => {
                 let t1 = 0; let t2 = 0; (live.game.rounds || []).forEach(r => { t1 += (r.t1||0); t2 += (r.t2||0); });
                 const isCoop = live.game.team1.includes(uid) || live.game.team2.includes(uid);
+                const t1Name = getTeamName(live.game.team1, 'Team 1');
+                const t2Name = getTeamName(live.game.team2, 'Team 2');
+                
                 return `
                     <div onclick="vibe(); openSpectate('${live.id}')" class="bg-google-surfaceLight dark:bg-google-surfaceDark rounded-[24px] p-5 mb-4 shadow-google hover:shadow-google-hover active:scale-[0.98] transition-all cursor-pointer border ${isCoop ? 'border-primary' : 'border-google-borderLight dark:border-google-borderDark'} relative overflow-hidden">
                         <div class="absolute top-4 right-4 flex items-center gap-1 text-google-red text-[10px] font-black uppercase tracking-widest animate-pulse"><span class="w-2 h-2 bg-google-red rounded-full"></span> LIVE</div>
                         <div class="text-sm font-bold text-google-textMuted mb-3 flex items-center gap-2"><span class="material-symbols-outlined text-[18px] ${isCoop?'text-primary':''}">${isCoop?'group':'podcasts'}</span> ${isCoop ? 'Your Co-op Match' : live.hostName + "'s Match"}</div>
                         <div class="flex justify-between items-center">
-                            <div class="flex-1 text-center"><h3 class="text-3xl font-black">${t1}</h3><p class="text-[10px] font-bold mt-1 uppercase text-google-textMuted">Team 1</p></div>
+                            <div class="flex-1 text-center overflow-hidden"><h3 class="text-3xl font-black">${t1}</h3><p class="text-[10px] font-bold mt-1 uppercase text-google-textMuted truncate w-full px-1">${t1Name}</p></div>
                             <div class="px-2 text-google-borderLight dark:text-google-borderDark font-black text-xl">VS</div>
-                            <div class="flex-1 text-center"><h3 class="text-3xl font-black text-primary dark:text-primary-dark">${t2}</h3><p class="text-[10px] font-bold mt-1 uppercase text-google-textMuted">Team 2</p></div>
+                            <div class="flex-1 text-center overflow-hidden"><h3 class="text-3xl font-black text-primary dark:text-primary-dark">${t2}</h3><p class="text-[10px] font-bold mt-1 uppercase text-google-textMuted truncate w-full px-1">${t2Name}</p></div>
                         </div>
                     </div>
                 `;
@@ -646,6 +662,9 @@
                 document.getElementById('spec-status').classList.replace('text-google-red', 'text-primary');
             }
 
+            const t1Name = getTeamName(gameData.team1, 'Team 1');
+            const t2Name = getTeamName(gameData.team2, 'Team 2');
+
             let t1 = 0; let t2 = 0;
             const roundsHtml = (gameData.rounds || []).map((r, i) => {
                 t1 += (r.t1||0); t2 += (r.t2||0);
@@ -663,9 +682,9 @@
             container.innerHTML = `
                 <div class="bg-google-surfaceLight dark:bg-google-surfaceDark rounded-[20px] p-3 shadow-sm border border-google-borderLight dark:border-google-borderDark">
                     <div class="flex justify-between items-end mb-2 px-2">
-                        <div class="text-center w-1/3"><h2 id="coop-t1" class="text-3xl font-black">${t1}</h2><span class="text-[9px] uppercase font-bold text-google-textMuted">Team 1</span></div>
+                        <div class="text-center w-1/3 overflow-hidden"><h2 id="coop-t1" class="text-3xl font-black">${t1}</h2><span class="text-[9px] uppercase font-bold text-google-textMuted truncate block w-full px-1">${t1Name}</span></div>
                         <div class="text-center w-1/3 pb-1"><span class="material-symbols-outlined text-google-borderLight dark:text-google-borderDark">handshake</span></div>
-                        <div class="text-center w-1/3"><h2 id="coop-t2" class="text-3xl font-black text-primary dark:text-primary-dark">${t2}</h2><span class="text-[9px] uppercase font-bold text-google-textMuted">Team 2</span></div>
+                        <div class="text-center w-1/3 overflow-hidden"><h2 id="coop-t2" class="text-3xl font-black text-primary dark:text-primary-dark">${t2}</h2><span class="text-[9px] uppercase font-bold text-google-textMuted truncate block w-full px-1">${t2Name}</span></div>
                     </div>
                     <div class="max-h-24 overflow-y-auto px-2 bg-google-bgLight dark:bg-google-bgDark rounded-xl">${roundsHtml}</div>
                 </div>
@@ -841,13 +860,15 @@
         function renderHistory() {
             let html = state.history.map(h => {
                 let t1 = 0; let t2 = 0; (h.rounds || []).forEach(r => { t1 += (r.t1||0); t2 += (r.t2||0); }); const t1Won = t1 < t2;
+                const t1Name = getTeamName(h.team1, 'Team 1');
+                const t2Name = getTeamName(h.team2, 'Team 2');
                 return `
                     <div class="bg-google-surfaceLight dark:bg-google-surfaceDark rounded-[24px] p-4 mb-3 shadow-sm border border-google-borderLight dark:border-google-borderDark cursor-pointer hover:shadow-google transition-shadow active:scale-[0.98]" onclick="vibe(); viewMatchDetails('${h.id}')">
                         <div class="text-[10px] text-google-textMuted font-bold mb-2 uppercase">${new Date(h.date).toLocaleDateString()}</div>
                         <div class="flex justify-between items-center">
-                            <div class="flex-1 text-center"><h3 class="text-2xl font-black ${t1Won ? 'text-primary dark:text-primary-dark' : 'text-google-textMuted'}">${t1}</h3></div>
+                            <div class="flex-1 text-center overflow-hidden"><h3 class="text-2xl font-black ${t1Won ? 'text-primary dark:text-primary-dark' : 'text-google-textMuted'}">${t1}</h3><div class="text-[9px] font-bold mt-1 uppercase text-google-textMuted truncate w-full px-1">${t1Name}</div></div>
                             <div class="px-2 text-google-borderLight dark:text-google-borderDark font-black">VS</div>
-                            <div class="flex-1 text-center"><h3 class="text-2xl font-black ${!t1Won ? 'text-primary dark:text-primary-dark' : 'text-google-textMuted'}">${t2}</h3></div>
+                            <div class="flex-1 text-center overflow-hidden"><h3 class="text-2xl font-black ${!t1Won ? 'text-primary dark:text-primary-dark' : 'text-google-textMuted'}">${t2}</h3><div class="text-[9px] font-bold mt-1 uppercase text-google-textMuted truncate w-full px-1">${t2Name}</div></div>
                         </div>
                     </div>`;
             }).join('');
@@ -858,7 +879,23 @@
             const match = state.history.find(m => m.id === matchId); if(!match) return;
             let t1 = 0; let t2 = 0;
             const roundsHtml = (match.rounds || []).map((r, i) => { t1 += (r.t1||0); t2 += (r.t2||0); return `<div class="flex justify-between py-2 border-b border-google-borderLight dark:border-google-borderDark text-sm"><span class="w-1/3 text-center font-bold">${r.t1||0}</span><span class="w-1/3 text-center text-google-textMuted">R${i+1}</span><span class="w-1/3 text-center font-bold">${r.t2||0}</span></div>`; }).join('');
-            showModal("Match Details", `<div class="flex justify-between mb-4 bg-google-bgLight dark:bg-[#3c4043] p-4 rounded-2xl border border-google-borderLight dark:border-google-borderDark"><div class="text-center w-1/2 border-r border-google-borderLight dark:border-google-borderDark"><div class="text-3xl font-black">${t1}</div></div><div class="text-center w-1/2"><div class="text-3xl font-black">${t2}</div></div></div><div class="max-h-60 overflow-y-auto px-2">${roundsHtml}</div>`);
+            
+            const t1Name = getTeamName(match.team1, 'Team 1');
+            const t2Name = getTeamName(match.team2, 'Team 2');
+
+            showModal("Match Details", `
+                <div class="flex justify-between mb-4 bg-google-bgLight dark:bg-[#3c4043] p-4 rounded-2xl border border-google-borderLight dark:border-google-borderDark">
+                    <div class="text-center w-1/2 border-r border-google-borderLight dark:border-google-borderDark overflow-hidden pr-2">
+                        <div class="text-3xl font-black">${t1}</div>
+                        <div class="text-[10px] font-bold mt-1 text-google-textMuted truncate w-full">${t1Name}</div>
+                    </div>
+                    <div class="text-center w-1/2 overflow-hidden pl-2">
+                        <div class="text-3xl font-black">${t2}</div>
+                        <div class="text-[10px] font-bold mt-1 text-google-textMuted truncate w-full">${t2Name}</div>
+                    </div>
+                </div>
+                <div class="max-h-60 overflow-y-auto px-2">${roundsHtml}</div>
+            `);
         }
 
         function renderStats() { document.getElementById('content').innerHTML = `<div class="flex justify-between items-center mb-4"><button onclick="vibe(); switchTab('main')" class="p-2 -ml-2 rounded-full hover:bg-black/5 active:scale-95 transition-transform"><span class="material-symbols-outlined">arrow_back</span></button><h2 class="text-xl font-bold flex-1 ml-2">Stats Moved</h2></div><div class="text-center text-google-textMuted mt-10">Detailed stats are now on Player Profiles!<br>Tap the Leaderboard icon or Roster.</div>`; }
