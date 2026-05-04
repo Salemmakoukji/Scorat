@@ -93,11 +93,11 @@
         <!-- Header -->
         <header class="flex justify-between items-center mb-6">
             <h1 class="text-2xl font-bold tracking-tight text-primary dark:text-primary-dark flex items-center gap-2">
-                <span class="material-symbols-outlined text-3xl">sports_score</span> Scorat
+                <span class="material-symbols-outlined text-3xl">bolt</span> Scorat
             </h1>
             <div class="flex gap-2">
                 <button onclick="vibe(); switchTab('leaderboard')" class="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors text-google-textMuted dark:text-google-textDark">
-                    <span class="material-symbols-outlined icon-unfilled">leaderboard</span>
+                    <span class="material-symbols-outlined icon-unfilled">rewarded_ads</span>
                 </button>
                 <button onclick="vibe(); switchTab('stats')" class="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors text-google-textMuted dark:text-google-textDark">
                     <span class="material-symbols-outlined icon-unfilled">bar_chart</span>
@@ -168,19 +168,19 @@
                 <input type="text" id="ob-player-name" placeholder="Enter Nickname" class="w-full mt-2 bg-google-bgLight dark:bg-google-bgDark border border-google-borderLight dark:border-google-borderDark text-google-textLight dark:text-google-textDark px-4 py-3 rounded-full font-medium focus:border-primary focus:ring-1 focus:ring-primary outline-none text-center select-text">
                 
                 <button onclick="vibe(); saveUserProfile()" class="w-full mt-2 bg-primary dark:bg-primary-dark text-white dark:text-google-bgDark py-3 rounded-full font-bold shadow-md hover:shadow-google-hover active:scale-95 transition-all">Start Playing</button>
-                <button onclick="vibe(); toggleRestoreView(true)" class="mt-2 text-sm text-primary dark:text-primary-dark font-bold hover:underline">هل تملك حساباً سابقاً؟ استرجاع بالـ ID</button>
+                <button onclick="vibe(); toggleRestoreView(true)" class="mt-2 text-sm text-primary dark:text-primary-dark font-bold hover:underline">Already have an account? Restore by ID</button>
             </div>
 
             <!-- View: Restore Profile by ID -->
             <div id="view-restore-profile" class="hidden flex-col gap-4">
                 <span class="material-symbols-outlined text-6xl text-primary dark:text-primary-dark mb-4 mx-auto">manage_search</span>
-                <h2 class="text-2xl font-bold text-google-textLight dark:text-google-textDark mb-2">استرجاع حسابك</h2>
-                <p class="text-google-textMuted dark:text-gray-400 mb-4 text-sm">أدخل الـ ID الخاص بك لاستعادة إحصائياتك ومبارياتك السابقة.</p>
+                <h2 class="text-2xl font-bold text-google-textLight dark:text-google-textDark mb-2">Restore Your Account</h2>
+                <p class="text-google-textMuted dark:text-gray-400 mb-4 text-sm">Enter your ID to restore your stats and previous matches.</p>
                 
-                <input type="text" id="restore-id-input" placeholder="أدخل الـ ID هنا..." class="w-full bg-google-bgLight dark:bg-google-bgDark border border-google-borderLight dark:border-google-borderDark text-google-textLight dark:text-google-textDark px-4 py-4 rounded-xl font-mono font-bold focus:border-primary focus:ring-1 focus:ring-primary outline-none text-center select-text">
+                <input type="text" id="restore-id-input" placeholder="Enter ID here..." class="w-full bg-google-bgLight dark:bg-google-bgDark border border-google-borderLight dark:border-google-borderDark text-google-textLight dark:text-google-textDark px-4 py-4 rounded-xl font-mono font-bold focus:border-primary focus:ring-1 focus:ring-primary outline-none text-center select-text">
                 
-                <button onclick="vibe(); restoreAccount()" class="w-full mt-2 bg-primary dark:bg-primary-dark text-white dark:text-google-bgDark py-3 rounded-full font-bold shadow-md hover:shadow-google-hover active:scale-95 transition-all">تأكيد واسترجاع</button>
-                <button onclick="vibe(); toggleRestoreView(false)" class="mt-2 text-sm text-google-textMuted font-bold hover:underline">العودة لإنشاء حساب جديد</button>
+                <button onclick="vibe(); restoreAccount()" class="w-full mt-2 bg-primary dark:bg-primary-dark text-white dark:text-google-bgDark py-3 rounded-full font-bold shadow-md hover:shadow-google-hover active:scale-95 transition-all">Confirm & Restore</button>
+                <button onclick="vibe(); toggleRestoreView(false)" class="mt-2 text-sm text-google-textMuted font-bold hover:underline">Back to Create New Account</button>
             </div>
 
         </div>
@@ -303,18 +303,18 @@
 
         window.restoreAccount = async function() {
             const id = document.getElementById('restore-id-input').value.trim();
-            if (!id) return showToast("الرجاء إدخال الـ ID الخاص بك", "error");
+            if (!id) return showToast("Please enter your ID", "error");
             
             try {
                 const userDoc = await getDoc(doc(db, 'artifacts', appId, 'public', 'data', 'users', id));
                 if (userDoc.exists()) {
                     localStorage.setItem('scorat_uid', id);
-                    showToast("تم استرجاع الحساب بنجاح!");
+                    showToast("Account restored successfully!");
                     setTimeout(() => location.reload(), 1000);
                 } else {
-                    showToast("لم يتم العثور على حساب مطابق بهذا الـ ID", "error");
+                    showToast("No account found matching this ID", "error");
                 }
-            } catch (e) { showToast("حدث خطأ أثناء الاتصال بقاعدة البيانات", "error"); }
+            } catch (e) { showToast("Error connecting to the database", "error"); }
         }
 
         window.previewOnboardingAvatar = function(e) {
@@ -867,13 +867,13 @@
             const uid = getActiveUid();
             if(uid) {
                 navigator.clipboard.writeText(uid);
-                showToast("تم نسخ الـ ID للحافظة!");
+                showToast("ID copied to clipboard!");
             }
         }
 
         window.logoutAccount = function() {
             localStorage.removeItem('scorat_uid');
-            showToast("تم تسجيل الخروج");
+            showToast("Logged out successfully");
             setTimeout(() => location.reload(), 1000);
         }
 
@@ -889,12 +889,12 @@
                     </div>` : ''}
 
                     <div class="bg-google-surfaceLight dark:bg-google-surfaceDark p-5 rounded-[24px] shadow-sm border border-google-borderLight dark:border-google-borderDark">
-                        <h3 class="text-[10px] font-bold uppercase text-google-textMuted mb-4 tracking-widest">إدارة الحساب</h3>
+                        <h3 class="text-[10px] font-bold uppercase text-google-textMuted mb-4 tracking-widest">Account Management</h3>
                         <div class="flex justify-between items-center mb-3">
-                            <div class="flex flex-col"><span class="font-bold text-sm">الـ ID الخاص بك</span><span class="text-[10px] text-google-textMuted mt-1 font-mono">${getActiveUid()}</span></div>
+                            <div class="flex flex-col"><span class="font-bold text-sm">Your ID</span><span class="text-[10px] text-google-textMuted mt-1 font-mono">${getActiveUid()}</span></div>
                             <button onclick="vibe(); copyMyId()" class="bg-gray-100 dark:bg-gray-800 p-2 rounded-full active:scale-95 transition-transform"><span class="material-symbols-outlined text-[16px]">content_copy</span></button>
                         </div>
-                        <button onclick="vibe(); logoutAccount()" class="w-full bg-red-50 dark:bg-red-900/20 text-google-red py-3 rounded-xl text-xs font-bold mt-2 hover:bg-red-100 transition-colors">تسجيل الخروج / تبديل الحساب</button>
+                        <button onclick="vibe(); logoutAccount()" class="w-full bg-red-50 dark:bg-red-900/20 text-google-red py-3 rounded-xl text-xs font-bold mt-2 hover:bg-red-100 transition-colors">Log Out / Switch Account</button>
                     </div>
 
                     <div class="bg-google-surfaceLight dark:bg-google-surfaceDark p-5 rounded-[24px] shadow-sm border border-google-borderLight dark:border-google-borderDark">
