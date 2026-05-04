@@ -80,6 +80,9 @@
                 <span class="material-symbols-outlined text-3xl">sports_score</span> Scorat
             </h1>
             <div class="flex gap-2">
+                <button onclick="switchTab('leaderboard')" class="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors text-google-textMuted dark:text-google-textDark">
+                    <span class="material-symbols-outlined icon-unfilled">leaderboard</span>
+                </button>
                 <button onclick="switchTab('stats')" class="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors text-google-textMuted dark:text-google-textDark">
                     <span class="material-symbols-outlined icon-unfilled">bar_chart</span>
                 </button>
@@ -155,7 +158,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, collection, onSnapshot, addDoc, deleteDoc, orderBy, query } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, getDoc, collection, onSnapshot, addDoc, deleteDoc, orderBy, query, updateDoc, increment, enableIndexedDbPersistence } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         /* --- FIREBASE CONFIGURATION --- */
         const firebaseConfig = {
@@ -198,6 +201,13 @@
                 const app = initializeApp(firebaseConfig);
                 auth = getAuth(app);
                 db = getFirestore(app);
+                
+                try {
+                    await enableIndexedDbPersistence(db);
+                } catch (err) {
+                    console.warn("Offline persistence failed", err);
+                }
+
                 await signInAnonymously(auth);
                 onAuthStateChanged(auth, async (user) => {
                     if (user) { currentUser = user; await checkUserProfile(user.uid); }
@@ -295,7 +305,7 @@
             const name = document.getElementById('ob-player-name').value.trim();
             if (!name) return showToast("Nickname is required!");
             try {
-                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'users', currentUser.uid), { name, avatar: onboardingAvatarBase64, joinedAt: Date.now() });
+                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'users', currentUser.uid), { name, avatar: onboardingAvatarBase64, joinedAt: Date.now(), wins: 0, losses: 0 });
                 document.getElementById('onboarding-container').classList.add('hidden'); showToast("Profile created!"); setupListeners();
             } catch (e) { showToast("Error creating profile."); }
         }
@@ -368,6 +378,20 @@
             state.lastActiveState = JSON.parse(JSON.stringify(state.activeGame)); 
             const docRef = await addDoc(collection(db, 'artifacts', appId, 'users', currentUser.uid, 'history'), { date: Date.now(), team1: state.activeGame.team1, team2: state.activeGame.team2, rounds: state.activeGame.rounds });
             state.tempHistoryId = docRef.id;
+
+            let t1 = 0; let t2 = 0;
+            state.activeGame.rounds.forEach(r => { t1 += (r.t1||0); t2 += (r.t2||0); });
+            const t1Won = t1 < t2;
+            const updateStats = async (team, won) => {
+                for (const pid of team) {
+                    if (pid) {
+                        try { await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'users', pid), { wins: increment(won ? 1 : 0), losses: increment(won ? 0 : 1) }); } catch(e) {}
+                    }
+                }
+            };
+            await updateStats(state.activeGame.team1, t1Won);
+            await updateStats(state.activeGame.team2, !t1Won);
+
             state.activeGame = { team1: state.activeGame.team1, team2: state.activeGame.team2, rounds: [], m1Triggered: false, m2Triggered: false, gameOver: false };
             saveActiveGame(); deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'liveGames', currentUser.uid)).catch(()=>{});
             showToast("Game saved & reset.", "Undo", undoReset);
@@ -375,6 +399,20 @@
 
         async function undoReset() {
             if (!currentUser || !state.lastActiveState || !state.tempHistoryId) return;
+
+            let t1 = 0; let t2 = 0;
+            state.lastActiveState.rounds.forEach(r => { t1 += (r.t1||0); t2 += (r.t2||0); });
+            const t1Won = t1 < t2;
+            const revertStats = async (team, won) => {
+                for (const pid of team) {
+                    if (pid) {
+                        try { await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'users', pid), { wins: increment(won ? -1 : 0), losses: increment(won ? 0 : -1) }); } catch(e) {}
+                    }
+                }
+            };
+            await revertStats(state.lastActiveState.team1, t1Won);
+            await revertStats(state.lastActiveState.team2, !t1Won);
+
             state.activeGame = state.lastActiveState; saveActiveGame();
             await deleteDoc(doc(db, 'artifacts', appId, 'users', currentUser.uid, 'history', state.tempHistoryId));
             state.tempHistoryId = null; state.lastActiveState = null; showToast("Reset undone.");
@@ -407,6 +445,7 @@
             else if (state.currentTab === 'settings') renderSettings();
             else if (state.currentTab === 'live') renderLiveList();
             else if (state.currentTab === 'spectate_match') renderSpectateMatch();
+            else if (state.currentTab === 'leaderboard') renderLeaderboard();
         }
 
         function getPlayerAvatarHTML(id, teamIndex, posIndex, readOnly = false) {
@@ -614,12 +653,104 @@
         /* --- Additional Views --- */
         function renderPlayers() {
             let html = state.players.map(p => `
-                <div class="flex items-center gap-4 p-4 bg-google-surfaceLight dark:bg-google-surfaceDark rounded-[24px] mb-3 shadow-sm border ${p.id === currentUser?.uid ? 'border-google-blue' : 'border-google-borderLight dark:border-google-borderDark'}">
+                <div onclick="openPlayerProfile('${p.id}')" class="flex items-center gap-4 p-4 bg-google-surfaceLight dark:bg-google-surfaceDark rounded-[24px] mb-3 shadow-sm border ${p.id === currentUser?.uid ? 'border-google-blue' : 'border-google-borderLight dark:border-google-borderDark'} cursor-pointer hover:shadow-google transition-shadow">
                     <img src="${p.avatar || 'https://api.dicebear.com/7.x/initials/svg?seed=' + p.name}" class="w-12 h-12 rounded-full object-cover shadow-sm">
                     <div class="flex flex-col"><span class="font-bold">${p.name}</span>${p.id === currentUser?.uid ? '<span class="text-[10px] text-google-blue font-bold uppercase tracking-wider">You</span>' : ''}</div>
                 </div>
             `).join('');
             document.getElementById('content').innerHTML = `<div class="flex justify-between items-center mb-4"><h2 class="text-2xl font-bold">Roster</h2><span class="text-xs font-bold bg-google-blueLight text-google-blue px-3 py-1 rounded-full">${state.players.length} Players</span></div><div class="flex-1 overflow-y-auto pb-6">${html}</div>`;
+        }
+
+        window.openPlayerProfile = function(playerId) {
+            const player = state.players.find(p => p.id === playerId);
+            if (!player || !currentUser) return;
+            
+            let h2hWins = 0; let h2hLosses = 0;
+            let coopWins = 0; let coopLosses = 0;
+
+            state.history.forEach(match => {
+                const myTeam1 = match.team1.includes(currentUser.uid);
+                const myTeam2 = match.team2.includes(currentUser.uid);
+                const theirTeam1 = match.team1.includes(playerId);
+                const theirTeam2 = match.team2.includes(playerId);
+
+                if (!myTeam1 && !myTeam2) return; 
+                if (!theirTeam1 && !theirTeam2) return; 
+
+                let t1 = 0; let t2 = 0;
+                match.rounds.forEach(r => { t1 += (r.t1||0); t2 += (r.t2||0); });
+                const t1Won = t1 < t2;
+                const iWon = (myTeam1 && t1Won) || (myTeam2 && !t1Won);
+
+                if ((myTeam1 && theirTeam1) || (myTeam2 && theirTeam2)) {
+                    if (iWon) coopWins++; else coopLosses++;
+                } else if ((myTeam1 && theirTeam2) || (myTeam2 && theirTeam1)) {
+                    if (iWon) h2hWins++; else h2hLosses++;
+                }
+            });
+
+            const rate = player.wins + player.losses > 0 ? (player.wins / (player.wins + player.losses) * 100).toFixed(0) : 0;
+
+            const content = `
+                <div class="flex flex-col items-center mb-6">
+                    <img src="${player.avatar || 'https://api.dicebear.com/7.x/initials/svg?seed=' + player.name}" class="w-24 h-24 rounded-full object-cover shadow-md mb-3 border-4 border-google-blueLight">
+                    <h3 class="text-2xl font-black text-center">${player.name}</h3>
+                    <div class="flex gap-4 mt-2 text-sm">
+                        <div class="text-center"><div class="font-bold text-google-blue">${player.wins || 0}</div><div class="text-[10px] uppercase text-google-textMuted">Wins</div></div>
+                        <div class="text-center"><div class="font-bold text-google-red">${player.losses || 0}</div><div class="text-[10px] uppercase text-google-textMuted">Losses</div></div>
+                        <div class="text-center"><div class="font-bold">${rate}%</div><div class="text-[10px] uppercase text-google-textMuted">Win Rate</div></div>
+                    </div>
+                </div>
+                
+                ${playerId !== currentUser.uid ? `
+                <div class="bg-google-bgLight dark:bg-google-bgDark rounded-2xl p-4 border border-google-borderLight dark:border-google-borderDark mb-4">
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-google-blue mb-3">Head-to-Head vs You</h4>
+                    <div class="flex justify-between items-center bg-google-surfaceLight dark:bg-google-surfaceDark p-3 rounded-xl shadow-sm mb-2">
+                        <span class="text-sm font-medium">As Opponents</span>
+                        <div class="font-bold text-sm"><span class="text-google-blue">${h2hWins}W</span> - <span class="text-google-red">${h2hLosses}L</span></div>
+                    </div>
+                    <div class="flex justify-between items-center bg-google-surfaceLight dark:bg-google-surfaceDark p-3 rounded-xl shadow-sm">
+                        <span class="text-sm font-medium">As Teammates</span>
+                        <div class="font-bold text-sm"><span class="text-google-blue">${coopWins}W</span> - <span class="text-google-red">${coopLosses}L</span></div>
+                    </div>
+                </div>
+                ` : ''}
+            `;
+            showModal("Player Profile", content);
+        }
+
+        function renderLeaderboard() {
+            const playersWithStats = state.players.filter(p => (p.wins || 0) > 0 || (p.losses || 0) > 0).map(p => {
+                const total = (p.wins || 0) + (p.losses || 0);
+                const rate = total > 0 ? ((p.wins || 0) / total) * 100 : 0;
+                return { ...p, rate, total };
+            }).sort((a, b) => b.rate !== a.rate ? b.rate - a.rate : (b.wins || 0) - (a.wins || 0));
+
+            let html = playersWithStats.map((p, index) => {
+                let badge = `<span class="font-black text-google-textMuted text-lg w-6 text-center">${index + 1}</span>`;
+                if (index === 0) badge = `<span class="text-2xl">🥇</span>`;
+                if (index === 1) badge = `<span class="text-2xl">🥈</span>`;
+                if (index === 2) badge = `<span class="text-2xl">🥉</span>`;
+
+                return `
+                    <div onclick="openPlayerProfile('${p.id}')" class="flex items-center p-4 bg-google-surfaceLight dark:bg-google-surfaceDark rounded-[24px] mb-3 shadow-sm border border-google-borderLight dark:border-google-borderDark cursor-pointer hover:shadow-google transition-all">
+                        <div class="mr-3 flex justify-center w-8">${badge}</div>
+                        <img src="${p.avatar || 'https://api.dicebear.com/7.x/initials/svg?seed=' + p.name}" class="w-10 h-10 rounded-full mr-3 object-cover shadow-sm">
+                        <div class="flex-1"><h4 class="font-bold text-sm">${p.name}</h4><span class="text-[10px] font-medium text-google-textMuted">${p.wins || 0}W - ${p.losses || 0}L</span></div>
+                        <div class="text-right"><div class="text-xl font-black ${index < 3 ? 'text-google-blue' : ''}">${p.rate.toFixed(0)}%</div></div>
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('content').innerHTML = `
+                <div class="flex justify-between items-center mb-4">
+                    <button onclick="switchTab('main')" class="p-2 -ml-2 rounded-full hover:bg-black/5"><span class="material-symbols-outlined">arrow_back</span></button>
+                    <h2 class="text-xl font-bold flex-1 ml-2">Global Leaderboard</h2>
+                </div>
+                <div class="flex-1 overflow-y-auto pb-6">
+                    ${html || `<div class="text-center text-google-textMuted mt-10">No ranked players yet. Finish a match to rank up!</div>`}
+                </div>
+            `;
         }
 
         function renderHistory() {
