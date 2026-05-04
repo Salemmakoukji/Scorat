@@ -5,8 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Scorat - Match Tracker</title>
     
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
+    <!-- Google Fonts & Material Symbols -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
@@ -61,8 +63,10 @@
 </head>
 <body class="bg-google-bgLight text-google-textLight dark:bg-google-bgDark dark:text-google-textDark transition-colors duration-300 pb-28 min-h-screen">
 
+    <!-- App Container -->
     <div id="app" class="max-w-md mx-auto relative min-h-screen flex flex-col pt-4 px-4">
         
+        <!-- Header -->
         <header class="flex justify-between items-center mb-6">
             <h1 class="text-2xl font-bold tracking-tight text-google-blue dark:text-google-blueDark flex items-center gap-2">
                 <span class="material-symbols-outlined text-3xl">sports_score</span> Scorat
@@ -77,8 +81,10 @@
             </div>
         </header>
 
+        <!-- Main Content Area -->
         <main id="content" class="flex-1 w-full flex flex-col gap-4"></main>
 
+        <!-- Bottom Navigation -->
         <nav class="fixed bottom-4 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-[400px] bg-google-surfaceLight dark:bg-google-surfaceDark rounded-full shadow-google flex justify-between items-center px-4 py-2 z-40 border border-google-borderLight dark:border-google-borderDark">
             <button data-tab="main" class="nav-btn flex flex-col items-center justify-center w-12 h-12 rounded-full text-google-textMuted dark:text-google-textDark hover:bg-google-blueLight dark:hover:bg-google-blue/20 transition-colors">
                 <span class="material-symbols-outlined icon-unfilled text-2xl nav-icon">home</span>
@@ -87,6 +93,7 @@
                 <span class="material-symbols-outlined icon-unfilled text-2xl nav-icon">group</span>
             </button>
             
+            <!-- Prominent Add Round FAB -->
             <button id="btn-add-round" class="relative -top-6 bg-google-blue dark:bg-google-blueDark text-white dark:text-google-bgDark w-16 h-16 rounded-[20px] shadow-google-hover flex items-center justify-center hover:scale-105 active:scale-95 transition-transform border-4 border-google-bgLight dark:border-google-bgDark">
                 <span class="material-symbols-outlined text-3xl font-bold">add</span>
             </button>
@@ -101,13 +108,17 @@
         </nav>
     </div>
 
+    <!-- Modals Container -->
     <div id="modal-container" class="fixed inset-0 z-50 hidden bg-black/50 backdrop-blur-sm flex items-end sm:items-center justify-center pb-0 sm:pb-0">
         <div id="modal-content" class="bg-google-surfaceLight dark:bg-google-surfaceDark w-full max-w-md rounded-t-3xl sm:rounded-3xl p-6 shadow-2xl transform transition-transform translate-y-full max-h-[85vh] overflow-y-auto">
-            </div>
+            <!-- Modal inner content -->
+        </div>
     </div>
 
+    <!-- Toast Container -->
     <div id="toast-container" class="fixed bottom-28 left-1/2 -translate-x-1/2 z-50 flex flex-col gap-2 w-[calc(100%-2rem)] max-w-[400px]"></div>
 
+    <!-- Onboarding Container -->
     <div id="onboarding-container" class="fixed inset-0 z-[100] hidden bg-google-bgLight dark:bg-google-bgDark flex flex-col items-center justify-center p-6">
         <div class="w-full max-w-sm text-center bg-google-surfaceLight dark:bg-google-surfaceDark p-8 rounded-[32px] shadow-google">
             <span class="material-symbols-outlined text-6xl text-google-blue dark:text-google-blueDark mb-4">account_circle</span>
@@ -132,6 +143,7 @@
         </div>
     </div>
 
+    <!-- Firebase Scripts -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
@@ -159,6 +171,7 @@
             history: [],
             liveGames: [],
             spectatingMatchId: null,
+            hostChatData: [],
             activeGame: { team1: [null, null], team2: [null, null], rounds: [], m1Triggered: false, m2Triggered: false, gameOver: false },
             tempHistoryId: null,
             lastActiveState: null
@@ -168,6 +181,7 @@
         let onboardingAvatarBase64 = null;
         let unsubLiveGame = null;
         let unsubLiveChat = null;
+        let unsubHostChat = null;
 
         /* --- Initialization --- */
         async function init() {
@@ -337,6 +351,25 @@
             return `<div ${!readOnly ? `onclick="openPlayerSelect(${teamIndex}, ${posIndex})"` : ''} class="w-12 h-12 rounded-full border-2 border-google-surfaceLight dark:border-google-surfaceDark bg-google-bgLight dark:bg-google-bgDark flex items-center justify-center overflow-hidden shadow-sm z-10 -ml-3 first:ml-0 ${!readOnly ? 'cursor-pointer hover:scale-105 transition-transform' : ''}">${content}</div>`;
         }
 
+        /* --- Reusable Chat HTML Generator --- */
+        function generateChatHTML(chatData) {
+            return chatData.map(msg => {
+                const isMe = msg.uid === currentUser?.uid;
+                const p = state.players.find(x => x.id === msg.uid) || { avatar: null, name: msg.name };
+                return `
+                    <div class="flex ${isMe ? 'justify-end' : 'justify-start'} mb-3">
+                        <div class="max-w-[85%] flex items-end gap-2 ${isMe ? 'flex-row-reverse' : 'flex-row'}">
+                            <img src="${p.avatar || 'https://api.dicebear.com/7.x/initials/svg?seed=' + msg.name}" class="w-6 h-6 rounded-full object-cover shadow-sm border border-google-borderLight dark:border-google-borderDark">
+                            <div class="${isMe ? 'bg-google-blue text-white rounded-tl-2xl rounded-tr-2xl rounded-bl-2xl' : 'bg-google-surfaceLight dark:bg-[#3c4043] text-google-textLight dark:text-google-textDark rounded-tl-2xl rounded-tr-2xl rounded-br-2xl border border-google-borderLight dark:border-google-borderDark'} px-3 py-2 text-[13px] shadow-sm flex flex-col">
+                                <span class="text-[9px] font-black ${isMe ? 'text-blue-100' : 'text-google-blue dark:text-google-blueDark'} mb-0.5 uppercase tracking-wider">${isMe ? 'You' : msg.name}</span>
+                                <span>${msg.text}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
         /* --- Main Scoreboard --- */
         function renderMain() {
             let t1 = 0; let t2 = 0;
@@ -354,7 +387,10 @@
             document.getElementById('content').innerHTML = `
                 <div class="flex justify-between items-center mb-2 px-2">
                     <span class="text-xs font-bold text-google-textMuted uppercase tracking-wider">Targets: ${state.settings.m1} / ${state.settings.m2}</span>
-                    <button onclick="resetGame()" class="text-xs text-google-red hover:bg-google-redLight dark:hover:bg-google-red/10 px-3 py-1 rounded-full font-bold flex items-center gap-1 transition-colors"><span class="material-symbols-outlined text-[16px]">restart_alt</span> Reset</button>
+                    <div class="flex gap-2">
+                        ${(state.activeGame.rounds && state.activeGame.rounds.length > 0) ? `<button onclick="openHostChat()" class="text-xs text-google-blue bg-google-blueLight dark:bg-google-blue/10 px-3 py-1 rounded-full font-bold flex items-center gap-1 transition-colors hover:opacity-80"><span class="material-symbols-outlined text-[16px]">chat</span> Chat</button>` : ''}
+                        <button onclick="resetGame()" class="text-xs text-google-red hover:bg-google-redLight dark:hover:bg-google-red/10 px-3 py-1 rounded-full font-bold flex items-center gap-1 transition-colors"><span class="material-symbols-outlined text-[16px]">restart_alt</span> End Game</button>
+                    </div>
                 </div>
                 <div class="grid grid-cols-2 gap-3 mb-4">
                     <div class="bg-google-surfaceLight dark:bg-google-surfaceDark p-5 rounded-[24px] flex flex-col items-center justify-between shadow-google border ${t1 >= state.settings.m2 ? 'border-google-red' : 'border-google-borderLight dark:border-google-borderDark'}">
@@ -389,7 +425,7 @@
         window.openPlayerSelect = function(teamIndex, posIndex) {
             let html = state.players.map(p => `
                 <div onclick="selectPlayer(${teamIndex}, ${posIndex}, '${p.id}')" class="flex items-center gap-4 p-3 hover:bg-google-bgLight dark:hover:bg-google-bgDark rounded-2xl cursor-pointer transition-colors border border-transparent hover:border-google-borderLight dark:hover:border-google-borderDark">
-                    <img src="${p.avatar || 'https://via.placeholder.com/150'}" class="w-10 h-10 rounded-full object-cover">
+                    <img src="${p.avatar || 'https://api.dicebear.com/7.x/initials/svg?seed=' + p.name}" class="w-10 h-10 rounded-full object-cover">
                     <span class="font-bold">${p.name}</span>
                 </div>
             `).join('');
@@ -400,7 +436,40 @@
             saveActiveGame(); closeModal(); renderMain();
         }
 
-        /* --- Live & Chat --- */
+        /* --- Host Chat --- */
+        window.openHostChat = function() {
+            showModal("Live Game Chat", `
+                <div class="flex flex-col h-[50vh]">
+                    <div id="host-chat-box" class="flex-1 overflow-y-auto p-2 mb-2"></div>
+                    <div class="flex items-center gap-2 mt-auto bg-google-bgLight dark:bg-google-bgDark p-2 rounded-full border border-google-borderLight dark:border-google-borderDark">
+                        <input type="text" id="host-chat-input" placeholder="Chat with spectators..." onkeypress="if(event.key==='Enter') sendHostChatMessage()" class="flex-1 bg-transparent px-2 outline-none text-sm text-google-textLight dark:text-google-textDark">
+                        <button onclick="sendHostChatMessage()" class="w-8 h-8 bg-google-blue text-white rounded-full flex items-center justify-center hover:scale-105 transition-transform"><span class="material-symbols-outlined text-[16px]">send</span></button>
+                    </div>
+                </div>
+            `);
+
+            if(unsubHostChat) unsubHostChat();
+            unsubHostChat = onSnapshot(query(collection(db, 'artifacts', appId, 'public', 'data', 'liveGames', currentUser.uid, 'chat'), orderBy('timestamp', 'asc')), (snap) => {
+                state.hostChatData = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                renderHostChat();
+            });
+        }
+
+        window.sendHostChatMessage = async function() {
+            const input = document.getElementById('host-chat-input'); const text = input.value.trim();
+            if(!text || !currentUser) return;
+            input.value = '';
+            const myProfile = state.players.find(p => p.id === currentUser.uid);
+            await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'liveGames', currentUser.uid, 'chat'), { uid: currentUser.uid, name: myProfile?.name || 'Host', text: text, timestamp: Date.now() });
+        }
+
+        function renderHostChat() {
+            const box = document.getElementById('host-chat-box'); if(!box) return;
+            box.innerHTML = generateChatHTML(state.hostChatData) || '<div class="text-center text-google-textMuted text-sm mt-10">No messages yet.</div>';
+            requestAnimationFrame(() => box.scrollTop = box.scrollHeight);
+        }
+
+        /* --- Live Spectate & Chat --- */
         function renderLiveList() {
             let html = state.liveGames.map(live => {
                 let t1 = 0; let t2 = 0; (live.game.rounds || []).forEach(r => { t1 += (r.t1||0); t2 += (r.t2||0); });
@@ -438,7 +507,7 @@
                 </div>
                 <div id="spectate-top"></div>
                 <div class="flex-1 bg-google-surfaceLight dark:bg-google-surfaceDark rounded-[24px] mt-2 flex flex-col overflow-hidden shadow-google border border-google-borderLight dark:border-google-borderDark">
-                    <div id="spectate-chat" class="flex-1 overflow-y-auto p-4 space-y-4"></div>
+                    <div id="spectate-chat" class="flex-1 overflow-y-auto p-4"></div>
                     <div class="p-3 bg-google-bgLight dark:bg-google-bgDark border-t border-google-borderLight dark:border-google-borderDark flex items-center gap-2">
                         <input type="text" id="chat-input" placeholder="Message..." onkeypress="if(event.key==='Enter') sendChatMessage()" class="flex-1 bg-google-surfaceLight dark:bg-google-surfaceDark px-4 py-2 rounded-full border border-google-borderLight dark:border-google-borderDark outline-none focus:border-google-blue text-sm">
                         <button onclick="sendChatMessage()" class="w-10 h-10 bg-google-blue text-white rounded-full flex items-center justify-center hover:shadow-google-hover transition-all"><span class="material-symbols-outlined text-[20px]">send</span></button>
@@ -466,21 +535,7 @@
 
         function renderSpectateChat(chatData) {
             const box = document.getElementById('spectate-chat'); if(!box) return;
-            box.innerHTML = chatData.map(msg => {
-                const isMe = msg.uid === currentUser?.uid;
-                const p = state.players.find(x => x.id === msg.uid) || { avatar: null, name: msg.name };
-                return `
-                    <div class="flex ${isMe ? 'justify-end' : 'justify-start'}">
-                        <div class="max-w-[85%] flex items-end gap-2 ${isMe ? 'flex-row-reverse' : 'flex-row'}">
-                            <img src="${p.avatar || 'https://via.placeholder.com/150'}" class="w-6 h-6 rounded-full object-cover">
-                            <div class="${isMe ? 'bg-google-blue text-white rounded-tl-2xl rounded-tr-2xl rounded-bl-2xl' : 'bg-google-bgLight dark:bg-[#3c4043] text-google-textLight dark:text-google-textDark rounded-tl-2xl rounded-tr-2xl rounded-br-2xl border border-google-borderLight dark:border-google-borderDark'} px-3 py-2 text-[13px] shadow-sm">
-                                ${!isMe ? `<span class="text-[9px] font-black opacity-50 block mb-0.5 uppercase">${msg.name}</span>` : ''}
-                                ${msg.text}
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
+            box.innerHTML = generateChatHTML(chatData);
             requestAnimationFrame(() => box.scrollTop = box.scrollHeight);
         }
 
@@ -496,7 +551,7 @@
         function renderPlayers() {
             let html = state.players.map(p => `
                 <div class="flex items-center gap-4 p-4 bg-google-surfaceLight dark:bg-google-surfaceDark rounded-[24px] mb-3 shadow-sm border ${p.id === currentUser?.uid ? 'border-google-blue' : 'border-google-borderLight dark:border-google-borderDark'}">
-                    <img src="${p.avatar || 'https://via.placeholder.com/150'}" class="w-12 h-12 rounded-full object-cover shadow-sm">
+                    <img src="${p.avatar || 'https://api.dicebear.com/7.x/initials/svg?seed=' + p.name}" class="w-12 h-12 rounded-full object-cover shadow-sm">
                     <div class="flex flex-col"><span class="font-bold">${p.name}</span>${p.id === currentUser?.uid ? '<span class="text-[10px] text-google-blue font-bold uppercase tracking-wider">You</span>' : ''}</div>
                 </div>
             `).join('');
@@ -542,7 +597,7 @@
                 if (rate >= 60 && (s.w+s.l) >= 5) { rank = "Elite"; rCol = "text-google-red"; } else if (rate >= 40 && (s.w+s.l) >= 3) { rank = "Pro"; rCol = "text-google-blue"; }
                 return { ...s, rate, rank, rCol };
             }).sort((a,b) => b.rate - a.rate);
-            let html = statArr.map(s => `<div class="flex items-center p-4 bg-google-surfaceLight dark:bg-google-surfaceDark rounded-[24px] mb-3 shadow-sm border border-google-borderLight dark:border-google-borderDark"><img src="${s.avatar}" class="w-10 h-10 rounded-full mr-4 object-cover"><div class="flex-1"><h4 class="font-bold text-sm">${s.name}</h4><span class="text-[10px] uppercase font-black tracking-widest ${s.rCol}">${s.rank}</span></div><div class="text-right"><div class="text-xl font-black">${s.rate.toFixed(0)}%</div><div class="text-[10px] font-bold text-google-textMuted">${s.w}W - ${s.l}L</div></div></div>`).join('');
+            let html = statArr.map(s => `<div class="flex items-center p-4 bg-google-surfaceLight dark:bg-google-surfaceDark rounded-[24px] mb-3 shadow-sm border border-google-borderLight dark:border-google-borderDark"><img src="${s.avatar || 'https://api.dicebear.com/7.x/initials/svg?seed=' + s.name}" class="w-10 h-10 rounded-full mr-4 object-cover"><div class="flex-1"><h4 class="font-bold text-sm">${s.name}</h4><span class="text-[10px] uppercase font-black tracking-widest ${s.rCol}">${s.rank}</span></div><div class="text-right"><div class="text-xl font-black">${s.rate.toFixed(0)}%</div><div class="text-[10px] font-bold text-google-textMuted">${s.w}W - ${s.l}L</div></div></div>`).join('');
             document.getElementById('content').innerHTML = `<div class="flex justify-between items-center mb-4"><button onclick="switchTab('main')" class="p-2 -ml-2 rounded-full hover:bg-black/5"><span class="material-symbols-outlined">arrow_back</span></button><h2 class="text-xl font-bold flex-1 ml-2">Stats</h2></div><div class="flex-1 overflow-y-auto pb-6">${html || `<div class="text-center text-google-textMuted mt-10">Play games to see stats.</div>`}</div>`;
         }
 
@@ -587,6 +642,7 @@
         }
 
         window.closeModal = function() {
+            if(unsubHostChat) { unsubHostChat(); unsubHostChat = null; }
             const container = document.getElementById('modal-container'); const modContent = document.getElementById('modal-content');
             modContent.classList.add('translate-y-full'); setTimeout(() => container.classList.add('hidden'), 300);
         }
