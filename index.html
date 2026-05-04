@@ -1,55 +1,44 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en" class="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Scorat - 2v2 Score Tracker</title>
+    <title>Scorat - Match Tracker</title>
     
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Phosphor Icons -->
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
     
-    <!-- Material 3 & Tailwind Config -->
     <script>
         tailwind.config = {
             darkMode: 'class',
             theme: {
                 extend: {
+                    fontFamily: { sans: ['Roboto', 'sans-serif'] },
                     colors: {
-                        primary: 'var(--md-sys-color-primary)',
-                        'on-primary': 'var(--md-sys-color-on-primary)',
-                        'primary-container': 'var(--md-sys-color-primary-container)',
-                        'on-primary-container': 'var(--md-sys-color-on-primary-container)',
-                        secondary: 'var(--md-sys-color-secondary)',
-                        'on-secondary': 'var(--md-sys-color-on-secondary)',
-                        'secondary-container': 'var(--md-sys-color-secondary-container)',
-                        'on-secondary-container': 'var(--md-sys-color-on-secondary-container)',
-                        surface: 'var(--md-sys-color-surface)',
-                        'on-surface': 'var(--md-sys-color-on-surface)',
-                        'surface-variant': 'var(--md-sys-color-surface-variant)',
-                        'on-surface-variant': 'var(--md-sys-color-on-surface-variant)',
-                        error: 'var(--md-sys-color-error)',
-                        'on-error': 'var(--md-sys-color-on-error)'
-                    },
-                    borderRadius: {
-                        '4xl': '32px',
-                        '5xl': '40px'
-                    },
-                    animation: {
-                        'celebrate': 'pulse-fast 1.5s ease-in-out infinite',
-                        'slide-up': 'slide-up 0.3s cubic-bezier(0.2, 1, 0.3, 1) forwards',
-                    },
-                    keyframes: {
-                        'pulse-fast': {
-                            '0%, 100%': { transform: 'scale(1)', opacity: '1' },
-                            '50%': { transform: 'scale(1.05)', opacity: '0.8' },
-                        },
-                        'slide-up': {
-                            '0%': { transform: 'translateY(100%)', opacity: '0' },
-                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        google: {
+                            blue: '#1a73e8',
+                            blueLight: '#e8f0fe',
+                            blueDark: '#8ab4f8',
+                            red: '#ea4335',
+                            redLight: '#fce8e6',
+                            bgLight: '#f8f9fa',
+                            surfaceLight: '#ffffff',
+                            textLight: '#202124',
+                            textMuted: '#5f6368',
+                            bgDark: '#202124',
+                            surfaceDark: '#303134',
+                            textDark: '#e8eaed',
+                            borderLight: '#dadce0',
+                            borderDark: '#5f6368'
                         }
+                    },
+                    boxShadow: {
+                        'google': '0 1px 2px 0 rgba(60,64,67,0.3), 0 1px 3px 1px rgba(60,64,67,0.15)',
+                        'google-hover': '0 1px 3px 0 rgba(60,64,67,0.3), 0 4px 8px 3px rgba(60,64,67,0.15)',
                     }
                 }
             }
@@ -57,149 +46,92 @@
     </script>
 
     <style>
-        /* Material Design 3 Expressive Tokens */
-        :root {
-            --md-sys-color-primary: #006874;
-            --md-sys-color-on-primary: #ffffff;
-            --md-sys-color-primary-container: #97f0ff;
-            --md-sys-color-on-primary-container: #001f24;
-            --md-sys-color-secondary: #ff5449;
-            --md-sys-color-on-secondary: #ffffff;
-            --md-sys-color-secondary-container: #ffdad6;
-            --md-sys-color-on-secondary-container: #410002;
-            --md-sys-color-surface: #fbfdfd;
-            --md-sys-color-on-surface: #191c1d;
-            --md-sys-color-surface-variant: #dbe4e6;
-            --md-sys-color-on-surface-variant: #3f484a;
-            --md-sys-color-error: #ba1a1a;
-            --md-sys-color-on-error: #ffffff;
-        }
-
-        .dark {
-            --md-sys-color-primary: #4fd8eb;
-            --md-sys-color-on-primary: #00363d;
-            --md-sys-color-primary-container: #004f58;
-            --md-sys-color-on-primary-container: #97f0ff;
-            --md-sys-color-secondary: #ffb4ab;
-            --md-sys-color-on-secondary: #690005;
-            --md-sys-color-secondary-container: #93000a;
-            --md-sys-color-on-secondary-container: #ffdad6;
-            --md-sys-color-surface: #191c1d;
-            --md-sys-color-on-surface: #e1e3e3;
-            --md-sys-color-surface-variant: #3f484a;
-            --md-sys-color-on-surface-variant: #bfc8ca;
-            --md-sys-color-error: #ffb4ab;
-            --md-sys-color-on-error: #690005;
-        }
-
-        body {
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            -webkit-tap-highlight-color: transparent;
-        }
-
+        body { font-family: 'Roboto', sans-serif; -webkit-tap-highlight-color: transparent; }
         ::-webkit-scrollbar { display: none; }
         * { scrollbar-width: none; }
-
-        input[type="number"]::-webkit-inner-spin-button,
-        input[type="number"]::-webkit-outer-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
+        input[type="number"]::-webkit-inner-spin-button, input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
         
-        .confetti-piece {
-            position: fixed;
-            width: 10px;
-            height: 10px;
-            background-color: var(--md-sys-color-primary);
-            top: -10px;
-            z-index: 9999;
-            animation: fall 3s linear forwards;
-        }
-
-        @keyframes fall {
-            to { transform: translateY(100vh) rotate(720deg); }
-        }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .icon-unfilled { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        
+        /* Celebration Confetti */
+        .confetti-piece { position: fixed; width: 10px; height: 10px; z-index: 9999; animation: fall 3s linear forwards; }
+        @keyframes fall { to { transform: translateY(100vh) rotate(720deg); } }
     </style>
 </head>
-<body class="bg-surface text-on-surface transition-colors duration-300 pb-28 min-h-screen">
+<body class="bg-google-bgLight text-google-textLight dark:bg-google-bgDark dark:text-google-textDark transition-colors duration-300 pb-28 min-h-screen">
 
-    <!-- App Container -->
     <div id="app" class="max-w-md mx-auto relative min-h-screen flex flex-col pt-4 px-4">
         
-        <!-- Header -->
         <header class="flex justify-between items-center mb-6">
-            <h1 class="text-3xl font-bold tracking-tight text-primary flex items-center gap-2">
-                <i class="ph-fill ph-trophy"></i> Scorat
+            <h1 class="text-2xl font-bold tracking-tight text-google-blue dark:text-google-blueDark flex items-center gap-2">
+                <span class="material-symbols-outlined text-3xl">sports_score</span> Scorat
             </h1>
             <div class="flex gap-2">
-                <button id="btn-settings" class="p-3 rounded-full bg-surface-variant text-on-surface-variant hover:bg-primary-container hover:text-on-primary-container transition-colors shadow-sm">
-                    <i class="ph ph-gear text-xl"></i>
+                <button onclick="switchTab('stats')" class="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors text-google-textMuted dark:text-google-textDark">
+                    <span class="material-symbols-outlined icon-unfilled">bar_chart</span>
+                </button>
+                <button onclick="switchTab('settings')" class="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors text-google-textMuted dark:text-google-textDark">
+                    <span class="material-symbols-outlined icon-unfilled">settings</span>
                 </button>
             </div>
         </header>
 
-        <!-- Main Content Area -->
         <main id="content" class="flex-1 w-full flex flex-col gap-4"></main>
 
-        <!-- Navigation FAB -->
-        <nav class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-[400px] bg-surface-variant/95 backdrop-blur-md rounded-[40px] shadow-lg flex justify-between items-center px-4 py-2 z-40 border border-on-surface/5">
-            <button data-tab="stats" class="nav-btn flex flex-col items-center justify-center w-12 h-12 rounded-full text-on-surface-variant transition-colors hover:text-primary">
-                <i class="ph ph-chart-bar text-2xl"></i>
+        <nav class="fixed bottom-4 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-[400px] bg-google-surfaceLight dark:bg-google-surfaceDark rounded-full shadow-google flex justify-between items-center px-4 py-2 z-40 border border-google-borderLight dark:border-google-borderDark">
+            <button data-tab="main" class="nav-btn flex flex-col items-center justify-center w-12 h-12 rounded-full text-google-textMuted dark:text-google-textDark hover:bg-google-blueLight dark:hover:bg-google-blue/20 transition-colors">
+                <span class="material-symbols-outlined icon-unfilled text-2xl nav-icon">home</span>
             </button>
-            <button data-tab="players" class="nav-btn flex flex-col items-center justify-center w-12 h-12 rounded-full text-on-surface-variant transition-colors hover:text-primary">
-                <i class="ph ph-users text-2xl"></i>
-            </button>
-            
-            <!-- Prominent Add Round -->
-            <button id="btn-add-round" class="relative -top-6 bg-primary text-on-primary w-16 h-16 rounded-[24px] shadow-xl flex items-center justify-center hover:scale-105 active:scale-95 transition-transform border-4 border-surface">
-                <i class="ph ph-plus text-3xl font-bold"></i>
+            <button data-tab="players" class="nav-btn flex flex-col items-center justify-center w-12 h-12 rounded-full text-google-textMuted dark:text-google-textDark hover:bg-google-blueLight dark:hover:bg-google-blue/20 transition-colors">
+                <span class="material-symbols-outlined icon-unfilled text-2xl nav-icon">group</span>
             </button>
             
-            <button data-tab="live" class="nav-btn flex flex-col items-center justify-center w-12 h-12 rounded-full text-on-surface-variant transition-colors hover:text-primary relative">
-                <i class="ph ph-broadcast text-2xl"></i>
-                <span id="live-indicator" class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full animate-pulse hidden"></span>
+            <button id="btn-add-round" class="relative -top-6 bg-google-blue dark:bg-google-blueDark text-white dark:text-google-bgDark w-16 h-16 rounded-[20px] shadow-google-hover flex items-center justify-center hover:scale-105 active:scale-95 transition-transform border-4 border-google-bgLight dark:border-google-bgDark">
+                <span class="material-symbols-outlined text-3xl font-bold">add</span>
             </button>
-            <button data-tab="history" class="nav-btn flex flex-col items-center justify-center w-12 h-12 rounded-full text-on-surface-variant transition-colors hover:text-primary">
-                <i class="ph ph-clock-counter-clockwise text-2xl"></i>
+            
+            <button data-tab="live" class="nav-btn flex flex-col items-center justify-center w-12 h-12 rounded-full text-google-textMuted dark:text-google-textDark hover:bg-google-blueLight dark:hover:bg-google-blue/20 transition-colors relative">
+                <span class="material-symbols-outlined icon-unfilled text-2xl nav-icon">podcasts</span>
+                <span id="live-indicator" class="absolute top-2 right-2 w-2.5 h-2.5 bg-google-red rounded-full animate-pulse hidden border-2 border-white dark:border-google-surfaceDark"></span>
+            </button>
+            <button data-tab="history" class="nav-btn flex flex-col items-center justify-center w-12 h-12 rounded-full text-google-textMuted dark:text-google-textDark hover:bg-google-blueLight dark:hover:bg-google-blue/20 transition-colors">
+                <span class="material-symbols-outlined icon-unfilled text-2xl nav-icon">history</span>
             </button>
         </nav>
     </div>
 
-    <!-- Modals Container -->
-    <div id="modal-container" class="fixed inset-0 z-50 hidden bg-on-surface/40 backdrop-blur-sm flex items-end sm:items-center justify-center pb-0 sm:pb-0">
-        <div id="modal-content" class="bg-surface w-full max-w-md rounded-t-[32px] sm:rounded-[32px] p-6 shadow-2xl transform transition-transform translate-y-full max-h-[85vh] overflow-y-auto">
-            <!-- Modal inner content -->
-        </div>
+    <div id="modal-container" class="fixed inset-0 z-50 hidden bg-black/50 backdrop-blur-sm flex items-end sm:items-center justify-center pb-0 sm:pb-0">
+        <div id="modal-content" class="bg-google-surfaceLight dark:bg-google-surfaceDark w-full max-w-md rounded-t-3xl sm:rounded-3xl p-6 shadow-2xl transform transition-transform translate-y-full max-h-[85vh] overflow-y-auto">
+            </div>
     </div>
 
-    <!-- Toast Container -->
     <div id="toast-container" class="fixed bottom-28 left-1/2 -translate-x-1/2 z-50 flex flex-col gap-2 w-[calc(100%-2rem)] max-w-[400px]"></div>
 
-    <!-- Onboarding Container -->
-    <div id="onboarding-container" class="fixed inset-0 z-[100] hidden bg-surface flex flex-col items-center justify-center p-6">
-        <div class="w-full max-w-sm text-center">
-            <h2 class="text-3xl font-black text-primary mb-2">Welcome to Scorat!</h2>
-            <p class="text-on-surface-variant mb-8">Create your player profile to join the global roster.</p>
+    <div id="onboarding-container" class="fixed inset-0 z-[100] hidden bg-google-bgLight dark:bg-google-bgDark flex flex-col items-center justify-center p-6">
+        <div class="w-full max-w-sm text-center bg-google-surfaceLight dark:bg-google-surfaceDark p-8 rounded-[32px] shadow-google">
+            <span class="material-symbols-outlined text-6xl text-google-blue dark:text-google-blueDark mb-4">account_circle</span>
+            <h2 class="text-3xl font-bold text-google-textLight dark:text-google-textDark mb-2">Welcome</h2>
+            <p class="text-google-textMuted dark:text-gray-400 mb-6 text-sm">Create your profile to join the global roster.</p>
             
             <div class="flex flex-col gap-4">
                 <div class="flex justify-center mb-2">
-                    <div id="ob-avatar-preview" class="w-24 h-24 rounded-full bg-surface-variant border-4 border-dashed border-on-surface/30 flex items-center justify-center overflow-hidden relative">
-                        <i class="ph ph-camera text-3xl opacity-50"></i>
+                    <div id="ob-avatar-preview" class="w-24 h-24 rounded-full bg-google-bgLight dark:bg-google-bgDark border-2 border-dashed border-google-borderLight dark:border-google-borderDark flex items-center justify-center overflow-hidden relative">
+                        <span class="material-symbols-outlined text-3xl opacity-50">add_a_photo</span>
                     </div>
                 </div>
-                <label class="bg-surface-variant px-4 py-2 rounded-full font-bold cursor-pointer text-sm hover:bg-surface-variant/80 transition-colors border border-on-surface/10 mx-auto w-max">
-                    Upload Photo
+                <label class="bg-google-blueLight dark:bg-google-surfaceDark text-google-blue dark:text-google-blueDark px-4 py-2 rounded-full font-medium cursor-pointer text-sm hover:bg-black/5 transition-colors mx-auto border border-google-blue/20">
+                    Choose Photo
                     <input type="file" accept="image/*" class="hidden" onchange="previewOnboardingAvatar(event)">
                 </label>
                 
-                <input type="text" id="ob-player-name" placeholder="Your Nickname" class="w-full mt-4 bg-surface-variant text-on-surface-variant px-4 py-4 rounded-[24px] font-bold focus:ring-2 focus:ring-primary outline-none text-center">
+                <input type="text" id="ob-player-name" placeholder="Enter Nickname" class="w-full mt-2 bg-google-bgLight dark:bg-google-bgDark border border-google-borderLight dark:border-google-borderDark text-google-textLight dark:text-google-textDark px-4 py-3 rounded-full font-medium focus:border-google-blue focus:ring-1 focus:ring-google-blue outline-none text-center">
                 
-                <button onclick="saveUserProfile()" class="w-full mt-6 bg-primary text-on-primary py-4 rounded-full font-bold text-lg shadow-md hover:scale-[1.02] transition-transform">Start Playing</button>
+                <button onclick="saveUserProfile()" class="w-full mt-4 bg-google-blue dark:bg-google-blueDark text-white dark:text-google-bgDark py-3 rounded-full font-bold shadow-md hover:shadow-google-hover transition-all">Start Playing</button>
             </div>
         </div>
     </div>
 
-    <!-- Firebase Scripts -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
@@ -216,27 +148,18 @@
             measurementId: "G-Y945QFFG3G"
         };
 
-        const appId = '1:324240314924:web:12866f2c25908f82fb7789'; // Used for root path organization in Firestore
+        const appId = 'scorat-app'; 
         let db, auth, currentUser;
         
         /* --- Global State --- */
         const state = {
             currentTab: 'main',
-            settings: { darkMode: true, m1: 351, m2: 551, m1Audio: null, m2Audio: null },
+            settings: { darkMode: false, m1: 351, m2: 551, m1Audio: null, m2Audio: null },
             players: [],
             history: [],
             liveGames: [],
             spectatingMatchId: null,
-            spectatingMatchData: null,
-            spectatingChatData: [],
-            activeGame: {
-                team1: [null, null], 
-                team2: [null, null], 
-                rounds: [], 
-                m1Triggered: false, 
-                m2Triggered: false,
-                gameOver: false
-            },
+            activeGame: { team1: [null, null], team2: [null, null], rounds: [], m1Triggered: false, m2Triggered: false, gameOver: false },
             tempHistoryId: null,
             lastActiveState: null
         };
@@ -252,34 +175,23 @@
                 const app = initializeApp(firebaseConfig);
                 auth = getAuth(app);
                 db = getFirestore(app);
-
                 await signInAnonymously(auth);
-
                 onAuthStateChanged(auth, async (user) => {
-                    if (user) {
-                        currentUser = user;
-                        await checkUserProfile(user.uid);
-                    }
+                    if (user) { currentUser = user; await checkUserProfile(user.uid); }
                 });
-            } catch (error) {
-                console.error("Firebase Init Error:", error);
-                showToast("Failed to connect to database.");
-            }
+            } catch (error) { console.error("Firebase Init Error:", error); showToast("Failed to connect to database."); }
             bindEvents();
         }
 
         async function checkUserProfile(uid) {
             try {
                 const userDoc = await getDoc(doc(db, 'artifacts', appId, 'public', 'data', 'users', uid));
-                if (!userDoc.exists()) {
-                    document.getElementById('onboarding-container').classList.remove('hidden');
-                } else {
+                if (!userDoc.exists()) document.getElementById('onboarding-container').classList.remove('hidden');
+                else {
                     document.getElementById('onboarding-container').classList.add('hidden');
                     setupListeners();
                 }
-            } catch(e) {
-                console.error("Error checking profile", e);
-            }
+            } catch(e) { console.error(e); }
         }
 
         window.previewOnboardingAvatar = function(e) {
@@ -289,109 +201,73 @@
             reader.onload = (event) => {
                 const img = new Image();
                 img.onload = () => {
-                    const canvas = document.createElement('canvas');
-                    const MAX_SIZE = 150;
-                    let width = img.width; let height = img.height;
-                    if (width > height) { if (width > MAX_SIZE) { height *= MAX_SIZE / width; width = MAX_SIZE; } } 
-                    else { if (height > MAX_SIZE) { width *= MAX_SIZE / height; height = MAX_SIZE; } }
-                    canvas.width = width; canvas.height = height;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, width, height);
+                    const canvas = document.createElement('canvas'); const MAX_SIZE = 150;
+                    let w = img.width; let h = img.height;
+                    if (w > h) { if (w > MAX_SIZE) { h *= MAX_SIZE / w; w = MAX_SIZE; } } 
+                    else { if (h > MAX_SIZE) { w *= MAX_SIZE / h; h = MAX_SIZE; } }
+                    canvas.width = w; canvas.height = h;
+                    const ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0, w, h);
                     onboardingAvatarBase64 = canvas.toDataURL('image/jpeg', 0.7);
                     document.getElementById('ob-avatar-preview').innerHTML = `<img src="${onboardingAvatarBase64}" class="w-full h-full object-cover">`;
-                };
-                img.src = event.target.result;
-            };
-            reader.readAsDataURL(file);
+                }; img.src = event.target.result;
+            }; reader.readAsDataURL(file);
         }
 
         window.saveUserProfile = async function() {
             const name = document.getElementById('ob-player-name').value.trim();
             if (!name) return showToast("Nickname is required!");
-            
             try {
-                const userRef = doc(db, 'artifacts', appId, 'public', 'data', 'users', currentUser.uid);
-                await setDoc(userRef, {
-                    name,
-                    avatar: onboardingAvatarBase64,
-                    joinedAt: Date.now()
-                });
-                document.getElementById('onboarding-container').classList.add('hidden');
-                showToast("Profile created successfully!");
-                setupListeners();
-            } catch (error) {
-                console.error("Error saving profile", error);
-                showToast("Error creating profile.");
-            }
+                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'users', currentUser.uid), { name, avatar: onboardingAvatarBase64, joinedAt: Date.now() });
+                document.getElementById('onboarding-container').classList.add('hidden'); showToast("Profile created!"); setupListeners();
+            } catch (e) { showToast("Error creating profile."); }
         }
 
-        /* --- Database Listeners --- */
+        /* --- Listeners --- */
         function setupListeners() {
             if (!currentUser) return;
             const uid = currentUser.uid;
 
-            // 1. Settings
             onSnapshot(doc(db, 'artifacts', appId, 'users', uid, 'state', 'settings'), (snap) => {
-                if (snap.exists()) {
-                    state.settings = { ...state.settings, ...snap.data() };
-                    applyTheme(state.settings.darkMode);
-                } else setDoc(doc(db, 'artifacts', appId, 'users', uid, 'state', 'settings'), state.settings);
+                if (snap.exists()) { state.settings = { ...state.settings, ...snap.data() }; applyTheme(state.settings.darkMode); } 
+                else setDoc(doc(db, 'artifacts', appId, 'users', uid, 'state', 'settings'), state.settings);
                 if(state.currentTab === 'settings') renderActiveTab();
             });
 
-            // 2. Active Game
             onSnapshot(doc(db, 'artifacts', appId, 'users', uid, 'state', 'activeGame'), (snap) => {
-                if (snap.exists()) {
-                    state.activeGame = snap.data();
-                    checkMilestones(); 
-                } else setDoc(doc(db, 'artifacts', appId, 'users', uid, 'state', 'activeGame'), state.activeGame);
+                if (snap.exists()) { state.activeGame = snap.data(); checkMilestones(); } 
+                else setDoc(doc(db, 'artifacts', appId, 'users', uid, 'state', 'activeGame'), state.activeGame);
                 if (state.currentTab === 'main') renderMain();
             });
 
-            // 3. Global Roster
             onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'users'), (snap) => {
                 state.players = snap.docs.map(d => ({ id: d.id, ...d.data() }));
                 if (['players', 'main', 'history', 'stats'].includes(state.currentTab)) renderActiveTab();
             });
 
-            // 4. History
             onSnapshot(collection(db, 'artifacts', appId, 'users', uid, 'history'), (snap) => {
                 state.history = snap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a,b) => b.date - a.date);
                 if (['history', 'stats'].includes(state.currentTab)) renderActiveTab();
             });
 
-            // 5. Global Live Games List
             onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'liveGames'), (snap) => {
-                state.liveGames = snap.docs.map(d => ({ id: d.id, ...d.data() })).filter(g => g.id !== uid); // Don't spectate self
-                const indicator = document.getElementById('live-indicator');
-                if(state.liveGames.length > 0) indicator.classList.remove('hidden');
-                else indicator.classList.add('hidden');
-                
+                state.liveGames = snap.docs.map(d => ({ id: d.id, ...d.data() })).filter(g => g.id !== uid);
+                document.getElementById('live-indicator').classList.toggle('hidden', state.liveGames.length === 0);
                 if (state.currentTab === 'live') renderActiveTab();
             });
         }
 
-        /* --- Core Logic & Writes --- */
+        /* --- Game Logic --- */
         function saveActiveGame() {
             if (!currentUser) return;
             clearTimeout(debounceTimer);
             debounceTimer = setTimeout(() => {
                 const uid = currentUser.uid;
-                // Save locally
-                setDoc(doc(db, 'artifacts', appId, 'users', uid, 'state', 'activeGame'), state.activeGame).catch(e => console.error(e));
+                setDoc(doc(db, 'artifacts', appId, 'users', uid, 'state', 'activeGame'), state.activeGame).catch(e=>console.error(e));
                 
-                // Broadcast to live
                 const liveRef = doc(db, 'artifacts', appId, 'public', 'data', 'liveGames', uid);
                 if (state.activeGame.rounds && state.activeGame.rounds.length > 0 && !state.activeGame.gameOver) {
-                    setDoc(liveRef, {
-                        hostId: uid,
-                        hostName: state.players.find(p => p.id === uid)?.name || 'Player',
-                        game: state.activeGame,
-                        updatedAt: Date.now()
-                    });
-                } else {
-                    deleteDoc(liveRef).catch(()=>{});
-                }
+                    setDoc(liveRef, { hostId: uid, hostName: state.players.find(p => p.id === uid)?.name || 'Player', game: state.activeGame, updatedAt: Date.now() });
+                } else deleteDoc(liveRef).catch(()=>{});
             }, 300);
         }
 
@@ -402,60 +278,50 @@
         }
 
         function checkMilestones() {
-            let t1Total = 0; let t2Total = 0;
-            (state.activeGame.rounds || []).forEach(r => { t1Total += (parseInt(r.t1) || 0); t2Total += (parseInt(r.t2) || 0); });
+            let t1 = 0; let t2 = 0;
+            (state.activeGame.rounds || []).forEach(r => { t1 += (parseInt(r.t1) || 0); t2 += (parseInt(r.t2) || 0); });
             const { m1, m2 } = state.settings;
-            if ((t1Total >= m1 || t2Total >= m1) && !state.activeGame.m1Triggered) {
-                state.activeGame.m1Triggered = true; playAlertSound('m1'); saveActiveGame();
-            }
-            if ((t1Total >= m2 || t2Total >= m2) && !state.activeGame.gameOver) {
-                state.activeGame.m2Triggered = true; state.activeGame.gameOver = true;
-                playAlertSound('m2'); triggerCelebration(); saveActiveGame();
-            }
+            if ((t1 >= m1 || t2 >= m1) && !state.activeGame.m1Triggered) { state.activeGame.m1Triggered = true; playAlertSound('m1'); saveActiveGame(); }
+            if ((t1 >= m2 || t2 >= m2) && !state.activeGame.gameOver) { state.activeGame.m2Triggered = true; state.activeGame.gameOver = true; playAlertSound('m2'); triggerCelebration(); saveActiveGame(); }
         }
 
-        async function resetGame() {
-            if (!currentUser) return;
-            if (!state.activeGame.rounds || state.activeGame.rounds.length === 0) return showToast("Board is clear.");
-
+        window.resetGame = async function() {
+            if (!currentUser || !state.activeGame.rounds || state.activeGame.rounds.length === 0) return showToast("Board is clear.");
             state.lastActiveState = JSON.parse(JSON.stringify(state.activeGame)); 
-            const newHistory = { date: Date.now(), team1: state.activeGame.team1, team2: state.activeGame.team2, rounds: state.activeGame.rounds };
-            const docRef = await addDoc(collection(db, 'artifacts', appId, 'users', currentUser.uid, 'history'), newHistory);
+            const docRef = await addDoc(collection(db, 'artifacts', appId, 'users', currentUser.uid, 'history'), { date: Date.now(), team1: state.activeGame.team1, team2: state.activeGame.team2, rounds: state.activeGame.rounds });
             state.tempHistoryId = docRef.id;
-
             state.activeGame = { team1: state.activeGame.team1, team2: state.activeGame.team2, rounds: [], m1Triggered: false, m2Triggered: false, gameOver: false };
-            saveActiveGame();
-            
-            // Remove from Live Broadcasts
-            deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'liveGames', currentUser.uid)).catch(()=>{});
+            saveActiveGame(); deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'liveGames', currentUser.uid)).catch(()=>{});
             showToast("Game saved & reset.", "Undo", undoReset);
         }
 
         async function undoReset() {
             if (!currentUser || !state.lastActiveState || !state.tempHistoryId) return;
-            state.activeGame = state.lastActiveState;
-            saveActiveGame();
+            state.activeGame = state.lastActiveState; saveActiveGame();
             await deleteDoc(doc(db, 'artifacts', appId, 'users', currentUser.uid, 'history', state.tempHistoryId));
-            state.tempHistoryId = null; state.lastActiveState = null;
-            showToast("Reset undone.");
+            state.tempHistoryId = null; state.lastActiveState = null; showToast("Reset undone.");
         }
 
-        /* --- UI Rendering Functions --- */
-        function switchTab(tabName) {
+        /* --- UI Rendering --- */
+        window.switchTab = function(tabName) {
             if(unsubLiveGame) { unsubLiveGame(); unsubLiveGame = null; }
             if(unsubLiveChat) { unsubLiveChat(); unsubLiveChat = null; }
-
             state.currentTab = tabName;
             document.querySelectorAll('.nav-btn').forEach(btn => {
-                if (btn.dataset.tab === tabName) { btn.classList.add('text-primary'); btn.classList.remove('text-on-surface-variant'); } 
-                else { btn.classList.remove('text-primary'); btn.classList.add('text-on-surface-variant'); }
+                const icon = btn.querySelector('.nav-icon');
+                if (btn.dataset.tab === tabName) { 
+                    btn.classList.add('text-google-blue', 'dark:text-google-blueDark'); btn.classList.remove('text-google-textMuted', 'dark:text-google-textDark');
+                    if(icon) icon.classList.remove('icon-unfilled');
+                } else { 
+                    btn.classList.remove('text-google-blue', 'dark:text-google-blueDark'); btn.classList.add('text-google-textMuted', 'dark:text-google-textDark');
+                    if(icon) icon.classList.add('icon-unfilled');
+                }
             });
             renderActiveTab();
         }
 
         function renderActiveTab() {
-            const content = document.getElementById('content');
-            content.innerHTML = '';
+            const c = document.getElementById('content'); c.innerHTML = '';
             if (state.currentTab === 'main') renderMain();
             else if (state.currentTab === 'players') renderPlayers();
             else if (state.currentTab === 'history') renderHistory();
@@ -465,369 +331,258 @@
             else if (state.currentTab === 'spectate_match') renderSpectateMatch();
         }
 
-        function getPlayerDetails(id) {
-            return state.players.find(p => p.id === id) || { name: 'Select', avatar: null };
-        }
-
         function getPlayerAvatarHTML(id, teamIndex, posIndex, readOnly = false) {
-            const p = getPlayerDetails(id);
-            const content = p.avatar ? `<img src="${p.avatar}" class="w-full h-full object-cover">` : `<span class="text-xs font-bold">${p.name.charAt(0).toUpperCase()}</span>`;
-            const clickHandler = readOnly ? '' : `onclick="openPlayerSelect(${teamIndex}, ${posIndex})"`;
-            const cursor = readOnly ? '' : 'cursor-pointer hover:scale-105 transition-transform';
-            return `
-                <div ${clickHandler} class="w-12 h-12 rounded-full border-4 border-surface bg-surface-variant flex items-center justify-center overflow-hidden shadow-sm z-10 -ml-3 first:ml-0 ${cursor}">
-                    ${content}
-                </div>
-            `;
+            const p = state.players.find(x => x.id === id) || { name: 'Select', avatar: null };
+            const content = p.avatar ? `<img src="${p.avatar}" class="w-full h-full object-cover">` : `<span class="text-sm font-bold text-google-textMuted">${p.name.charAt(0).toUpperCase()}</span>`;
+            return `<div ${!readOnly ? `onclick="openPlayerSelect(${teamIndex}, ${posIndex})"` : ''} class="w-12 h-12 rounded-full border-2 border-google-surfaceLight dark:border-google-surfaceDark bg-google-bgLight dark:bg-google-bgDark flex items-center justify-center overflow-hidden shadow-sm z-10 -ml-3 first:ml-0 ${!readOnly ? 'cursor-pointer hover:scale-105 transition-transform' : ''}">${content}</div>`;
         }
 
         /* --- Main Scoreboard --- */
         function renderMain() {
-            const content = document.getElementById('content');
-            let t1Total = 0; let t2Total = 0;
+            let t1 = 0; let t2 = 0;
             const roundsHtml = (state.activeGame.rounds || []).map((r, i) => {
-                t1Total += (parseInt(r.t1) || 0); t2Total += (parseInt(r.t2) || 0);
+                t1 += (parseInt(r.t1) || 0); t2 += (parseInt(r.t2) || 0);
                 return `
-                    <div class="flex items-center justify-between bg-surface-variant/50 p-2 rounded-[24px] mb-2 shadow-sm animate-slide-up" style="animation-delay: ${i*0.05}s">
-                        <input type="number" value="${r.t1 !== null ? r.t1 : ''}" oninput="updateRound(${i}, 't1', this.value)" class="w-20 text-center bg-surface text-on-surface py-3 px-2 rounded-full font-bold focus:ring-2 focus:ring-primary outline-none ${state.activeGame.gameOver?'opacity-50 pointer-events-none':''}">
-                        <span class="font-bold text-on-surface-variant opacity-50 px-2 text-sm">R${i+1}</span>
-                        <input type="number" value="${r.t2 !== null ? r.t2 : ''}" oninput="updateRound(${i}, 't2', this.value)" class="w-20 text-center bg-surface text-on-surface py-3 px-2 rounded-full font-bold focus:ring-2 focus:ring-primary outline-none ${state.activeGame.gameOver?'opacity-50 pointer-events-none':''}">
+                    <div class="flex items-center justify-between bg-google-surfaceLight dark:bg-google-surfaceDark p-2 rounded-[20px] mb-2 shadow-sm border border-google-borderLight dark:border-google-borderDark">
+                        <input type="number" value="${r.t1 !== null ? r.t1 : ''}" oninput="updateRoundData(${i}, 't1', this.value)" class="w-20 text-center bg-google-bgLight dark:bg-google-bgDark text-google-textLight dark:text-google-textDark py-3 px-2 rounded-2xl font-bold focus:border-google-blue focus:ring-1 focus:ring-google-blue outline-none ${state.activeGame.gameOver?'opacity-50 pointer-events-none':''}">
+                        <span class="font-bold text-google-textMuted text-sm">R${i+1}</span>
+                        <input type="number" value="${r.t2 !== null ? r.t2 : ''}" oninput="updateRoundData(${i}, 't2', this.value)" class="w-20 text-center bg-google-bgLight dark:bg-google-bgDark text-google-textLight dark:text-google-textDark py-3 px-2 rounded-2xl font-bold focus:border-google-blue focus:ring-1 focus:ring-google-blue outline-none ${state.activeGame.gameOver?'opacity-50 pointer-events-none':''}">
                     </div>
                 `;
             }).join('');
 
-            const t1ColorClass = t1Total >= state.settings.m2 ? 'bg-error text-on-error' : 'bg-secondary-container text-on-secondary-container';
-            const t2ColorClass = t2Total >= state.settings.m2 ? 'bg-error text-on-error' : 'bg-primary-container text-on-primary-container';
-
-            content.innerHTML = `
-                <div class="flex justify-between items-center mb-2 px-1">
-                    <span class="text-xs font-bold text-on-surface-variant/60 uppercase tracking-wider">Targets: ${state.settings.m1} / ${state.settings.m2}</span>
-                    <button onclick="resetGame()" class="text-xs bg-error/10 text-error px-3 py-1 rounded-full font-bold flex items-center gap-1 hover:bg-error/20"><i class="ph ph-arrow-counter-clockwise"></i> Reset</button>
+            document.getElementById('content').innerHTML = `
+                <div class="flex justify-between items-center mb-2 px-2">
+                    <span class="text-xs font-bold text-google-textMuted uppercase tracking-wider">Targets: ${state.settings.m1} / ${state.settings.m2}</span>
+                    <button onclick="resetGame()" class="text-xs text-google-red hover:bg-google-redLight dark:hover:bg-google-red/10 px-3 py-1 rounded-full font-bold flex items-center gap-1 transition-colors"><span class="material-symbols-outlined text-[16px]">restart_alt</span> Reset</button>
                 </div>
-                <div class="grid grid-cols-2 gap-4 mb-4">
-                    <div class="${t1ColorClass} p-5 rounded-[32px] flex flex-col items-center justify-between shadow-md relative overflow-hidden">
-                        <div class="flex mb-4 w-full justify-center pl-3">
-                            ${getPlayerAvatarHTML(state.activeGame.team1[0], 1, 0)}
-                            ${getPlayerAvatarHTML(state.activeGame.team1[1], 1, 1)}
-                        </div>
-                        <h2 class="text-5xl font-black tracking-tighter">${t1Total}</h2>
-                        <span class="text-xs opacity-70 mt-1 uppercase font-bold tracking-widest">Team 1</span>
+                <div class="grid grid-cols-2 gap-3 mb-4">
+                    <div class="bg-google-surfaceLight dark:bg-google-surfaceDark p-5 rounded-[24px] flex flex-col items-center justify-between shadow-google border ${t1 >= state.settings.m2 ? 'border-google-red' : 'border-google-borderLight dark:border-google-borderDark'}">
+                        <div class="flex mb-3 justify-center pl-3">${getPlayerAvatarHTML(state.activeGame.team1[0], 1, 0)}${getPlayerAvatarHTML(state.activeGame.team1[1], 1, 1)}</div>
+                        <h2 id="t1-total" class="text-5xl font-black text-google-textLight dark:text-google-textDark">${t1}</h2>
+                        <span class="text-[10px] text-google-textMuted mt-1 uppercase font-bold tracking-widest">Team 1</span>
                     </div>
-                    <div class="${t2ColorClass} p-5 rounded-[32px] flex flex-col items-center justify-between shadow-md relative overflow-hidden">
-                        <div class="flex mb-4 w-full justify-center pl-3">
-                            ${getPlayerAvatarHTML(state.activeGame.team2[0], 2, 0)}
-                            ${getPlayerAvatarHTML(state.activeGame.team2[1], 2, 1)}
-                        </div>
-                        <h2 class="text-5xl font-black tracking-tighter">${t2Total}</h2>
-                        <span class="text-xs opacity-70 mt-1 uppercase font-bold tracking-widest">Team 2</span>
+                    <div class="bg-google-surfaceLight dark:bg-google-surfaceDark p-5 rounded-[24px] flex flex-col items-center justify-between shadow-google border ${t2 >= state.settings.m2 ? 'border-google-red' : 'border-google-borderLight dark:border-google-borderDark'}">
+                        <div class="flex mb-3 justify-center pl-3">${getPlayerAvatarHTML(state.activeGame.team2[0], 2, 0)}${getPlayerAvatarHTML(state.activeGame.team2[1], 2, 1)}</div>
+                        <h2 id="t2-total" class="text-5xl font-black text-google-blue dark:text-google-blueDark">${t2}</h2>
+                        <span class="text-[10px] text-google-textMuted mt-1 uppercase font-bold tracking-widest">Team 2</span>
                     </div>
                 </div>
-                <div class="flex-1 overflow-y-auto pb-6 px-1">
-                    ${roundsHtml || `<div class="flex flex-col items-center justify-center h-40 opacity-50 text-center"><i class="ph ph-clipboard-text text-4xl mb-2"></i><p>No rounds yet.<br>Tap + to start scoring.</p></div>`}
+                <div class="flex-1 overflow-y-auto pb-6 px-1" id="rounds-container">
+                    ${roundsHtml || `<div class="flex flex-col items-center justify-center h-40 opacity-50 text-center"><span class="material-symbols-outlined text-4xl mb-2">edit_document</span><p class="text-sm">No rounds yet.<br>Tap + to start.</p></div>`}
                 </div>
             `;
         }
 
-        window.updateRound = function(index, team, value) {
+        window.updateRoundData = function(index, team, value) {
             state.activeGame.rounds[index][team] = value === '' ? null : parseInt(value);
-            saveActiveGame(); 
-            calculateTotalsUI();
-        }
-
-        function calculateTotalsUI() {
-            let t1Total = 0; let t2Total = 0;
-            (state.activeGame.rounds || []).forEach(r => { t1Total += (parseInt(r.t1) || 0); t2Total += (parseInt(r.t2) || 0); });
-            const headers = document.querySelectorAll('h2.text-5xl');
-            if(headers.length >= 2) { headers[0].innerText = t1Total; headers[1].innerText = t2Total; }
+            saveActiveGame();
+            
+            // Update Totals directly in DOM so we don't lose input focus!
+            let t1 = 0; let t2 = 0;
+            state.activeGame.rounds.forEach(r => { t1 += (parseInt(r.t1)||0); t2 += (parseInt(r.t2)||0); });
+            const h1 = document.getElementById('t1-total'); if(h1) h1.innerText = t1;
+            const h2 = document.getElementById('t2-total'); if(h2) h2.innerText = t2;
             checkMilestones();
         }
 
         window.openPlayerSelect = function(teamIndex, posIndex) {
-            let listHtml = state.players.map(p => `
-                <div onclick="selectPlayer(${teamIndex}, ${posIndex}, '${p.id}')" class="flex items-center gap-4 p-3 hover:bg-surface-variant rounded-2xl cursor-pointer transition-colors">
-                    <img src="${p.avatar || 'data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\' fill=\'%23ccc\'><circle cx=\'50\' cy=\'50\' r=\'50\'/></svg>'}" class="w-10 h-10 rounded-full object-cover">
-                    <span class="font-bold text-lg">${p.name}</span>
+            let html = state.players.map(p => `
+                <div onclick="selectPlayer(${teamIndex}, ${posIndex}, '${p.id}')" class="flex items-center gap-4 p-3 hover:bg-google-bgLight dark:hover:bg-google-bgDark rounded-2xl cursor-pointer transition-colors border border-transparent hover:border-google-borderLight dark:hover:border-google-borderDark">
+                    <img src="${p.avatar || 'https://via.placeholder.com/150'}" class="w-10 h-10 rounded-full object-cover">
+                    <span class="font-bold">${p.name}</span>
                 </div>
             `).join('');
-
-            showModal('Select Player', `
-                <div class="flex flex-col gap-2 max-h-60 overflow-y-auto pr-2">
-                    <div onclick="selectPlayer(${teamIndex}, ${posIndex}, null)" class="flex items-center gap-4 p-3 hover:bg-error/10 text-error rounded-2xl cursor-pointer transition-colors">
-                        <i class="ph ph-x-circle text-2xl"></i><span class="font-bold">Clear Slot</span>
-                    </div>
-                    ${listHtml}
-                </div>
-            `);
+            showModal('Select Player', `<div class="flex flex-col gap-2 max-h-60 overflow-y-auto"><div onclick="selectPlayer(${teamIndex}, ${posIndex}, null)" class="flex items-center gap-4 p-3 hover:bg-google-redLight dark:hover:bg-google-red/10 text-google-red rounded-2xl cursor-pointer transition-colors"><span class="material-symbols-outlined">person_remove</span><span class="font-bold">Clear Slot</span></div>${html}</div>`);
         }
-
         window.selectPlayer = function(teamIndex, posIndex, playerId) {
             if (teamIndex === 1) state.activeGame.team1[posIndex] = playerId; else state.activeGame.team2[posIndex] = playerId;
             saveActiveGame(); closeModal(); renderMain();
         }
 
-        /* --- Live Spectate & Chat --- */
+        /* --- Live & Chat --- */
         function renderLiveList() {
-            const content = document.getElementById('content');
-            let listHtml = state.liveGames.map(live => {
-                let t1Total = 0; let t2Total = 0;
-                (live.game.rounds || []).forEach(r => { t1Total += (r.t1||0); t2Total += (r.t2||0); });
+            let html = state.liveGames.map(live => {
+                let t1 = 0; let t2 = 0; (live.game.rounds || []).forEach(r => { t1 += (r.t1||0); t2 += (r.t2||0); });
                 return `
-                    <div onclick="openSpectate('${live.id}')" class="bg-surface-variant/40 rounded-[32px] p-4 mb-4 shadow-sm border border-on-surface/5 cursor-pointer hover:bg-surface-variant/70 transition-colors relative overflow-hidden">
-                        <div class="absolute top-4 right-4 flex items-center gap-1 text-error text-xs font-bold animate-pulse">
-                            <span class="w-2 h-2 bg-error rounded-full"></span> LIVE
-                        </div>
-                        <div class="text-sm font-bold opacity-60 mb-2">${live.hostName}'s Match</div>
+                    <div onclick="openSpectate('${live.id}')" class="bg-google-surfaceLight dark:bg-google-surfaceDark rounded-[24px] p-5 mb-4 shadow-google hover:shadow-google-hover transition-all cursor-pointer border border-google-borderLight dark:border-google-borderDark relative overflow-hidden">
+                        <div class="absolute top-4 right-4 flex items-center gap-1 text-google-red text-[10px] font-black uppercase tracking-widest animate-pulse"><span class="w-2 h-2 bg-google-red rounded-full"></span> LIVE</div>
+                        <div class="text-sm font-bold text-google-textMuted mb-3 flex items-center gap-2"><span class="material-symbols-outlined text-[18px]">podcasts</span> ${live.hostName}'s Match</div>
                         <div class="flex justify-between items-center">
-                            <div class="flex-1 text-center"><h3 class="text-2xl font-black text-on-surface-variant">${t1Total}</h3><p class="text-xs font-bold mt-1 uppercase">Team 1</p></div>
-                            <div class="px-2 text-on-surface-variant/30 font-black text-xl">VS</div>
-                            <div class="flex-1 text-center"><h3 class="text-2xl font-black text-primary">${t2Total}</h3><p class="text-xs font-bold mt-1 uppercase">Team 2</p></div>
+                            <div class="flex-1 text-center"><h3 class="text-3xl font-black">${t1}</h3><p class="text-[10px] font-bold mt-1 uppercase text-google-textMuted">Team 1</p></div>
+                            <div class="px-2 text-google-borderLight dark:text-google-borderDark font-black text-xl">VS</div>
+                            <div class="flex-1 text-center"><h3 class="text-3xl font-black text-google-blue dark:text-google-blueDark">${t2}</h3><p class="text-[10px] font-bold mt-1 uppercase text-google-textMuted">Team 2</p></div>
                         </div>
                     </div>
                 `;
             }).join('');
-
-            content.innerHTML = `
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-2xl font-bold flex items-center gap-2"><i class="ph-fill ph-broadcast text-error"></i> Live Matches</h2>
-                </div>
-                <div class="flex-1 overflow-y-auto pb-6">${listHtml || `<div class="text-center opacity-50 mt-10">No live matches right now.</div>`}</div>
-            `;
+            document.getElementById('content').innerHTML = `<h2 class="text-2xl font-bold mb-4">Live Matches</h2><div class="flex-1 overflow-y-auto pb-6">${html || `<div class="text-center text-google-textMuted mt-10">No live matches.</div>`}</div>`;
         }
 
         window.openSpectate = function(hostId) {
-            state.spectatingMatchId = hostId;
-            switchTab('spectate_match');
-
-            // Listen to game
+            state.spectatingMatchId = hostId; switchTab('spectate_match');
             unsubLiveGame = onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'liveGames', hostId), (snap) => {
-                if (snap.exists()) {
-                    state.spectatingMatchData = snap.data().game;
-                    renderSpectateMatchScoreboard();
-                } else {
-                    showToast("Match ended or host disconnected.");
-                    switchTab('live');
-                }
+                if (snap.exists()) { renderSpectateScoreboard(snap.data().game); } 
+                else { showToast("Match ended."); switchTab('live'); }
             });
-
-            // Listen to chat
-            const chatQuery = query(collection(db, 'artifacts', appId, 'public', 'data', 'liveGames', hostId, 'chat'), orderBy('timestamp', 'asc'));
-            unsubLiveChat = onSnapshot(chatQuery, (snap) => {
-                state.spectatingChatData = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-                renderSpectateMatchChat();
+            unsubLiveChat = onSnapshot(query(collection(db, 'artifacts', appId, 'public', 'data', 'liveGames', hostId, 'chat'), orderBy('timestamp', 'asc')), (snap) => {
+                renderSpectateChat(snap.docs.map(d => ({ id: d.id, ...d.data() })));
             });
         }
 
         function renderSpectateMatch() {
             document.getElementById('content').innerHTML = `
                 <div class="flex justify-between items-center mb-2 px-1">
-                    <button onclick="switchTab('live')" class="text-sm bg-surface-variant text-on-surface-variant px-3 py-1 rounded-full font-bold flex items-center gap-1 hover:bg-primary-container transition-colors"><i class="ph ph-arrow-left"></i> Back</button>
-                    <span class="text-xs font-bold text-error uppercase tracking-wider animate-pulse flex items-center gap-1"><span class="w-2 h-2 bg-error rounded-full"></span> Spectating</span>
+                    <button onclick="switchTab('live')" class="text-sm bg-google-surfaceLight dark:bg-google-surfaceDark border border-google-borderLight dark:border-google-borderDark px-3 py-1 rounded-full font-bold flex items-center gap-1 hover:bg-black/5 transition-colors"><span class="material-symbols-outlined text-[18px]">arrow_back</span> Back</button>
+                    <span class="text-xs font-bold text-google-red uppercase tracking-wider animate-pulse flex items-center gap-1"><span class="w-2 h-2 bg-google-red rounded-full"></span> Spectating</span>
                 </div>
-                <div id="spectate-scoreboard"></div>
-                <div class="flex-1 bg-surface-variant/30 rounded-[32px] mt-4 flex flex-col overflow-hidden relative border border-on-surface/5">
-                    <div id="spectate-chat-box" class="flex-1 overflow-y-auto p-4 space-y-3 pb-2"></div>
-                    <div class="p-2 bg-surface-variant flex items-center gap-2">
-                        <input type="text" id="chat-input" placeholder="Say something..." class="flex-1 bg-surface text-on-surface px-4 py-3 rounded-full font-bold focus:ring-2 focus:ring-primary outline-none text-sm">
-                        <button onclick="sendChatMessage()" class="w-12 h-12 bg-primary text-on-primary rounded-full flex items-center justify-center hover:scale-105 transition-transform"><i class="ph-fill ph-paper-plane-right"></i></button>
+                <div id="spectate-top"></div>
+                <div class="flex-1 bg-google-surfaceLight dark:bg-google-surfaceDark rounded-[24px] mt-2 flex flex-col overflow-hidden shadow-google border border-google-borderLight dark:border-google-borderDark">
+                    <div id="spectate-chat" class="flex-1 overflow-y-auto p-4 space-y-4"></div>
+                    <div class="p-3 bg-google-bgLight dark:bg-google-bgDark border-t border-google-borderLight dark:border-google-borderDark flex items-center gap-2">
+                        <input type="text" id="chat-input" placeholder="Message..." onkeypress="if(event.key==='Enter') sendChatMessage()" class="flex-1 bg-google-surfaceLight dark:bg-google-surfaceDark px-4 py-2 rounded-full border border-google-borderLight dark:border-google-borderDark outline-none focus:border-google-blue text-sm">
+                        <button onclick="sendChatMessage()" class="w-10 h-10 bg-google-blue text-white rounded-full flex items-center justify-center hover:shadow-google-hover transition-all"><span class="material-symbols-outlined text-[20px]">send</span></button>
                     </div>
                 </div>
             `;
-            // Trigger keyboard enter
-            document.getElementById('chat-input')?.addEventListener('keypress', function (e) {
-                if (e.key === 'Enter') sendChatMessage();
-            });
-            if(state.spectatingMatchData) renderSpectateMatchScoreboard();
         }
 
-        function renderSpectateMatchScoreboard() {
-            const container = document.getElementById('spectate-scoreboard');
-            if(!container || !state.spectatingMatchData) return;
-
-            let t1Total = 0; let t2Total = 0;
-            (state.spectatingMatchData.rounds || []).forEach(r => { t1Total += (r.t1||0); t2Total += (r.t2||0); });
-
+        function renderSpectateScoreboard(gameData) {
+            const container = document.getElementById('spectate-top'); if(!container) return;
+            let t1 = 0; let t2 = 0; (gameData.rounds || []).forEach(r => { t1 += (r.t1||0); t2 += (r.t2||0); });
             container.innerHTML = `
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="bg-surface-variant/80 p-4 rounded-[24px] flex flex-col items-center shadow-sm">
-                        <div class="flex mb-2 justify-center pl-3 transform scale-75 origin-bottom">
-                            ${getPlayerAvatarHTML(state.spectatingMatchData.team1[0], 1, 0, true)}
-                            ${getPlayerAvatarHTML(state.spectatingMatchData.team1[1], 1, 1, true)}
-                        </div>
-                        <h2 class="text-3xl font-black">${t1Total}</h2>
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="bg-google-surfaceLight dark:bg-google-surfaceDark p-3 rounded-[20px] flex flex-col items-center shadow-sm border border-google-borderLight dark:border-google-borderDark">
+                        <h2 class="text-2xl font-black">${t1}</h2>
+                        <span class="text-[10px] uppercase font-bold text-google-textMuted">Team 1</span>
                     </div>
-                    <div class="bg-surface-variant/80 p-4 rounded-[24px] flex flex-col items-center shadow-sm">
-                        <div class="flex mb-2 justify-center pl-3 transform scale-75 origin-bottom">
-                            ${getPlayerAvatarHTML(state.spectatingMatchData.team2[0], 2, 0, true)}
-                            ${getPlayerAvatarHTML(state.spectatingMatchData.team2[1], 2, 1, true)}
-                        </div>
-                        <h2 class="text-3xl font-black">${t2Total}</h2>
+                    <div class="bg-google-surfaceLight dark:bg-google-surfaceDark p-3 rounded-[20px] flex flex-col items-center shadow-sm border border-google-borderLight dark:border-google-borderDark">
+                        <h2 class="text-2xl font-black text-google-blue dark:text-google-blueDark">${t2}</h2>
+                        <span class="text-[10px] uppercase font-bold text-google-textMuted">Team 2</span>
                     </div>
                 </div>
             `;
         }
 
-        function renderSpectateMatchChat() {
-            const box = document.getElementById('spectate-chat-box');
-            if(!box) return;
-
-            box.innerHTML = state.spectatingChatData.map(msg => {
+        function renderSpectateChat(chatData) {
+            const box = document.getElementById('spectate-chat'); if(!box) return;
+            box.innerHTML = chatData.map(msg => {
                 const isMe = msg.uid === currentUser?.uid;
-                const p = getPlayerDetails(msg.uid);
+                const p = state.players.find(x => x.id === msg.uid) || { avatar: null, name: msg.name };
                 return `
                     <div class="flex ${isMe ? 'justify-end' : 'justify-start'}">
-                        <div class="max-w-[80%] flex items-end gap-2 ${isMe ? 'flex-row-reverse' : 'flex-row'}">
-                            <img src="${p.avatar || 'data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\' fill=\'%23ccc\'><circle cx=\'50\' cy=\'50\' r=\'50\'/></svg>'}" class="w-6 h-6 rounded-full object-cover">
-                            <div class="${isMe ? 'bg-primary text-on-primary rounded-tl-2xl rounded-tr-2xl rounded-bl-2xl' : 'bg-surface text-on-surface rounded-tl-2xl rounded-tr-2xl rounded-br-2xl'} px-3 py-2 text-sm shadow-sm border border-on-surface/5">
-                                ${!isMe ? `<span class="text-[10px] font-black opacity-50 block mb-1 uppercase tracking-wider">${msg.name}</span>` : ''}
+                        <div class="max-w-[85%] flex items-end gap-2 ${isMe ? 'flex-row-reverse' : 'flex-row'}">
+                            <img src="${p.avatar || 'https://via.placeholder.com/150'}" class="w-6 h-6 rounded-full object-cover">
+                            <div class="${isMe ? 'bg-google-blue text-white rounded-tl-2xl rounded-tr-2xl rounded-bl-2xl' : 'bg-google-bgLight dark:bg-[#3c4043] text-google-textLight dark:text-google-textDark rounded-tl-2xl rounded-tr-2xl rounded-br-2xl border border-google-borderLight dark:border-google-borderDark'} px-3 py-2 text-[13px] shadow-sm">
+                                ${!isMe ? `<span class="text-[9px] font-black opacity-50 block mb-0.5 uppercase">${msg.name}</span>` : ''}
                                 ${msg.text}
                             </div>
                         </div>
                     </div>
                 `;
             }).join('');
-            box.scrollTop = box.scrollHeight; // Auto-scroll
+            requestAnimationFrame(() => box.scrollTop = box.scrollHeight);
         }
 
         window.sendChatMessage = async function() {
-            const input = document.getElementById('chat-input');
-            const text = input.value.trim();
+            const input = document.getElementById('chat-input'); const text = input.value.trim();
             if(!text || !state.spectatingMatchId || !currentUser) return;
-
             input.value = '';
             const myProfile = state.players.find(p => p.id === currentUser.uid);
-            await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'liveGames', state.spectatingMatchId, 'chat'), {
-                uid: currentUser.uid,
-                name: myProfile?.name || 'Spectator',
-                text: text,
-                timestamp: Date.now()
-            });
+            await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'liveGames', state.spectatingMatchId, 'chat'), { uid: currentUser.uid, name: myProfile?.name || 'User', text: text, timestamp: Date.now() });
         }
 
-        /* --- Other Tabs (Players, History, Stats, Settings) --- */
+        /* --- Additional Views --- */
         function renderPlayers() {
-            const content = document.getElementById('content');
-            let listHtml = state.players.map(p => `
-                <div class="flex items-center justify-between p-4 bg-surface-variant/40 rounded-[24px] mb-3 shadow-sm border ${p.id === currentUser?.uid ? 'border-primary' : 'border-transparent'}">
-                    <div class="flex items-center gap-4">
-                        <img src="${p.avatar || 'data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\' fill=\'%23ccc\'><circle cx=\'50\' cy=\'50\' r=\'50\'/></svg>'}" class="w-14 h-14 rounded-full object-cover shadow-sm">
-                        <div class="flex flex-col">
-                            <span class="font-bold text-xl">${p.name}</span>
-                            ${p.id === currentUser?.uid ? '<span class="text-xs text-primary font-bold uppercase tracking-wider">You</span>' : ''}
-                        </div>
-                    </div>
+            let html = state.players.map(p => `
+                <div class="flex items-center gap-4 p-4 bg-google-surfaceLight dark:bg-google-surfaceDark rounded-[24px] mb-3 shadow-sm border ${p.id === currentUser?.uid ? 'border-google-blue' : 'border-google-borderLight dark:border-google-borderDark'}">
+                    <img src="${p.avatar || 'https://via.placeholder.com/150'}" class="w-12 h-12 rounded-full object-cover shadow-sm">
+                    <div class="flex flex-col"><span class="font-bold">${p.name}</span>${p.id === currentUser?.uid ? '<span class="text-[10px] text-google-blue font-bold uppercase tracking-wider">You</span>' : ''}</div>
                 </div>
             `).join('');
-            content.innerHTML = `<div class="flex justify-between items-center mb-4"><h2 class="text-2xl font-bold">Global Roster</h2><span class="text-xs font-bold bg-primary-container text-on-primary-container px-3 py-1 rounded-full">${state.players.length} Players</span></div><div class="flex-1 overflow-y-auto pb-6">${listHtml}</div>`;
+            document.getElementById('content').innerHTML = `<div class="flex justify-between items-center mb-4"><h2 class="text-2xl font-bold">Roster</h2><span class="text-xs font-bold bg-google-blueLight text-google-blue px-3 py-1 rounded-full">${state.players.length} Players</span></div><div class="flex-1 overflow-y-auto pb-6">${html}</div>`;
         }
 
         function renderHistory() {
-            const content = document.getElementById('content');
-            let listHtml = state.history.map(h => {
-                let t1Score = 0; let t2Score = 0; (h.rounds || []).forEach(r => { t1Score += (r.t1||0); t2Score += (r.t2||0); });
-                const t1Won = t1Score < t2Score;
+            let html = state.history.map(h => {
+                let t1 = 0; let t2 = 0; (h.rounds || []).forEach(r => { t1 += (r.t1||0); t2 += (r.t2||0); });
+                const t1Won = t1 < t2;
                 return `
-                    <div class="bg-surface-variant/40 rounded-[32px] p-4 mb-4 shadow-sm border border-on-surface/5 cursor-pointer hover:bg-surface-variant/60" onclick="viewMatchDetails('${h.id}')">
-                        <div class="flex justify-between items-center text-xs opacity-60 font-bold mb-3 px-2">
-                            <span>${new Date(h.date).toLocaleDateString()}</span>
-                        </div>
+                    <div class="bg-google-surfaceLight dark:bg-google-surfaceDark rounded-[24px] p-4 mb-3 shadow-sm border border-google-borderLight dark:border-google-borderDark cursor-pointer hover:shadow-google transition-shadow" onclick="viewMatchDetails('${h.id}')">
+                        <div class="text-[10px] text-google-textMuted font-bold mb-2 uppercase">${new Date(h.date).toLocaleDateString()}</div>
                         <div class="flex justify-between items-center">
-                            <div class="flex-1 text-center"><h3 class="text-2xl font-black ${t1Won ? 'text-primary' : 'text-on-surface-variant'}">${t1Score}</h3></div>
-                            <div class="px-2 text-on-surface-variant/30 font-black text-xl">VS</div>
-                            <div class="flex-1 text-center"><h3 class="text-2xl font-black ${!t1Won ? 'text-primary' : 'text-on-surface-variant'}">${t2Score}</h3></div>
+                            <div class="flex-1 text-center"><h3 class="text-2xl font-black ${t1Won ? 'text-google-blue dark:text-google-blueDark' : 'text-google-textMuted'}">${t1}</h3></div>
+                            <div class="px-2 text-google-borderLight dark:text-google-borderDark font-black">VS</div>
+                            <div class="flex-1 text-center"><h3 class="text-2xl font-black ${!t1Won ? 'text-google-blue dark:text-google-blueDark' : 'text-google-textMuted'}">${t2}</h3></div>
                         </div>
                     </div>
                 `;
             }).join('');
-            content.innerHTML = `<h2 class="text-2xl font-bold mb-4">Past Matches</h2><div class="flex-1 overflow-y-auto pb-6">${listHtml || `<div class="text-center opacity-50 mt-10">No match history.</div>`}</div>`;
+            document.getElementById('content').innerHTML = `<h2 class="text-2xl font-bold mb-4">Match History</h2><div class="flex-1 overflow-y-auto pb-6">${html || `<div class="text-center text-google-textMuted mt-10">No history.</div>`}</div>`;
         }
 
         window.viewMatchDetails = function(matchId) {
-            const match = state.history.find(m => m.id === matchId);
-            if(!match) return;
-            let t1Total = 0; let t2Total = 0;
-            const roundsHtml = (match.rounds || []).map((r, i) => {
-                t1Total += (r.t1||0); t2Total += (r.t2||0);
-                return `<div class="flex justify-between py-2 border-b border-on-surface/10 text-sm"><span class="w-1/3 text-center font-bold">${r.t1||0}</span><span class="w-1/3 text-center opacity-50">R${i+1}</span><span class="w-1/3 text-center font-bold">${r.t2||0}</span></div>`;
-            }).join('');
-
-            showModal("Match Details", `
-                <div class="flex justify-between mb-4 bg-surface-variant p-4 rounded-2xl">
-                    <div class="text-center w-1/2 border-r border-on-surface/10"><div class="text-3xl font-black">${t1Total}</div></div>
-                    <div class="text-center w-1/2"><div class="text-3xl font-black">${t2Total}</div></div>
-                </div>
-                <div class="max-h-60 overflow-y-auto px-2">${roundsHtml}</div>
-            `);
+            const match = state.history.find(m => m.id === matchId); if(!match) return;
+            let t1 = 0; let t2 = 0;
+            const roundsHtml = (match.rounds || []).map((r, i) => { t1 += (r.t1||0); t2 += (r.t2||0); return `<div class="flex justify-between py-2 border-b border-google-borderLight dark:border-google-borderDark text-sm"><span class="w-1/3 text-center font-bold">${r.t1||0}</span><span class="w-1/3 text-center text-google-textMuted">R${i+1}</span><span class="w-1/3 text-center font-bold">${r.t2||0}</span></div>`; }).join('');
+            showModal("Match Details", `<div class="flex justify-between mb-4 bg-google-bgLight dark:bg-[#3c4043] p-4 rounded-2xl border border-google-borderLight dark:border-google-borderDark"><div class="text-center w-1/2 border-r border-google-borderLight dark:border-google-borderDark"><div class="text-3xl font-black">${t1}</div></div><div class="text-center w-1/2"><div class="text-3xl font-black">${t2}</div></div></div><div class="max-h-60 overflow-y-auto px-2">${roundsHtml}</div>`);
         }
 
         function renderStats() {
-            const content = document.getElementById('content');
             const pStats = {}; state.players.forEach(p => pStats[p.id] = { name: p.name, avatar: p.avatar, w: 0, l: 0 });
             state.history.forEach(match => {
-                let t1Score = 0; let t2Score = 0; (match.rounds || []).forEach(r => { t1Score += (r.t1||0); t2Score += (r.t2||0); });
-                const t1Won = t1Score < t2Score;
-                const assignStat = (team, won) => { team.forEach(pid => { if (pid && pStats[pid]) { if (won) pStats[pid].w++; else pStats[pid].l++; } }); };
-                assignStat(match.team1 || [], t1Won); assignStat(match.team2 || [], !t1Won);
+                let t1 = 0; let t2 = 0; (match.rounds || []).forEach(r => { t1 += (r.t1||0); t2 += (r.t2||0); });
+                const t1Won = t1 < t2;
+                const addSt = (tm, won) => { tm.forEach(pid => { if (pid && pStats[pid]) { if (won) pStats[pid].w++; else pStats[pid].l++; } }); };
+                addSt(match.team1 || [], t1Won); addSt(match.team2 || [], !t1Won);
             });
             const statArr = Object.values(pStats).filter(s => s.w + s.l > 0).map(s => {
                 const rate = (s.w / (s.w + s.l)) * 100;
-                let rank = "Amateur"; let rankColor = "text-on-surface-variant";
-                if (rate >= 60 && (s.w+s.l) >= 5) { rank = "Elite"; rankColor = "text-[#ffb4ab] dark:text-[#ff5449]"; }
-                else if (rate >= 40 && (s.w+s.l) >= 3) { rank = "Pro"; rankColor = "text-primary"; }
-                return { ...s, rate, rank, rankColor };
+                let rank = "Amateur"; let rCol = "text-google-textMuted";
+                if (rate >= 60 && (s.w+s.l) >= 5) { rank = "Elite"; rCol = "text-google-red"; } else if (rate >= 40 && (s.w+s.l) >= 3) { rank = "Pro"; rCol = "text-google-blue"; }
+                return { ...s, rate, rank, rCol };
             }).sort((a,b) => b.rate - a.rate);
-
-            let listHtml = statArr.map(s => `
-                <div class="flex items-center p-4 bg-surface-variant/30 rounded-[28px] mb-3 shadow-sm border border-on-surface/5">
-                    <img src="${s.avatar}" class="w-12 h-12 rounded-full mr-4 object-cover shadow-sm">
-                    <div class="flex-1"><h4 class="font-bold text-lg">${s.name}</h4><span class="text-xs uppercase font-black tracking-widest ${s.rankColor}">${s.rank}</span></div>
-                    <div class="text-right"><div class="text-2xl font-black">${s.rate.toFixed(0)}%</div><div class="text-xs font-bold opacity-60">${s.w}W - ${s.l}L</div></div>
-                </div>
-            `).join('');
-            content.innerHTML = `<h2 class="text-2xl font-bold mb-4">Performance</h2><div class="flex-1 overflow-y-auto pb-6">${listHtml || `<div class="text-center opacity-50 mt-10">Play games to see stats.</div>`}</div>`;
+            let html = statArr.map(s => `<div class="flex items-center p-4 bg-google-surfaceLight dark:bg-google-surfaceDark rounded-[24px] mb-3 shadow-sm border border-google-borderLight dark:border-google-borderDark"><img src="${s.avatar}" class="w-10 h-10 rounded-full mr-4 object-cover"><div class="flex-1"><h4 class="font-bold text-sm">${s.name}</h4><span class="text-[10px] uppercase font-black tracking-widest ${s.rCol}">${s.rank}</span></div><div class="text-right"><div class="text-xl font-black">${s.rate.toFixed(0)}%</div><div class="text-[10px] font-bold text-google-textMuted">${s.w}W - ${s.l}L</div></div></div>`).join('');
+            document.getElementById('content').innerHTML = `<div class="flex justify-between items-center mb-4"><button onclick="switchTab('main')" class="p-2 -ml-2 rounded-full hover:bg-black/5"><span class="material-symbols-outlined">arrow_back</span></button><h2 class="text-xl font-bold flex-1 ml-2">Stats</h2></div><div class="flex-1 overflow-y-auto pb-6">${html || `<div class="text-center text-google-textMuted mt-10">Play games to see stats.</div>`}</div>`;
         }
 
         function renderSettings() {
             document.getElementById('content').innerHTML = `
-                <h2 class="text-2xl font-bold mb-4">Settings</h2>
-                <div class="flex-1 overflow-y-auto pb-6 space-y-6 px-1">
-                    <section class="bg-surface-variant/40 p-5 rounded-[32px] shadow-sm">
-                        <div class="flex justify-between items-center"><span class="font-bold">Dark Mode</span>
-                            <label class="relative inline-flex items-center cursor-pointer">
-                                <input type="checkbox" class="sr-only peer" ${state.settings.darkMode ? 'checked' : ''} onchange="state.settings.darkMode=this.checked; saveSettings();">
-                                <div class="w-14 h-8 bg-surface border-2 border-on-surface/20 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-primary after:border-primary after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-primary-container"></div>
-                            </label>
-                        </div>
-                    </section>
-                    <section class="bg-surface-variant/40 p-5 rounded-[32px] shadow-sm">
-                        <h3 class="text-sm font-bold uppercase text-primary mb-4">Match Rules</h3>
-                        <div class="mb-4"><label class="block text-sm font-bold opacity-70 mb-2">Milestone 1</label><input type="number" value="${state.settings.m1}" onchange="state.settings.m1=parseInt(this.value)||0; saveSettings()" class="w-full bg-surface text-on-surface px-4 py-3 rounded-full font-bold focus:ring-2 focus:ring-primary outline-none text-center"></div>
-                        <div><label class="block text-sm font-bold opacity-70 mb-2">Milestone 2</label><input type="number" value="${state.settings.m2}" onchange="state.settings.m2=parseInt(this.value)||0; saveSettings()" class="w-full bg-surface text-on-surface px-4 py-3 rounded-full font-bold focus:ring-2 focus:ring-error outline-none text-center"></div>
-                    </section>
+                <div class="flex justify-between items-center mb-4"><button onclick="switchTab('main')" class="p-2 -ml-2 rounded-full hover:bg-black/5"><span class="material-symbols-outlined">arrow_back</span></button><h2 class="text-xl font-bold flex-1 ml-2">Settings</h2></div>
+                <div class="flex-1 overflow-y-auto pb-6 space-y-4 px-1">
+                    <div class="bg-google-surfaceLight dark:bg-google-surfaceDark p-4 rounded-[24px] shadow-sm border border-google-borderLight dark:border-google-borderDark flex justify-between items-center">
+                        <span class="font-bold text-sm">Dark Mode</span>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" class="sr-only peer" ${state.settings.darkMode ? 'checked' : ''} onchange="state.settings.darkMode=this.checked; saveSettings();">
+                            <div class="w-11 h-6 bg-google-borderLight dark:bg-google-borderDark peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-google-blue"></div>
+                        </label>
+                    </div>
+                    <div class="bg-google-surfaceLight dark:bg-google-surfaceDark p-4 rounded-[24px] shadow-sm border border-google-borderLight dark:border-google-borderDark">
+                        <h3 class="text-xs font-bold uppercase text-google-blue mb-4">Rules</h3>
+                        <div class="mb-3"><label class="block text-[10px] font-bold text-google-textMuted mb-1">Target 1</label><input type="number" value="${state.settings.m1}" onchange="state.settings.m1=parseInt(this.value)||0; saveSettings()" class="w-full bg-google-bgLight dark:bg-google-bgDark px-3 py-2 rounded-xl font-bold outline-none border border-google-borderLight dark:border-google-borderDark focus:border-google-blue"></div>
+                        <div><label class="block text-[10px] font-bold text-google-textMuted mb-1">Game Over Target</label><input type="number" value="${state.settings.m2}" onchange="state.settings.m2=parseInt(this.value)||0; saveSettings()" class="w-full bg-google-bgLight dark:bg-google-bgDark px-3 py-2 rounded-xl font-bold outline-none border border-google-borderLight dark:border-google-borderDark focus:border-google-red"></div>
+                    </div>
                 </div>
             `;
         }
 
         /* --- Audio, Themes & Utilities --- */
-        const playBeep = (freq = 600, duration = 0.3) => {
-            try { const ctx = new (window.AudioContext || window.webkitAudioContext)(); const osc = ctx.createOscillator(); const gain = ctx.createGain(); osc.connect(gain); gain.connect(ctx.destination); osc.type = 'sine'; osc.frequency.setValueAtTime(freq, ctx.currentTime); gain.gain.setValueAtTime(0.2, ctx.currentTime); gain.gain.exponentialRampToValueAtTime(0.00001, ctx.currentTime + duration); osc.start(); osc.stop(ctx.currentTime + duration); } catch(e) {}
-        };
-        const playAlertSound = (type) => { type === 'm1' ? playBeep(500, 0.4) : playBeep(800, 0.6); };
+        const playAlertSound = (type) => { try { const ctx = new (window.AudioContext || window.webkitAudioContext)(); const osc = ctx.createOscillator(); const gain = ctx.createGain(); osc.connect(gain); gain.connect(ctx.destination); osc.type = 'sine'; osc.frequency.setValueAtTime(type==='m1'?500:800, ctx.currentTime); gain.gain.setValueAtTime(0.2, ctx.currentTime); gain.gain.exponentialRampToValueAtTime(0.00001, ctx.currentTime + (type==='m1'?0.4:0.6)); osc.start(); osc.stop(ctx.currentTime + (type==='m1'?0.4:0.6)); } catch(e) {} };
         function applyTheme(isDark) { if (isDark) document.documentElement.classList.add('dark'); else document.documentElement.classList.remove('dark'); }
 
         function bindEvents() {
-            document.querySelectorAll('.nav-btn').forEach(btn => btn.addEventListener('click', (e) => { const t = e.currentTarget.dataset.tab; if(t) switchTab(t); }));
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.addEventListener('click', (e) => { const t = e.currentTarget.closest('.nav-btn').dataset.tab; if(t) switchTab(t); }));
             document.getElementById('btn-add-round').addEventListener('click', () => {
                 if(state.currentTab !== 'main') switchTab('main');
                 state.activeGame.rounds.push({ t1: null, t2: null }); saveActiveGame(); renderMain();
                 setTimeout(() => { const ins = document.querySelectorAll('input[type="number"]'); if(ins.length>0) ins[ins.length - 2].focus(); }, 100);
             });
-            document.getElementById('btn-settings').addEventListener('click', () => switchTab('settings'));
             document.getElementById('modal-container').addEventListener('click', (e) => { if(e.target.id === 'modal-container') closeModal(); });
         }
 
         function showModal(title, content) {
             const container = document.getElementById('modal-container'); const modContent = document.getElementById('modal-content');
-            modContent.innerHTML = `<div class="flex justify-between items-center mb-6"><h2 class="text-2xl font-bold">${title}</h2><button onclick="closeModal()" class="p-2 bg-surface-variant rounded-full text-on-surface-variant hover:bg-error/10 hover:text-error transition-colors"><i class="ph ph-x"></i></button></div><div class="mb-6">${content}</div>`;
+            modContent.innerHTML = `<div class="flex justify-between items-center mb-6"><h2 class="text-xl font-bold">${title}</h2><button onclick="closeModal()" class="p-2 rounded-full hover:bg-black/5"><span class="material-symbols-outlined">close</span></button></div><div class="mb-4">${content}</div>`;
             container.classList.remove('hidden'); setTimeout(() => modContent.classList.remove('translate-y-full'), 10);
         }
 
@@ -838,15 +593,14 @@
 
         window.showToast = function(msg, actionLabel = null, actionCallback = null) {
             const container = document.getElementById('toast-container'); const toast = document.createElement('div');
-            toast.className = `bg-on-surface text-surface px-4 py-3 rounded-[16px] shadow-xl flex justify-between items-center transform transition-all duration-300 translate-y-10 opacity-0`;
-            let btnHtml = ''; if (actionLabel) { const btnId = 'toast-btn-' + Date.now(); window[btnId] = () => { actionCallback(); toast.remove(); }; btnHtml = `<button onclick="window['${btnId}']()" class="text-primary-container font-black uppercase text-sm ml-4">${actionLabel}</button>`; }
-            toast.innerHTML = `<span class="font-bold text-sm">${msg}</span>${btnHtml}`; container.appendChild(toast);
+            toast.className = `bg-google-textLight dark:bg-google-textDark text-white dark:text-google-bgDark px-4 py-3 rounded-xl shadow-google flex justify-between items-center transform transition-all duration-300 translate-y-10 opacity-0 mb-2`;
+            let btnHtml = ''; if (actionLabel) { const btnId = 'toast-btn-' + Date.now(); window[btnId] = () => { actionCallback(); toast.remove(); }; btnHtml = `<button onclick="window['${btnId}']()" class="text-google-blueLight font-bold uppercase text-[10px] ml-4 tracking-widest">${actionLabel}</button>`; }
+            toast.innerHTML = `<span class="font-medium text-sm">${msg}</span>${btnHtml}`; container.appendChild(toast);
             requestAnimationFrame(() => toast.classList.remove('translate-y-10', 'opacity-0'));
             setTimeout(() => { toast.classList.add('translate-y-10', 'opacity-0'); setTimeout(() => toast.remove(), 300); }, 5000);
         }
 
         function triggerCelebration() { showToast("Game Over!"); }
-
         window.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
