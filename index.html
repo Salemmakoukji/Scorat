@@ -148,11 +148,13 @@
     <!-- Onboarding Container -->
     <div id="onboarding-container" class="fixed inset-0 z-[100] hidden bg-google-bgLight dark:bg-google-bgDark flex flex-col items-center justify-center p-6">
         <div class="w-full max-w-sm text-center bg-google-surfaceLight dark:bg-google-surfaceDark p-8 rounded-[32px] shadow-google page-enter">
-            <span class="material-symbols-outlined text-6xl text-primary dark:text-primary-dark mb-4">account_circle</span>
-            <h2 class="text-3xl font-bold text-google-textLight dark:text-google-textDark mb-2">Welcome</h2>
-            <p class="text-google-textMuted dark:text-gray-400 mb-6 text-sm">Create your profile to join the global roster.</p>
             
-            <div class="flex flex-col gap-4">
+            <!-- View: Create New Profile -->
+            <div id="view-create-profile" class="flex flex-col gap-4">
+                <span class="material-symbols-outlined text-6xl text-primary dark:text-primary-dark mb-4">account_circle</span>
+                <h2 class="text-3xl font-bold text-google-textLight dark:text-google-textDark mb-2">Welcome</h2>
+                <p class="text-google-textMuted dark:text-gray-400 mb-2 text-sm">Create your profile to join the global roster.</p>
+                
                 <div class="flex justify-center mb-2">
                     <div id="ob-avatar-preview" class="w-24 h-24 rounded-full bg-google-bgLight dark:bg-google-bgDark border-2 border-dashed border-google-borderLight dark:border-google-borderDark flex items-center justify-center overflow-hidden relative">
                         <span class="material-symbols-outlined text-3xl opacity-50">add_a_photo</span>
@@ -165,8 +167,22 @@
                 
                 <input type="text" id="ob-player-name" placeholder="Enter Nickname" class="w-full mt-2 bg-google-bgLight dark:bg-google-bgDark border border-google-borderLight dark:border-google-borderDark text-google-textLight dark:text-google-textDark px-4 py-3 rounded-full font-medium focus:border-primary focus:ring-1 focus:ring-primary outline-none text-center select-text">
                 
-                <button onclick="vibe(); saveUserProfile()" class="w-full mt-4 bg-primary dark:bg-primary-dark text-white dark:text-google-bgDark py-3 rounded-full font-bold shadow-md hover:shadow-google-hover active:scale-95 transition-all">Start Playing</button>
+                <button onclick="vibe(); saveUserProfile()" class="w-full mt-2 bg-primary dark:bg-primary-dark text-white dark:text-google-bgDark py-3 rounded-full font-bold shadow-md hover:shadow-google-hover active:scale-95 transition-all">Start Playing</button>
+                <button onclick="vibe(); toggleRestoreView(true)" class="mt-2 text-sm text-primary dark:text-primary-dark font-bold hover:underline">هل تملك حساباً سابقاً؟ استرجاع بالـ ID</button>
             </div>
+
+            <!-- View: Restore Profile by ID -->
+            <div id="view-restore-profile" class="hidden flex-col gap-4">
+                <span class="material-symbols-outlined text-6xl text-primary dark:text-primary-dark mb-4 mx-auto">manage_search</span>
+                <h2 class="text-2xl font-bold text-google-textLight dark:text-google-textDark mb-2">استرجاع حسابك</h2>
+                <p class="text-google-textMuted dark:text-gray-400 mb-4 text-sm">أدخل الـ ID الخاص بك لاستعادة إحصائياتك ومبارياتك السابقة.</p>
+                
+                <input type="text" id="restore-id-input" placeholder="أدخل الـ ID هنا..." class="w-full bg-google-bgLight dark:bg-google-bgDark border border-google-borderLight dark:border-google-borderDark text-google-textLight dark:text-google-textDark px-4 py-4 rounded-xl font-mono font-bold focus:border-primary focus:ring-1 focus:ring-primary outline-none text-center select-text">
+                
+                <button onclick="vibe(); restoreAccount()" class="w-full mt-2 bg-primary dark:bg-primary-dark text-white dark:text-google-bgDark py-3 rounded-full font-bold shadow-md hover:shadow-google-hover active:scale-95 transition-all">تأكيد واسترجاع</button>
+                <button onclick="vibe(); toggleRestoreView(false)" class="mt-2 text-sm text-google-textMuted font-bold hover:underline">العودة لإنشاء حساب جديد</button>
+            </div>
+
         </div>
     </div>
 
@@ -204,19 +220,20 @@
         let debounceTimer; let onboardingAvatarBase64 = null;
         let unsubLiveGame = null; let unsubLiveChat = null; let unsubHostChat = null;
 
-        /* --- PWA Setup (Executed immediately) --- */
+        /* --- Custom Active UID Getter --- */
+        window.getActiveUid = function() {
+            return localStorage.getItem('scorat_uid') || (currentUser ? currentUser.uid : null);
+        };
+
+        /* --- PWA Setup --- */
         let deferredPrompt;
-        
-        // 1. Valid Manifest (No Blob URL, fixes Chrome PWA block)
-        const manifest = { "name": "Scorat", "short_name": "Scorat", "start_url": ".", "display": "standalone", "background_color": "#f8f9fa", "theme_color": "#1a73e8", "icons": [{ "src": "./logo.png", "sizes": "512x512", "type": "image/png+xml", "purpose": "any maskable" }] };
+        const manifest = { "name": "Scorat", "short_name": "Scorat", "start_url": ".", "display": "standalone", "background_color": "#f8f9fa", "theme_color": "#1a73e8", "icons": [{ "src": ".logo.png", "sizes": "512x512", "type": "image/svg+xml", "purpose": "any maskable" }] };
         const manifestLink = document.createElement('link'); manifestLink.rel = 'manifest'; 
         manifestLink.href = 'data:application/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(manifest));
         document.head.appendChild(manifestLink);
 
-        // 2. Listen for Install Prompt Early
         window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
+            e.preventDefault(); deferredPrompt = e;
             setTimeout(() => {
                 if (document.getElementById('toast-container')) {
                     showToast("Install Scorat to your Home Screen!", "Install", () => {
@@ -241,16 +258,16 @@
 
                 await signInAnonymously(auth);
                 onAuthStateChanged(auth, async (user) => {
-                    if (user) { currentUser = user; await checkUserProfile(user.uid); }
+                    if (user) { 
+                        currentUser = user; 
+                        await checkUserProfile(getActiveUid()); 
+                    }
                 });
             } catch (error) { console.error("Firebase Init Error:", error); showToast("Failed to connect to database."); }
             bindEvents();
         }
 
-        // Haptic Feedback Helper
-        window.vibe = function(ms = 40) {
-            if (navigator.vibrate && state.settings.haptics) navigator.vibrate(ms);
-        };
+        window.vibe = function(ms = 40) { if (navigator.vibrate && state.settings.haptics) navigator.vibrate(ms); };
 
         function sendPushNotification(title, body) {
             if (state.settings.notifications && Notification.permission === 'granted') {
@@ -258,12 +275,46 @@
             }
         }
 
+        /* --- Auth / Restore Methods --- */
         async function checkUserProfile(uid) {
+            if(!uid) return;
             try {
                 const userDoc = await getDoc(doc(db, 'artifacts', appId, 'public', 'data', 'users', uid));
-                if (!userDoc.exists()) document.getElementById('onboarding-container').classList.remove('hidden');
-                else { document.getElementById('onboarding-container').classList.add('hidden'); setupListeners(); }
+                if (!userDoc.exists()) {
+                    document.getElementById('onboarding-container').classList.remove('hidden');
+                } else {
+                    document.getElementById('onboarding-container').classList.add('hidden'); 
+                    setupListeners(); 
+                }
             } catch(e) { console.error(e); }
+        }
+
+        window.toggleRestoreView = function(showRestore) {
+            if (showRestore) {
+                document.getElementById('view-create-profile').classList.add('hidden');
+                document.getElementById('view-restore-profile').classList.remove('hidden');
+                document.getElementById('view-restore-profile').style.display = 'flex';
+            } else {
+                document.getElementById('view-restore-profile').classList.add('hidden');
+                document.getElementById('view-restore-profile').style.display = '';
+                document.getElementById('view-create-profile').classList.remove('hidden');
+            }
+        }
+
+        window.restoreAccount = async function() {
+            const id = document.getElementById('restore-id-input').value.trim();
+            if (!id) return showToast("الرجاء إدخال الـ ID الخاص بك", "error");
+            
+            try {
+                const userDoc = await getDoc(doc(db, 'artifacts', appId, 'public', 'data', 'users', id));
+                if (userDoc.exists()) {
+                    localStorage.setItem('scorat_uid', id);
+                    showToast("تم استرجاع الحساب بنجاح!");
+                    setTimeout(() => location.reload(), 1000);
+                } else {
+                    showToast("لم يتم العثور على حساب مطابق بهذا الـ ID", "error");
+                }
+            } catch (e) { showToast("حدث خطأ أثناء الاتصال بقاعدة البيانات", "error"); }
         }
 
         window.previewOnboardingAvatar = function(e) {
@@ -283,13 +334,15 @@
             const name = document.getElementById('ob-player-name').value.trim(); if (!name) return showToast("Nickname is required!");
             try {
                 await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'users', currentUser.uid), { name, avatar: onboardingAvatarBase64, joinedAt: Date.now(), wins: 0, losses: 0 });
+                localStorage.setItem('scorat_uid', currentUser.uid); // Save explicitly as the active ID
                 document.getElementById('onboarding-container').classList.add('hidden'); showToast("Profile created!"); setupListeners();
             } catch (e) { showToast("Error creating profile."); }
         }
 
         /* --- Listeners --- */
         function setupListeners() {
-            if (!currentUser) return; const uid = currentUser.uid;
+            const uid = getActiveUid();
+            if (!uid) return;
 
             // Load Settings & apply logic
             const sStr = localStorage.getItem('scorat_settings');
@@ -341,9 +394,9 @@
 
         /* --- Game Logic --- */
         function saveActiveGame() {
-            if (!currentUser) return; clearTimeout(debounceTimer);
+            const uid = getActiveUid();
+            if (!uid) return; clearTimeout(debounceTimer);
             debounceTimer = setTimeout(() => {
-                const uid = currentUser.uid;
                 setDoc(doc(db, 'artifacts', appId, 'users', uid, 'state', 'activeGame'), state.activeGame).catch(e=>console.error(e));
                 const liveRef = doc(db, 'artifacts', appId, 'public', 'data', 'liveGames', uid);
                 if (state.activeGame.rounds && state.activeGame.rounds.length > 0 && !state.activeGame.gameOver) {
@@ -353,8 +406,9 @@
         }
 
         function saveActiveGameLocalOnly() {
-            if (!currentUser) return;
-            setDoc(doc(db, 'artifacts', appId, 'users', currentUser.uid, 'state', 'activeGame'), state.activeGame).catch(e=>console.error(e));
+            const uid = getActiveUid();
+            if (!uid) return;
+            setDoc(doc(db, 'artifacts', appId, 'users', uid, 'state', 'activeGame'), state.activeGame).catch(e=>console.error(e));
         }
 
         window.saveSettings = function() {
@@ -372,9 +426,10 @@
 
         window.resetGame = async function() {
             vibe();
-            if (!currentUser || !state.activeGame.rounds || state.activeGame.rounds.length === 0) return showToast("Board is clear.");
+            const uid = getActiveUid();
+            if (!uid || !state.activeGame.rounds || state.activeGame.rounds.length === 0) return showToast("Board is clear.");
             state.lastActiveState = JSON.parse(JSON.stringify(state.activeGame)); 
-            const docRef = await addDoc(collection(db, 'artifacts', appId, 'users', currentUser.uid, 'history'), { date: Date.now(), team1: state.activeGame.team1, team2: state.activeGame.team2, rounds: state.activeGame.rounds });
+            const docRef = await addDoc(collection(db, 'artifacts', appId, 'users', uid, 'history'), { date: Date.now(), team1: state.activeGame.team1, team2: state.activeGame.team2, rounds: state.activeGame.rounds });
             state.tempHistoryId = docRef.id;
 
             let t1 = 0; let t2 = 0; state.activeGame.rounds.forEach(r => { t1 += (r.t1||0); t2 += (r.t2||0); }); const t1Won = t1 < t2;
@@ -382,17 +437,18 @@
             await updateStats(state.activeGame.team1, t1Won); await updateStats(state.activeGame.team2, !t1Won);
 
             state.activeGame = { team1: state.activeGame.team1, team2: state.activeGame.team2, rounds: [], m1Triggered: false, m2Triggered: false, gameOver: false };
-            saveActiveGame(); deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'liveGames', currentUser.uid)).catch(()=>{});
+            saveActiveGame(); deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'liveGames', uid)).catch(()=>{});
             showToast("Game saved & reset.", "Undo", undoReset);
         }
 
         async function undoReset() {
-            if (!currentUser || !state.lastActiveState || !state.tempHistoryId) return;
+            const uid = getActiveUid();
+            if (!uid || !state.lastActiveState || !state.tempHistoryId) return;
             let t1 = 0; let t2 = 0; state.lastActiveState.rounds.forEach(r => { t1 += (r.t1||0); t2 += (r.t2||0); }); const t1Won = t1 < t2;
             const revertStats = async (team, won) => { for (const pid of team) { if (pid) { try { await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'users', pid), { wins: increment(won ? -1 : 0), losses: increment(won ? 0 : -1) }); } catch(e) {} } } };
             await revertStats(state.lastActiveState.team1, t1Won); await revertStats(state.lastActiveState.team2, !t1Won);
             state.activeGame = state.lastActiveState; saveActiveGame();
-            await deleteDoc(doc(db, 'artifacts', appId, 'users', currentUser.uid, 'history', state.tempHistoryId));
+            await deleteDoc(doc(db, 'artifacts', appId, 'users', uid, 'history', state.tempHistoryId));
             state.tempHistoryId = null; state.lastActiveState = null; showToast("Reset undone.");
         }
 
@@ -439,8 +495,9 @@
 
         /* --- Reusable Chat HTML Generator --- */
         function generateChatHTML(chatData) {
+            const myUid = getActiveUid();
             return chatData.map(msg => {
-                const isMe = msg.uid === currentUser?.uid;
+                const isMe = msg.uid === myUid;
                 const p = state.players.find(x => x.id === msg.uid) || { avatar: null, name: msg.name };
                 return `
                     <div class="flex ${isMe ? 'justify-end' : 'justify-start'} mb-3">
@@ -521,9 +578,10 @@
 
         /* --- Live Spectate & Co-Op --- */
         function renderLiveList() {
+            const uid = getActiveUid();
             let html = state.liveGames.map(live => {
                 let t1 = 0; let t2 = 0; (live.game.rounds || []).forEach(r => { t1 += (r.t1||0); t2 += (r.t2||0); });
-                const isCoop = live.game.team1.includes(currentUser?.uid) || live.game.team2.includes(currentUser?.uid);
+                const isCoop = live.game.team1.includes(uid) || live.game.team2.includes(uid);
                 return `
                     <div onclick="vibe(); openSpectate('${live.id}')" class="bg-google-surfaceLight dark:bg-google-surfaceDark rounded-[24px] p-5 mb-4 shadow-google hover:shadow-google-hover active:scale-[0.98] transition-all cursor-pointer border ${isCoop ? 'border-primary' : 'border-google-borderLight dark:border-google-borderDark'} relative overflow-hidden">
                         <div class="absolute top-4 right-4 flex items-center gap-1 text-google-red text-[10px] font-black uppercase tracking-widest animate-pulse"><span class="w-2 h-2 bg-google-red rounded-full"></span> LIVE</div>
@@ -540,6 +598,7 @@
         }
 
         window.openSpectate = function(hostId) {
+            const uid = getActiveUid();
             state.spectatingMatchId = hostId; switchTab('spectate_match');
             unsubLiveGame = onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'liveGames', hostId), (snap) => {
                 if (snap.exists()) { renderSpectateScoreboard(snap.data().game); } 
@@ -555,7 +614,7 @@
                 // Chat Push Notification logic
                 if (chats.length > 0 && document.hidden) {
                     const lastMsg = chats[chats.length - 1];
-                    if (lastMsg.uid !== currentUser?.uid) sendPushNotification(`New message from ${lastMsg.name}`, lastMsg.text);
+                    if (lastMsg.uid !== uid) sendPushNotification(`New message from ${lastMsg.name}`, lastMsg.text);
                 }
             });
         }
@@ -579,7 +638,8 @@
 
         function renderSpectateScoreboard(gameData) {
             const container = document.getElementById('spectate-top'); if(!container) return;
-            const isCoop = currentUser && (gameData.team1.includes(currentUser.uid) || gameData.team2.includes(currentUser.uid));
+            const uid = getActiveUid();
+            const isCoop = uid && (gameData.team1.includes(uid) || gameData.team2.includes(uid));
             
             if (isCoop) {
                 document.getElementById('spec-status').innerHTML = `<span class="w-2 h-2 bg-primary rounded-full"></span> CO-OP HOST`;
@@ -613,7 +673,8 @@
         }
 
         window.updateCoopRound = function(index, team, value) {
-            if (!state.spectatingMatchId || !currentUser) return;
+            const uid = getActiveUid();
+            if (!state.spectatingMatchId || !uid) return;
             const liveGameDoc = state.liveGames.find(g => g.id === state.spectatingMatchId);
             if (!liveGameDoc) return;
             
@@ -627,36 +688,26 @@
 
             clearTimeout(debounceTimer);
             debounceTimer = setTimeout(() => {
-                setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'liveGames', state.spectatingMatchId), { game: gameData, updatedBy: currentUser.uid }, { merge: true });
+                setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'liveGames', state.spectatingMatchId), { game: gameData, updatedBy: uid }, { merge: true });
             }, 300);
         }
 
         function renderSpectateChat(chatData) {
             const box = document.getElementById('spectate-chat'); if(!box) return;
-            box.innerHTML = chatData.map(msg => {
-                const isMe = msg.uid === currentUser?.uid; const p = state.players.find(x => x.id === msg.uid) || { avatar: null, name: msg.name };
-                return `
-                    <div class="flex ${isMe ? 'justify-end' : 'justify-start'} mb-3">
-                        <div class="max-w-[85%] flex items-end gap-2 ${isMe ? 'flex-row-reverse' : 'flex-row'}">
-                            <img src="${p.avatar || 'https://api.dicebear.com/7.x/initials/svg?seed=' + msg.name}" class="w-6 h-6 rounded-full object-cover shadow-sm border border-google-borderLight dark:border-google-borderDark">
-                            <div class="${isMe ? 'bg-primary text-white rounded-tl-2xl rounded-tr-2xl rounded-bl-2xl' : 'bg-google-surfaceLight dark:bg-[#3c4043] text-google-textLight dark:text-google-textDark rounded-tl-2xl rounded-tr-2xl rounded-br-2xl border border-google-borderLight dark:border-google-borderDark'} px-3 py-2 text-[13px] shadow-sm flex flex-col">
-                                <span class="text-[9px] font-black ${isMe ? 'text-white/80' : 'text-primary dark:text-primary-dark'} mb-0.5 uppercase tracking-wider">${isMe ? 'You' : msg.name}</span>
-                                <span>${msg.text}</span>
-                            </div>
-                        </div>
-                    </div>`;
-            }).join('');
+            box.innerHTML = generateChatHTML(chatData);
             requestAnimationFrame(() => box.scrollTop = box.scrollHeight);
         }
 
         window.sendChatMessage = async function() {
+            const uid = getActiveUid();
             const input = document.getElementById('chat-input'); const text = input.value.trim();
-            if(!text || !state.spectatingMatchId || !currentUser) return; input.value = '';
-            const myProfile = state.players.find(p => p.id === currentUser.uid);
-            await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'liveGames', state.spectatingMatchId, 'chat'), { uid: currentUser.uid, name: myProfile?.name || 'User', text: text, timestamp: Date.now() });
+            if(!text || !state.spectatingMatchId || !uid) return; input.value = '';
+            const myProfile = state.players.find(p => p.id === uid);
+            await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'liveGames', state.spectatingMatchId, 'chat'), { uid: uid, name: myProfile?.name || 'User', text: text, timestamp: Date.now() });
         }
         
         window.openHostChat = function() {
+            const uid = getActiveUid();
             showModal("Live Game Chat", `
                 <div class="flex flex-col h-[50vh]">
                     <div id="host-chat-box" class="flex-1 overflow-y-auto p-2 mb-2 scroll-smooth"></div>
@@ -667,36 +718,36 @@
                 </div>
             `);
             if(unsubHostChat) unsubHostChat();
-            unsubHostChat = onSnapshot(query(collection(db, 'artifacts', appId, 'public', 'data', 'liveGames', currentUser.uid, 'chat'), orderBy('timestamp', 'asc')), (snap) => {
+            unsubHostChat = onSnapshot(query(collection(db, 'artifacts', appId, 'public', 'data', 'liveGames', uid, 'chat'), orderBy('timestamp', 'asc')), (snap) => {
                 state.hostChatData = snap.docs.map(d => ({ id: d.id, ...d.data() }));
                 const box = document.getElementById('host-chat-box'); if(!box) return;
-                box.innerHTML = state.hostChatData.map(msg => {
-                    const isMe = msg.uid === currentUser?.uid; const p = state.players.find(x => x.id === msg.uid) || { avatar: null, name: msg.name };
-                    return `<div class="flex ${isMe ? 'justify-end' : 'justify-start'} mb-3"><div class="max-w-[85%] flex items-end gap-2 ${isMe ? 'flex-row-reverse' : 'flex-row'}"><img src="${p.avatar || 'https://api.dicebear.com/7.x/initials/svg?seed=' + msg.name}" class="w-6 h-6 rounded-full object-cover"><div class="${isMe ? 'bg-primary text-white rounded-tl-xl rounded-tr-xl rounded-bl-xl' : 'bg-google-surfaceLight dark:bg-[#3c4043] rounded-tl-xl rounded-tr-xl rounded-br-xl border border-google-borderLight dark:border-google-borderDark'} px-3 py-2 text-[12px]"><span class="text-[9px] font-black opacity-70 block mb-0.5">${isMe ? 'You' : msg.name}</span>${msg.text}</div></div></div>`;
-                }).join('') || '<div class="text-center text-google-textMuted text-sm mt-10">No messages yet.</div>';
+                box.innerHTML = generateChatHTML(state.hostChatData) || '<div class="text-center text-google-textMuted text-sm mt-10">No messages yet.</div>';
                 requestAnimationFrame(() => box.scrollTop = box.scrollHeight);
             });
         }
         window.sendHostChatMessage = async function() {
+            const uid = getActiveUid();
             const input = document.getElementById('host-chat-input'); const text = input.value.trim();
-            if(!text || !currentUser) return; input.value = '';
-            const myProfile = state.players.find(p => p.id === currentUser.uid);
-            await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'liveGames', currentUser.uid, 'chat'), { uid: currentUser.uid, name: myProfile?.name || 'Host', text: text, timestamp: Date.now() });
+            if(!text || !uid) return; input.value = '';
+            const myProfile = state.players.find(p => p.id === uid);
+            await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'liveGames', uid, 'chat'), { uid: uid, name: myProfile?.name || 'Host', text: text, timestamp: Date.now() });
         }
 
         /* --- Player & Profile (Achievements) --- */
         function renderPlayers() {
+            const uid = getActiveUid();
             let html = state.players.map(p => `
-                <div onclick="vibe(); openPlayerProfile('${p.id}')" class="flex items-center gap-4 p-4 bg-google-surfaceLight dark:bg-google-surfaceDark rounded-[24px] mb-3 shadow-sm border ${p.id === currentUser?.uid ? 'border-primary' : 'border-google-borderLight dark:border-google-borderDark'} cursor-pointer hover:shadow-google active:scale-[0.98] transition-all">
+                <div onclick="vibe(); openPlayerProfile('${p.id}')" class="flex items-center gap-4 p-4 bg-google-surfaceLight dark:bg-google-surfaceDark rounded-[24px] mb-3 shadow-sm border ${p.id === uid ? 'border-primary' : 'border-google-borderLight dark:border-google-borderDark'} cursor-pointer hover:shadow-google active:scale-[0.98] transition-all">
                     <img src="${p.avatar || 'https://api.dicebear.com/7.x/initials/svg?seed=' + p.name}" class="w-12 h-12 rounded-full object-cover shadow-sm">
-                    <div class="flex flex-col"><span class="font-bold">${p.name}</span>${p.id === currentUser?.uid ? '<span class="text-[10px] text-primary font-bold uppercase tracking-wider">You</span>' : ''}</div>
+                    <div class="flex flex-col"><span class="font-bold">${p.name}</span>${p.id === uid ? '<span class="text-[10px] text-primary font-bold uppercase tracking-wider">You</span>' : ''}</div>
                 </div>
             `).join('');
             document.getElementById('content').innerHTML = `<div class="flex justify-between items-center mb-4"><h2 class="text-2xl font-bold">Roster</h2><span class="text-xs font-bold bg-primary-light text-primary px-3 py-1 rounded-full">${state.players.length} Players</span></div><div class="flex-1 overflow-y-auto pb-6">${html}</div>`;
         }
 
         window.openPlayerProfile = function(playerId) {
-            const player = state.players.find(p => p.id === playerId); if (!player || !currentUser) return;
+            const uid = getActiveUid();
+            const player = state.players.find(p => p.id === playerId); if (!player || !uid) return;
             
             let h2hWins = 0; let h2hLosses = 0; let coopWins = 0; let coopLosses = 0;
             let teammates = {}; // to find loyal duo
@@ -712,8 +763,8 @@
                 }
 
                 // H2H logic
-                if (playerId !== currentUser.uid) {
-                    const myT1 = t1.includes(currentUser.uid); const myT2 = t2.includes(currentUser.uid);
+                if (playerId !== uid) {
+                    const myT1 = t1.includes(uid); const myT2 = t2.includes(uid);
                     if ((!myT1 && !myT2) || (!pInT1 && !pInT2)) return; 
                     let s1 = 0; let s2 = 0; match.rounds.forEach(r => { s1 += (r.t1||0); s2 += (r.t2||0); });
                     const t1Won = s1 < s2; const iWon = (myT1 && t1Won) || (myT2 && !t1Won);
@@ -753,7 +804,7 @@
                         <div class="text-center"><div class="font-black text-xl">${rate}%</div><div class="text-[10px] uppercase text-google-textMuted font-bold">Win Rate</div></div>
                     </div>
                 </div>
-                ${playerId !== currentUser.uid ? `
+                ${playerId !== uid ? `
                 <div class="bg-google-bgLight dark:bg-google-bgDark rounded-[24px] p-5 border border-google-borderLight dark:border-google-borderDark mb-2 shadow-inner">
                     <h4 class="text-[11px] font-bold uppercase tracking-wider text-google-textMuted mb-3 flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">compare_arrows</span> Head-to-Head vs You</h4>
                     <div class="flex justify-between items-center bg-google-surfaceLight dark:bg-google-surfaceDark p-3 rounded-2xl shadow-sm mb-2 border border-google-borderLight dark:border-google-borderDark">
@@ -812,6 +863,20 @@
 
         function renderStats() { document.getElementById('content').innerHTML = `<div class="flex justify-between items-center mb-4"><button onclick="vibe(); switchTab('main')" class="p-2 -ml-2 rounded-full hover:bg-black/5 active:scale-95 transition-transform"><span class="material-symbols-outlined">arrow_back</span></button><h2 class="text-xl font-bold flex-1 ml-2">Stats Moved</h2></div><div class="text-center text-google-textMuted mt-10">Detailed stats are now on Player Profiles!<br>Tap the Leaderboard icon or Roster.</div>`; }
 
+        window.copyMyId = function() {
+            const uid = getActiveUid();
+            if(uid) {
+                navigator.clipboard.writeText(uid);
+                showToast("تم نسخ الـ ID للحافظة!");
+            }
+        }
+
+        window.logoutAccount = function() {
+            localStorage.removeItem('scorat_uid');
+            showToast("تم تسجيل الخروج");
+            setTimeout(() => location.reload(), 1000);
+        }
+
         function renderSettings() {
             document.getElementById('content').innerHTML = `
                 <div class="flex justify-between items-center mb-4"><button onclick="vibe(); switchTab('main')" class="p-2 -ml-2 rounded-full hover:bg-black/5 active:scale-95 transition-transform"><span class="material-symbols-outlined">arrow_back</span></button><h2 class="text-xl font-bold flex-1 ml-2">Settings</h2></div>
@@ -822,6 +887,15 @@
                         <div class="flex flex-col"><span class="font-bold text-sm text-primary dark:text-primary-dark flex items-center gap-1"><span class="material-symbols-outlined text-[18px]">download</span> Install Scorat</span><span class="text-[10px] text-primary/70 dark:text-primary-dark/70 mt-1">Add App to Home Screen</span></div>
                         <button onclick="vibe(); installPWA()" class="bg-primary text-white px-4 py-2 rounded-full font-bold active:scale-95 transition-all text-xs shadow-md">Install</button>
                     </div>` : ''}
+
+                    <div class="bg-google-surfaceLight dark:bg-google-surfaceDark p-5 rounded-[24px] shadow-sm border border-google-borderLight dark:border-google-borderDark">
+                        <h3 class="text-[10px] font-bold uppercase text-google-textMuted mb-4 tracking-widest">إدارة الحساب</h3>
+                        <div class="flex justify-between items-center mb-3">
+                            <div class="flex flex-col"><span class="font-bold text-sm">الـ ID الخاص بك</span><span class="text-[10px] text-google-textMuted mt-1 font-mono">${getActiveUid()}</span></div>
+                            <button onclick="vibe(); copyMyId()" class="bg-gray-100 dark:bg-gray-800 p-2 rounded-full active:scale-95 transition-transform"><span class="material-symbols-outlined text-[16px]">content_copy</span></button>
+                        </div>
+                        <button onclick="vibe(); logoutAccount()" class="w-full bg-red-50 dark:bg-red-900/20 text-google-red py-3 rounded-xl text-xs font-bold mt-2 hover:bg-red-100 transition-colors">تسجيل الخروج / تبديل الحساب</button>
+                    </div>
 
                     <div class="bg-google-surfaceLight dark:bg-google-surfaceDark p-5 rounded-[24px] shadow-sm border border-google-borderLight dark:border-google-borderDark">
                         <h3 class="text-[10px] font-bold uppercase text-google-textMuted mb-4 tracking-widest">Appearance</h3>
