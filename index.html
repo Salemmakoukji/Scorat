@@ -3,7 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Scorat - Match Tracker</title>
+    <title>Scorat Online</title>
+    
+    <!-- PWA / App Meta Tags -->
+    <meta name="theme-color" content="#f8f9fa" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#202124" media="(prefers-color-scheme: dark)">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Scorat">
+    <link rel="icon" href="./logo.png" type="image/x-icon">
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -61,7 +69,7 @@
         @keyframes fall { to { transform: translateY(100vh) rotate(720deg); } }
     </style>
 </head>
-<body class="bg-google-bgLight text-google-textLight dark:bg-google-bgDark dark:text-google-textDark transition-colors duration-300 pb-28 min-h-screen">
+<body class="bg-google-bgLight text-google-textLight dark:bg-google-bgDark dark:text-google-textDark transition-colors duration-300 pb-28 min-h-screen select-none overscroll-none">
 
     <!-- App Container -->
     <div id="app" class="max-w-md mx-auto relative min-h-screen flex flex-col pt-4 px-4">
@@ -136,7 +144,7 @@
                     <input type="file" accept="image/*" class="hidden" onchange="previewOnboardingAvatar(event)">
                 </label>
                 
-                <input type="text" id="ob-player-name" placeholder="Enter Nickname" class="w-full mt-2 bg-google-bgLight dark:bg-google-bgDark border border-google-borderLight dark:border-google-borderDark text-google-textLight dark:text-google-textDark px-4 py-3 rounded-full font-medium focus:border-google-blue focus:ring-1 focus:ring-google-blue outline-none text-center">
+                <input type="text" id="ob-player-name" placeholder="Enter Nickname" class="w-full mt-2 bg-google-bgLight dark:bg-google-bgDark border border-google-borderLight dark:border-google-borderDark text-google-textLight dark:text-google-textDark px-4 py-3 rounded-full font-medium focus:border-google-blue focus:ring-1 focus:ring-google-blue outline-none text-center select-text">
                 
                 <button onclick="saveUserProfile()" class="w-full mt-4 bg-google-blue dark:bg-google-blueDark text-white dark:text-google-bgDark py-3 rounded-full font-bold shadow-md hover:shadow-google-hover transition-all">Start Playing</button>
             </div>
@@ -183,8 +191,9 @@
         let unsubLiveChat = null;
         let unsubHostChat = null;
 
-        /* --- Initialization --- */
+        /* --- Initialization & PWA --- */
         async function init() {
+            setupPWA();
             try {
                 const app = initializeApp(firebaseConfig);
                 auth = getAuth(app);
@@ -195,6 +204,61 @@
                 });
             } catch (error) { console.error("Firebase Init Error:", error); showToast("Failed to connect to database."); }
             bindEvents();
+        }
+
+        function setupPWA() {
+            // 1. Generate Manifest Dynamically to keep it 1-file
+            const manifest = {
+                "name": "Scorat - Match Tracker",
+                "short_name": "Scorat",
+                "start_url": ".",
+                "display": "standalone",
+                "background_color": "#f8f9fa",
+                "theme_color": "#1a73e8",
+                "icons": [
+                    {
+                        "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%231a73e8'%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm4.59-12.42L10 14.17l-2.59-2.58L6 13l4 4 8-8z'/%3E%3C/svg%3E",
+                        "sizes": "192x192",
+                        "type": "image/svg+xml",
+                        "purpose": "any maskable"
+                    },
+                    {
+                        "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%231a73e8'%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm4.59-12.42L10 14.17l-2.59-2.58L6 13l4 4 8-8z'/%3E%3C/svg%3E",
+                        "sizes": "512x512",
+                        "type": "image/svg+xml",
+                        "purpose": "any maskable"
+                    }
+                ]
+            };
+            const blob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
+            const manifestURL = URL.createObjectURL(blob);
+            const manifestLink = document.createElement('link');
+            manifestLink.rel = 'manifest';
+            manifestLink.href = manifestURL;
+            document.head.appendChild(manifestLink);
+
+            // 2. Dummy Service Worker for Chrome PWA requirements
+            if ('serviceWorker' in navigator) {
+                const swCode = "self.addEventListener('fetch', () => {});";
+                const swBlob = new Blob([swCode], { type: 'application/javascript' });
+                const swUrl = URL.createObjectURL(swBlob);
+                try { navigator.serviceWorker.register(swUrl).catch(()=>{}); } catch(e){}
+            }
+
+            // 3. Install Prompt handling
+            let deferredPrompt;
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                deferredPrompt = e;
+                setTimeout(() => {
+                    showToast("Install Scorat to your Home Screen!", "Install", async () => {
+                        if (deferredPrompt) {
+                            deferredPrompt.prompt();
+                            deferredPrompt = null;
+                        }
+                    });
+                }, 4000);
+            });
         }
 
         async function checkUserProfile(uid) {
@@ -377,9 +441,9 @@
                 t1 += (parseInt(r.t1) || 0); t2 += (parseInt(r.t2) || 0);
                 return `
                     <div class="flex items-center justify-between bg-google-surfaceLight dark:bg-google-surfaceDark p-2 rounded-[20px] mb-2 shadow-sm border border-google-borderLight dark:border-google-borderDark">
-                        <input type="number" value="${r.t1 !== null ? r.t1 : ''}" oninput="updateRoundData(${i}, 't1', this.value)" class="w-20 text-center bg-google-bgLight dark:bg-google-bgDark text-google-textLight dark:text-google-textDark py-3 px-2 rounded-2xl font-bold focus:border-google-blue focus:ring-1 focus:ring-google-blue outline-none ${state.activeGame.gameOver?'opacity-50 pointer-events-none':''}">
+                        <input type="number" value="${r.t1 !== null ? r.t1 : ''}" oninput="updateRoundData(${i}, 't1', this.value)" class="w-20 text-center bg-google-bgLight dark:bg-google-bgDark text-google-textLight dark:text-google-textDark py-3 px-2 rounded-2xl font-bold focus:border-google-blue focus:ring-1 focus:ring-google-blue outline-none select-text ${state.activeGame.gameOver?'opacity-50 pointer-events-none':''}">
                         <span class="font-bold text-google-textMuted text-sm">R${i+1}</span>
-                        <input type="number" value="${r.t2 !== null ? r.t2 : ''}" oninput="updateRoundData(${i}, 't2', this.value)" class="w-20 text-center bg-google-bgLight dark:bg-google-bgDark text-google-textLight dark:text-google-textDark py-3 px-2 rounded-2xl font-bold focus:border-google-blue focus:ring-1 focus:ring-google-blue outline-none ${state.activeGame.gameOver?'opacity-50 pointer-events-none':''}">
+                        <input type="number" value="${r.t2 !== null ? r.t2 : ''}" oninput="updateRoundData(${i}, 't2', this.value)" class="w-20 text-center bg-google-bgLight dark:bg-google-bgDark text-google-textLight dark:text-google-textDark py-3 px-2 rounded-2xl font-bold focus:border-google-blue focus:ring-1 focus:ring-google-blue outline-none select-text ${state.activeGame.gameOver?'opacity-50 pointer-events-none':''}">
                     </div>
                 `;
             }).join('');
@@ -442,7 +506,7 @@
                 <div class="flex flex-col h-[50vh]">
                     <div id="host-chat-box" class="flex-1 overflow-y-auto p-2 mb-2"></div>
                     <div class="flex items-center gap-2 mt-auto bg-google-bgLight dark:bg-google-bgDark p-2 rounded-full border border-google-borderLight dark:border-google-borderDark">
-                        <input type="text" id="host-chat-input" placeholder="Chat with spectators..." onkeypress="if(event.key==='Enter') sendHostChatMessage()" class="flex-1 bg-transparent px-2 outline-none text-sm text-google-textLight dark:text-google-textDark">
+                        <input type="text" id="host-chat-input" placeholder="Chat with spectators..." onkeypress="if(event.key==='Enter') sendHostChatMessage()" class="flex-1 bg-transparent px-2 outline-none text-sm text-google-textLight dark:text-google-textDark select-text">
                         <button onclick="sendHostChatMessage()" class="w-8 h-8 bg-google-blue text-white rounded-full flex items-center justify-center hover:scale-105 transition-transform"><span class="material-symbols-outlined text-[16px]">send</span></button>
                     </div>
                 </div>
@@ -509,7 +573,7 @@
                 <div class="flex-1 bg-google-surfaceLight dark:bg-google-surfaceDark rounded-[24px] mt-2 flex flex-col overflow-hidden shadow-google border border-google-borderLight dark:border-google-borderDark">
                     <div id="spectate-chat" class="flex-1 overflow-y-auto p-4"></div>
                     <div class="p-3 bg-google-bgLight dark:bg-google-bgDark border-t border-google-borderLight dark:border-google-borderDark flex items-center gap-2">
-                        <input type="text" id="chat-input" placeholder="Message..." onkeypress="if(event.key==='Enter') sendChatMessage()" class="flex-1 bg-google-surfaceLight dark:bg-google-surfaceDark px-4 py-2 rounded-full border border-google-borderLight dark:border-google-borderDark outline-none focus:border-google-blue text-sm">
+                        <input type="text" id="chat-input" placeholder="Message..." onkeypress="if(event.key==='Enter') sendChatMessage()" class="flex-1 bg-google-surfaceLight dark:bg-google-surfaceDark px-4 py-2 rounded-full border border-google-borderLight dark:border-google-borderDark outline-none focus:border-google-blue text-sm select-text">
                         <button onclick="sendChatMessage()" class="w-10 h-10 bg-google-blue text-white rounded-full flex items-center justify-center hover:shadow-google-hover transition-all"><span class="material-symbols-outlined text-[20px]">send</span></button>
                     </div>
                 </div>
@@ -614,8 +678,8 @@
                     </div>
                     <div class="bg-google-surfaceLight dark:bg-google-surfaceDark p-4 rounded-[24px] shadow-sm border border-google-borderLight dark:border-google-borderDark">
                         <h3 class="text-xs font-bold uppercase text-google-blue mb-4">Rules</h3>
-                        <div class="mb-3"><label class="block text-[10px] font-bold text-google-textMuted mb-1">Target 1</label><input type="number" value="${state.settings.m1}" onchange="state.settings.m1=parseInt(this.value)||0; saveSettings()" class="w-full bg-google-bgLight dark:bg-google-bgDark px-3 py-2 rounded-xl font-bold outline-none border border-google-borderLight dark:border-google-borderDark focus:border-google-blue"></div>
-                        <div><label class="block text-[10px] font-bold text-google-textMuted mb-1">Game Over Target</label><input type="number" value="${state.settings.m2}" onchange="state.settings.m2=parseInt(this.value)||0; saveSettings()" class="w-full bg-google-bgLight dark:bg-google-bgDark px-3 py-2 rounded-xl font-bold outline-none border border-google-borderLight dark:border-google-borderDark focus:border-google-red"></div>
+                        <div class="mb-3"><label class="block text-[10px] font-bold text-google-textMuted mb-1">Target 1</label><input type="number" value="${state.settings.m1}" onchange="state.settings.m1=parseInt(this.value)||0; saveSettings()" class="w-full bg-google-bgLight dark:bg-google-bgDark px-3 py-2 rounded-xl font-bold outline-none border border-google-borderLight dark:border-google-borderDark focus:border-google-blue select-text"></div>
+                        <div><label class="block text-[10px] font-bold text-google-textMuted mb-1">Game Over Target</label><input type="number" value="${state.settings.m2}" onchange="state.settings.m2=parseInt(this.value)||0; saveSettings()" class="w-full bg-google-bgLight dark:bg-google-bgDark px-3 py-2 rounded-xl font-bold outline-none border border-google-borderLight dark:border-google-borderDark focus:border-google-red select-text"></div>
                     </div>
                 </div>
             `;
