@@ -208,7 +208,7 @@
         let deferredPrompt;
         
         // 1. Valid Manifest (No Blob URL, fixes Chrome PWA block)
-        const manifest = { "name": "Scorat", "short_name": "Scorat", "start_url": ".", "display": "standalone", "background_color": "#f8f9fa", "theme_color": "#1a73e8", "icons": [{ "src": "https://api.dicebear.com/7.x/initials/svg?seed=Scorat&backgroundColor=1a73e8", "sizes": "512x512", "type": "image/svg+xml", "purpose": "any maskable" }] };
+        const manifest = { "name": "Scorat", "short_name": "Scorat", "start_url": ".", "display": "standalone", "background_color": "#f8f9fa", "theme_color": "#1a73e8", "icons": [{ "src": "./logo.png", "sizes": "512x512", "type": "image/png+xml", "purpose": "any maskable" }] };
         const manifestLink = document.createElement('link'); manifestLink.rel = 'manifest'; 
         manifestLink.href = 'data:application/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(manifest));
         document.head.appendChild(manifestLink);
