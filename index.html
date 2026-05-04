@@ -204,9 +204,34 @@
         let debounceTimer; let onboardingAvatarBase64 = null;
         let unsubLiveGame = null; let unsubLiveChat = null; let unsubHostChat = null;
 
-        /* --- Initialization & PWA --- */
+        /* --- PWA Setup (Executed immediately) --- */
+        let deferredPrompt;
+        
+        // 1. Valid Manifest (No Blob URL, fixes Chrome PWA block)
+        const manifest = { "name": "Scorat", "short_name": "Scorat", "start_url": ".", "display": "standalone", "background_color": "#f8f9fa", "theme_color": "#1a73e8", "icons": [{ "src": "https://api.dicebear.com/7.x/initials/svg?seed=Scorat&backgroundColor=1a73e8", "sizes": "512x512", "type": "image/svg+xml", "purpose": "any maskable" }] };
+        const manifestLink = document.createElement('link'); manifestLink.rel = 'manifest'; 
+        manifestLink.href = 'data:application/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(manifest));
+        document.head.appendChild(manifestLink);
+
+        // 2. Listen for Install Prompt Early
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            setTimeout(() => {
+                if (document.getElementById('toast-container')) {
+                    showToast("Install Scorat to your Home Screen!", "Install", () => {
+                        if (deferredPrompt) { deferredPrompt.prompt(); deferredPrompt = null; }
+                    });
+                }
+            }, 3000);
+        });
+
+        window.installPWA = function() {
+            if (deferredPrompt) { deferredPrompt.prompt(); deferredPrompt = null; }
+        };
+
+        /* --- Initialization --- */
         async function init() {
-            setupPWA();
             try {
                 const app = initializeApp(firebaseConfig);
                 auth = getAuth(app);
@@ -226,12 +251,6 @@
         window.vibe = function(ms = 40) {
             if (navigator.vibrate && state.settings.haptics) navigator.vibrate(ms);
         };
-
-        function setupPWA() {
-            const manifest = { "name": "Scorat - Match Tracker", "short_name": "Scorat", "start_url": ".", "display": "standalone", "background_color": "#f8f9fa", "theme_color": "#1a73e8", "icons": [{ "src": "data:image/svg+xml,%3Csvg xmlns='./logo.png' viewBox='0 0 24 24' fill='%231a73e8'%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm4.59-12.42L10 14.17l-2.59-2.58L6 13l4 4 8-8z'/%3E%3C/svg%3E", "sizes": "512x512", "type": "image/svg+xml", "purpose": "any maskable" }] };
-            const manifestLink = document.createElement('link'); manifestLink.rel = 'manifest'; manifestLink.href = URL.createObjectURL(new Blob([JSON.stringify(manifest)], {type: 'application/json'}));
-            document.head.appendChild(manifestLink);
-        }
 
         function sendPushNotification(title, body) {
             if (state.settings.notifications && Notification.permission === 'granted') {
@@ -798,6 +817,12 @@
                 <div class="flex justify-between items-center mb-4"><button onclick="vibe(); switchTab('main')" class="p-2 -ml-2 rounded-full hover:bg-black/5 active:scale-95 transition-transform"><span class="material-symbols-outlined">arrow_back</span></button><h2 class="text-xl font-bold flex-1 ml-2">Settings</h2></div>
                 <div class="flex-1 overflow-y-auto pb-6 space-y-4 px-1">
                     
+                    ${deferredPrompt ? `
+                    <div class="bg-primary-light dark:bg-primary/20 p-5 rounded-[24px] shadow-sm border border-primary mb-4 flex justify-between items-center">
+                        <div class="flex flex-col"><span class="font-bold text-sm text-primary dark:text-primary-dark flex items-center gap-1"><span class="material-symbols-outlined text-[18px]">download</span> Install Scorat</span><span class="text-[10px] text-primary/70 dark:text-primary-dark/70 mt-1">Add App to Home Screen</span></div>
+                        <button onclick="vibe(); installPWA()" class="bg-primary text-white px-4 py-2 rounded-full font-bold active:scale-95 transition-all text-xs shadow-md">Install</button>
+                    </div>` : ''}
+
                     <div class="bg-google-surfaceLight dark:bg-google-surfaceDark p-5 rounded-[24px] shadow-sm border border-google-borderLight dark:border-google-borderDark">
                         <h3 class="text-[10px] font-bold uppercase text-google-textMuted mb-4 tracking-widest">Appearance</h3>
                         
