@@ -409,7 +409,7 @@
                 showModal("Change Game Mode?", `
                     <p class="text-sm text-zinc-500 mb-6 text-center">Changing the mode will clear your current board. Continue?</p>
                     <div class="flex gap-3">
-                        <button onclick="closeModal(); document.getElementById('setting-game-mode').value = '${state.settings.gameMode}';" class="flex-1 bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 py-3.5 rounded-xl font-semibold">Cancel</button>
+                        <button onclick="closeModal(); renderActiveTab();" class="flex-1 bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 py-3.5 rounded-xl font-semibold">Cancel</button>
                         <button onclick="applyModeChange('${newMode}')" class="flex-1 bg-red-500 text-white py-3.5 rounded-xl font-semibold shadow-md active:scale-95">Reset</button>
                     </div>
                 `);
@@ -427,7 +427,7 @@
             };
             
             saveSettings(); saveActiveGame();
-            if(!silent) { showToast("Mode changed to " + md.name); renderSettings(); }
+            if(!silent) { showToast("Mode changed to " + md.name); renderActiveTab(); }
         }
 
         function saveActiveGame() {
@@ -613,13 +613,11 @@
                 scoreCardsHtml = `
                 <div class="grid grid-cols-2 gap-3 mb-4">
                     <div class="bg-surface-light dark:bg-surface-dark py-6 px-4 rounded-[32px] flex flex-col items-center justify-between shadow-soft border border-zinc-100 dark:border-zinc-800/50 ${t1 >= state.settings.m2 && md.target ? 'border-red-500 shadow-red-500/20' : ''} transition-all relative overflow-hidden">
-                        <div class="absolute top-0 right-0 w-16 h-16 bg-gradient-to-bl from-zinc-100 dark:from-zinc-800 rounded-bl-full opacity-50 pointer-events-none"></div>
                         <div class="flex mb-3 justify-center pl-3">${getPlayerAvatarHTML(state.activeGame.team1[0], 1, 0)}${getPlayerAvatarHTML(state.activeGame.team1[1], 1, 1)}</div>
                         <h2 id="t1-total" class="text-5xl font-black tracking-tighter text-zinc-900 dark:text-white">${t1}</h2>
                         <span class="text-[11px] text-zinc-400 mt-2 uppercase font-semibold truncate w-full text-center">${t1Name}</span>
                     </div>
                     <div class="bg-surface-light dark:bg-surface-dark py-6 px-4 rounded-[32px] flex flex-col items-center justify-between shadow-soft border border-zinc-100 dark:border-zinc-800/50 ${t2 >= state.settings.m2 && md.target ? 'border-red-500 shadow-red-500/20' : ''} transition-all relative overflow-hidden">
-                        <div class="absolute top-0 right-0 w-16 h-16 bg-gradient-to-bl from-primary-light dark:from-primary/10 rounded-bl-full opacity-50 pointer-events-none"></div>
                         <div class="flex mb-3 justify-center pl-3">${getPlayerAvatarHTML(state.activeGame.team2[0], 2, 0)}${getPlayerAvatarHTML(state.activeGame.team2[1], 2, 1)}</div>
                         <h2 id="t2-total" class="text-5xl font-black tracking-tighter text-primary">${t2}</h2>
                         <span class="text-[11px] text-zinc-400 mt-2 uppercase font-semibold truncate w-full text-center">${t2Name}</span>
@@ -630,8 +628,14 @@
             document.getElementById('content').innerHTML = `
                 <div class="flex justify-between items-center mb-3 px-1">
                     <div class="flex flex-col">
-                        <span class="text-xs font-bold text-primary tracking-wide uppercase">${md.name}</span>
-                        ${md.target ? `<span class="text-[10px] font-semibold text-zinc-400 uppercase">Target: ${state.settings.m1} / ${state.settings.m2}</span>` : ''}
+                        <div class="relative flex items-center bg-primary-light dark:bg-primary/10 px-3 py-1.5 rounded-full w-max shadow-sm border border-primary/20 cursor-pointer hover:bg-primary/20 transition-colors">
+                            <span class="text-[11px] font-bold text-primary tracking-wider uppercase mr-1">${md.name}</span>
+                            <span class="material-symbols-outlined text-[16px] text-primary pointer-events-none">expand_more</span>
+                            <select onchange="vibe(); handleModeChange(this.value)" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer text-base">
+                                ${Object.keys(GAME_MODES).map(k => `<option value="${k}" ${mode === k ? 'selected' : ''} class="text-zinc-900 bg-surface-light">${GAME_MODES[k].name}</option>`).join('')}
+                            </select>
+                        </div>
+                        ${md.target ? `<span class="text-[9px] font-semibold text-zinc-400 uppercase mt-1.5 ml-2 tracking-wider">Target: ${state.settings.m1} / ${state.settings.m2}</span>` : ''}
                     </div>
                     <div class="flex gap-1.5 bg-surface-light dark:bg-surface-dark p-1 rounded-2xl shadow-sm border border-zinc-100 dark:border-zinc-800/50">
                         ${(state.activeGame.mode.startsWith('trix')) ? `<button onclick="vibe(); openTrixCalculator()" class="w-10 h-10 rounded-xl bg-primary-light text-primary flex items-center justify-center hover:bg-primary hover:text-white transition-all active:scale-95"><span class="material-symbols-outlined text-[20px]">calculate</span></button>` : ''}
@@ -688,24 +692,48 @@
             const mode = state.activeGame.mode;
             const isComplex = mode === 'trix_complex';
 
-            let gameOptions = '';
+            // Filter to find only valid Trix rounds (ignoring manual empty rounds)
+            const validTrixLabels = ['King', 'Queens', 'Diamonds', 'Slaps', 'Trix', 'Complex'];
+            const trixRounds = (state.activeGame.rounds || []).filter(r => validTrixLabels.includes(r.label));
+            
+            // Determine current Kingdom and played games
+            const callsPerKingdom = isComplex ? 2 : 5;
+            const kingdomIndex = Math.floor(trixRounds.length / callsPerKingdom);
+            const currentKingdomRounds = trixRounds.slice(kingdomIndex * callsPerKingdom);
+            const playedLabels = currentKingdomRounds.map(r => r.label);
+
+            let availableOptions = [];
             if (isComplex) {
-                gameOptions = `<option value="complex">Complex (All Negatives)</option><option value="trix">Trix (+200, +150...)</option>`;
+                if (!playedLabels.includes('Complex')) availableOptions.push({ val: 'complex', text: 'Complex (All Negatives)' });
+                if (!playedLabels.includes('Trix')) availableOptions.push({ val: 'trix', text: 'Trix (+200, +150...)' });
             } else {
-                gameOptions = `
-                    <option value="king">King of Hearts (-75)</option>
-                    <option value="queens">Queens (-25)</option>
-                    <option value="diamonds">Diamonds (-10)</option>
-                    <option value="slaps">Slaps (-15)</option>
-                    <option value="trix">Trix (+200, +150...)</option>
-                `;
+                if (!playedLabels.includes('King')) availableOptions.push({ val: 'king', text: 'King of Hearts (-75)' });
+                if (!playedLabels.includes('Queens')) availableOptions.push({ val: 'queens', text: 'Queens (-25)' });
+                if (!playedLabels.includes('Diamonds')) availableOptions.push({ val: 'diamonds', text: 'Diamonds (-10)' });
+                if (!playedLabels.includes('Slaps')) availableOptions.push({ val: 'slaps', text: 'Slaps (-15)' });
+                if (!playedLabels.includes('Trix')) availableOptions.push({ val: 'trix', text: 'Trix (+200, +150...)' });
             }
 
-            showModal("Smart Calculator", `
+            let gameOptions = '';
+            let disabledState = '';
+            
+            if (availableOptions.length === 0) {
+                gameOptions = `<option value="">Kingdom Complete!</option>`;
+                disabledState = 'disabled';
+            } else {
+                gameOptions = availableOptions.map(opt => `<option value="${opt.val}">${opt.text}</option>`).join('');
+            }
+
+            const kingdomText = (kingdomIndex < 4) ? `Kingdom ${kingdomIndex + 1} / 4` : `Extra Kingdom ${kingdomIndex + 1}`;
+
+            showModal("🧮 Smart Calculator", `
                 <div class="flex-1 overflow-y-auto max-h-[60vh] pb-4 pr-1">
                     <div class="mb-5">
-                        <label class="block text-xs font-semibold text-zinc-500 mb-2">Select Current Game</label>
-                        <select id="trix-calc-type" onchange="renderTrixCalcInputs()" class="w-full bg-background-light dark:bg-background-dark px-4 py-3.5 rounded-2xl font-semibold border-none focus:ring-2 focus:ring-primary outline-none text-sm appearance-none">
+                        <div class="flex justify-between items-center mb-2">
+                            <label class="block text-xs font-semibold text-zinc-500">Select Current Game</label>
+                            <span class="text-[10px] font-bold bg-primary-light text-primary px-2 py-1 rounded-md">${kingdomText}</span>
+                        </div>
+                        <select id="trix-calc-type" onchange="renderTrixCalcInputs()" ${disabledState} class="w-full bg-background-light dark:bg-background-dark px-4 py-3.5 rounded-2xl font-semibold border-none focus:ring-2 focus:ring-primary outline-none text-sm appearance-none disabled:opacity-50">
                             ${gameOptions}
                         </select>
                     </div>
@@ -713,11 +741,15 @@
                 </div>
                 <div class="pt-4 mt-2 flex gap-3">
                     <button onclick="closeModal()" class="w-1/3 bg-background-light dark:bg-background-dark py-3.5 rounded-2xl text-sm font-semibold text-zinc-500 hover:bg-zinc-200 active:scale-95 transition-all">Cancel</button>
-                    <button onclick="calculateAndAddTrix()" class="flex-1 bg-primary py-3.5 rounded-2xl text-sm font-semibold text-white shadow-md active:scale-95 transition-all">Calculate & Add</button>
+                    <button onclick="calculateAndAddTrix()" ${disabledState} class="flex-1 bg-primary py-3.5 rounded-2xl text-sm font-semibold text-white shadow-md active:scale-95 transition-all disabled:opacity-50 disabled:active:scale-100">Calculate & Add</button>
                 </div>
             `);
 
-            renderTrixCalcInputs();
+            if (availableOptions.length > 0) {
+                renderTrixCalcInputs();
+            } else {
+                document.getElementById('trix-calc-dynamic-inputs').innerHTML = '<div class="text-center text-zinc-400 text-sm mt-8"><span class="material-symbols-outlined text-4xl mb-2 opacity-50">task_alt</span><br>All calls played in this kingdom.</div>';
+            }
         }
 
         window.renderTrixCalcInputs = function() {
@@ -776,23 +808,20 @@
 
             const buildQueensInput = () => `
                 <div class="bg-surface-light dark:bg-surface-dark p-5 rounded-3xl shadow-sm border border-zinc-100 dark:border-zinc-800">
-                    <h4 class="text-xs font-bold text-purple-500 mb-4 uppercase tracking-wider">Queens (-25 each)</h4>
-                    ${participants.map(p => `
-                        <div class="mb-4 pb-4 border-b border-zinc-100 dark:border-zinc-800 last:mb-0 last:pb-0 last:border-0">
-                            <span class="text-sm font-semibold block mb-3">${p.name}</span>
+                    <h4 class="text-xs font-bold text-purple-500 mb-2 uppercase tracking-wider">Queens (-25 each)</h4>
+                    <p class="text-[10px] text-zinc-500 mb-4">Select who ate each Queen, and who doubled it (if any).</p>
+                    ${[1, 2, 3, 4].map(i => `
+                        <div class="mb-3 pb-3 border-b border-zinc-100 dark:border-zinc-800 last:mb-0 last:pb-0 last:border-0 flex flex-col gap-2">
+                            <span class="text-[10px] font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-widest">Queen ${i}</span>
                             <div class="flex gap-2">
-                                <div class="flex-1 text-center bg-background-light dark:bg-background-dark p-2 rounded-xl">
-                                    <label class="block text-[9px] font-bold text-zinc-400 mb-1">Eaten</label>
-                                    <input type="number" id="trix-queens-eaten-${p.id}" value="0" min="0" max="4" class="w-full bg-transparent text-center font-black text-lg outline-none select-text">
-                                </div>
-                                <div class="flex-1 text-center bg-rose-50 dark:bg-rose-900/20 p-2 rounded-xl">
-                                    <label class="block text-[9px] font-bold text-rose-500 mb-1">Doubled (Eaten)</label>
-                                    <input type="number" id="trix-queens-doubled-eaten-${p.id}" value="0" min="0" max="4" class="w-full bg-transparent text-center font-black text-lg outline-none select-text text-rose-500">
-                                </div>
-                                <div class="flex-1 text-center bg-emerald-50 dark:bg-emerald-900/20 p-2 rounded-xl">
-                                    <label class="block text-[9px] font-bold text-emerald-600 mb-1">Doubled (By them)</label>
-                                    <input type="number" id="trix-queens-doubled-by-${p.id}" value="0" min="0" max="4" class="w-full bg-transparent text-center font-black text-lg outline-none select-text text-emerald-600">
-                                </div>
+                                <select id="trix-queen-eater-${i}" class="flex-1 bg-background-light dark:bg-background-dark px-3 py-2.5 rounded-xl border-none text-xs font-semibold outline-none focus:ring-2 focus:ring-primary appearance-none">
+                                    <option value="">Eaten by...</option>
+                                    ${participants.map(p => `<option value="${p.id}">${p.name}</option>`).join('')}
+                                </select>
+                                <select id="trix-queen-doubler-${i}" class="flex-1 bg-background-light dark:bg-background-dark px-3 py-2.5 rounded-xl border-none text-xs font-semibold outline-none focus:ring-2 focus:ring-purple-500 appearance-none">
+                                    <option value="">Not doubled</option>
+                                    ${participants.map(p => `<option value="${p.id}">Doubled by: ${p.name}</option>`).join('')}
+                                </select>
                             </div>
                         </div>
                     `).join('')}
@@ -868,23 +897,26 @@
             if (errorOccurred) return;
 
             if (['queens', 'complex'].includes(type)) {
-                let sumEaten = 0, sumDoubledEaten = 0, sumDoubledBy = 0;
+                let queensEaten = 0;
                 
-                ids.forEach(id => {
-                    const eaten = getNum('queens-eaten', id);
-                    const dEaten = getNum('queens-doubled-eaten', id);
-                    const dBy = getNum('queens-doubled-by', id);
+                for (let i = 1; i <= 4; i++) {
+                    const eater = document.getElementById(`trix-queen-eater-${i}`).value;
+                    const doubler = document.getElementById(`trix-queen-doubler-${i}`).value;
                     
-                    sumEaten += eaten; sumDoubledEaten += dEaten; sumDoubledBy += dBy;
-                    if(dEaten > eaten) { errorOccurred = true; showToast("Doubled eaten cannot exceed total eaten!", "error"); }
-                    
-                    const score = ((eaten - dEaten) * -25) + (dEaten * -50) + (dBy * 25);
-                    addScore(id, score);
-                });
+                    if (eater) {
+                        queensEaten++;
+                        addScore(eater, -25);
+                        if (doubler) {
+                            addScore(eater, -25); // Additional penalty for eating a doubled queen
+                            addScore(doubler, +25); // Reward for the one who doubled it
+                        }
+                    }
+                }
 
-                if(errorOccurred) return;
-                if (sumEaten !== 4) return showToast("Total eaten Queens must be exactly 4.", "error");
-                if (sumDoubledEaten !== sumDoubledBy) return showToast("Doubled Queens mismatch!", "error");
+                if (queensEaten !== 4) { 
+                    errorOccurred = true; 
+                    showToast("Must select who ate all 4 Queens!", "error"); 
+                }
             }
 
             if (['diamonds', 'slaps', 'complex'].includes(type)) {
@@ -1332,12 +1364,10 @@
 
                     <div class="bg-surface-light dark:bg-surface-dark p-6 rounded-3xl shadow-soft border border-zinc-100 dark:border-zinc-800">
                         <h3 class="text-[10px] font-bold uppercase text-zinc-400 mb-5 tracking-widest flex items-center gap-2"><span class="material-symbols-outlined text-[16px]">sports_esports</span> Match Rules</h3>
+                        
                         <div class="mb-5">
-                            <label class="block text-xs font-semibold text-zinc-500 mb-2">Game Mode</label>
-                            <select id="setting-game-mode" onchange="vibe(); handleModeChange(this.value)" class="w-full bg-background-light dark:bg-background-dark px-4 py-3.5 rounded-2xl font-bold border-none outline-none focus:ring-2 focus:ring-primary text-sm appearance-none">
-                                ${Object.keys(GAME_MODES).map(k => `<option value="${k}" ${mode === k ? 'selected' : ''}>${GAME_MODES[k].name}</option>`).join('')}
-                            </select>
-                            <div class="mt-2.5 text-[10px] text-zinc-400 font-bold uppercase tracking-widest">Rule: <span class="text-primary">${md.win === 'highest' ? 'Highest Score Wins' : 'Lowest Score Wins'}</span></div>
+                            <div class="text-[11px] text-zinc-400 font-semibold uppercase tracking-widest">Current Rule: <span class="text-primary">${md.win === 'highest' ? 'Highest Score Wins' : 'Lowest Score Wins'}</span></div>
+                            <p class="text-[10px] text-zinc-500 mt-1">Change the game mode directly from the Main Scoreboard tab.</p>
                         </div>
 
                         ${md.target ? `
