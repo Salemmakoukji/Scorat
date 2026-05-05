@@ -6,7 +6,7 @@
     <title>Scorat - Match Tracker</title>
     
     <!-- PWA / App Meta Tags -->
-    <meta name="theme-color" content="#f8f9fa" id="meta-theme-color">
+    <meta name="theme-color" content="#ffffff" id="meta-theme-color">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="Scorat">
@@ -18,10 +18,10 @@
     <!-- Google Fonts & Material Symbols -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
     
-    <!-- Immediate Theme Loading (Fixes Flash) -->
+    <!-- Immediate Theme Loading -->
     <script>
         const savedTheme = localStorage.getItem('scorat_theme');
         const isDark = savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches);
@@ -29,12 +29,12 @@
         
         const savedColor = localStorage.getItem('scorat_color') || 'blue';
         const colors = {
-            blue: { primary: '#1a73e8', light: '#e8f0fe', dark: '#8ab4f8' },
-            emerald: { primary: '#10b981', light: '#d1fae5', dark: '#34d399' },
-            purple: { primary: '#8b5cf6', light: '#ede9fe', dark: '#a78bfa' },
-            rose: { primary: '#f43f5e', light: '#ffe4e6', dark: '#fb7185' }
+            blue: { primary: '#2563eb', light: '#eff6ff', dark: '#3b82f6' },
+            emerald: { primary: '#10b981', light: '#ecfdf5', dark: '#34d399' },
+            purple: { primary: '#8b5cf6', light: '#f5f3ff', dark: '#a78bfa' },
+            rose: { primary: '#f43f5e', light: '#fff1f2', dark: '#fb7185' }
         };
-        const c = colors[savedColor];
+        const c = colors[savedColor] || colors.blue;
         document.documentElement.style.setProperty('--color-primary', c.primary);
         document.documentElement.style.setProperty('--color-primary-light', c.light);
         document.documentElement.style.setProperty('--color-primary-dark', c.dark);
@@ -45,20 +45,17 @@
             darkMode: 'class',
             theme: {
                 extend: {
-                    fontFamily: { sans: ['Roboto', 'sans-serif'] },
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
                     colors: {
                         primary: 'var(--color-primary)',
                         'primary-light': 'var(--color-primary-light)',
                         'primary-dark': 'var(--color-primary-dark)',
-                        google: {
-                            red: '#ea4335', redLight: '#fce8e6',
-                            bgLight: '#f8f9fa', surfaceLight: '#ffffff', textLight: '#202124', textMuted: '#5f6368',
-                            bgDark: '#202124', surfaceDark: '#303134', textDark: '#e8eaed', borderLight: '#dadce0', borderDark: '#5f6368'
-                        }
+                        surface: { light: '#ffffff', dark: '#18181b' },
+                        background: { light: '#f4f4f5', dark: '#09090b' }
                     },
                     boxShadow: {
-                        'google': '0 1px 2px 0 rgba(60,64,67,0.3), 0 1px 3px 1px rgba(60,64,67,0.15)',
-                        'google-hover': '0 1px 3px 0 rgba(60,64,67,0.3), 0 4px 8px 3px rgba(60,64,67,0.15)',
+                        'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.05)',
+                        'float': '0 10px 40px -10px rgba(0, 0, 0, 0.1)',
                     }
                 }
             }
@@ -66,44 +63,50 @@
     </script>
 
     <style>
-        body { font-family: 'Roboto', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
         ::-webkit-scrollbar { display: none; }
         * { scrollbar-width: none; }
         input[type="number"]::-webkit-inner-spin-button, input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
         
-        .material-symbols-outlined { font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
-        .icon-unfilled { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
-        
         /* Smooth Page Transitions */
         .page-enter { animation: fadeSlideUp 0.3s cubic-bezier(0.2, 1, 0.3, 1) forwards; }
         @keyframes fadeSlideUp {
-            0% { opacity: 0; transform: translateY(15px); }
+            0% { opacity: 0; transform: translateY(10px); }
             100% { opacity: 1; transform: translateY(0); }
+        }
+
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        .dark .glass-nav {
+            background: rgba(24, 24, 27, 0.85);
         }
 
         .confetti-piece { position: fixed; width: 10px; height: 10px; z-index: 9999; animation: fall 3s linear forwards; }
         @keyframes fall { to { transform: translateY(100vh) rotate(720deg); } }
     </style>
 </head>
-<body class="bg-google-bgLight text-google-textLight dark:bg-google-bgDark dark:text-google-textDark transition-colors duration-300 pb-28 min-h-screen select-none overscroll-none">
+<body class="bg-background-light text-zinc-800 dark:bg-background-dark dark:text-zinc-200 transition-colors duration-300 pb-32 min-h-screen select-none overscroll-none">
 
     <!-- App Container -->
-    <div id="app" class="max-w-md mx-auto relative min-h-screen flex flex-col pt-4 px-4">
+    <div id="app" class="max-w-md mx-auto relative min-h-screen flex flex-col pt-6 px-5">
         
         <!-- Header -->
         <header class="flex justify-between items-center mb-6">
-            <h1 class="text-2xl font-bold tracking-tight text-primary dark:text-primary-dark flex items-center gap-2">
-                <span class="material-symbols-outlined text-3xl">bolt</span> Scorat
+            <h1 class="text-2xl font-bold tracking-tight text-zinc-900 dark:text-white flex items-center gap-2">
+                <div class="w-8 h-8 rounded-xl bg-primary text-white flex items-center justify-center shadow-md">
+                    <span class="material-symbols-outlined text-[20px]">bolt</span>
+                </div>
+                Scorat
             </h1>
             <div class="flex gap-2">
-                <button onclick="vibe(); switchTab('leaderboard')" class="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors text-google-textMuted dark:text-google-textDark">
-                    <span class="material-symbols-outlined icon-unfilled">rewarded_ads</span>
+                <button onclick="vibe(); switchTab('leaderboard')" class="w-10 h-10 rounded-full flex items-center justify-center bg-surface-light dark:bg-surface-dark shadow-sm hover:scale-105 active:scale-95 transition-all text-zinc-500">
+                    <span class="material-symbols-outlined text-[20px]">emoji_events</span>
                 </button>
-                <button onclick="vibe(); switchTab('stats')" class="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors text-google-textMuted dark:text-google-textDark">
-                    <span class="material-symbols-outlined icon-unfilled">bar_chart</span>
-                </button>
-                <button onclick="vibe(); switchTab('settings')" class="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors text-google-textMuted dark:text-google-textDark">
-                    <span class="material-symbols-outlined icon-unfilled">settings</span>
+                <button onclick="vibe(); switchTab('settings')" class="w-10 h-10 rounded-full flex items-center justify-center bg-surface-light dark:bg-surface-dark shadow-sm hover:scale-105 active:scale-95 transition-all text-zinc-500">
+                    <span class="material-symbols-outlined text-[20px]">settings</span>
                 </button>
             </div>
         </header>
@@ -111,76 +114,84 @@
         <!-- Main Content Area -->
         <main id="content" class="flex-1 w-full flex flex-col gap-4 page-enter"></main>
 
-        <!-- Bottom Navigation -->
-        <nav class="fixed bottom-4 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-[400px] bg-google-surfaceLight dark:bg-google-surfaceDark rounded-full shadow-google flex justify-between items-center px-4 py-2 z-40 border border-google-borderLight dark:border-google-borderDark">
-            <button data-tab="main" class="nav-btn flex flex-col items-center justify-center w-12 h-12 rounded-full text-google-textMuted dark:text-google-textDark hover:bg-primary-light dark:hover:bg-primary/20 transition-colors">
-                <span class="material-symbols-outlined icon-unfilled text-2xl nav-icon">home</span>
+        <!-- Floating Bottom Navigation -->
+        <nav class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[calc(100%-2.5rem)] max-w-sm glass-nav rounded-3xl shadow-float flex justify-between items-center px-2 py-2 z-40 border border-zinc-200/50 dark:border-zinc-800/50">
+            <button data-tab="main" class="nav-btn flex flex-col items-center justify-center w-14 h-12 rounded-2xl text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
+                <span class="material-symbols-outlined text-[22px]">home</span>
             </button>
-            <button data-tab="players" class="nav-btn flex flex-col items-center justify-center w-12 h-12 rounded-full text-google-textMuted dark:text-google-textDark hover:bg-primary-light dark:hover:bg-primary/20 transition-colors">
-                <span class="material-symbols-outlined icon-unfilled text-2xl nav-icon">group</span>
-            </button>
-            
-            <!-- Prominent Add Round FAB -->
-            <button id="btn-add-round" onclick="vibe(80)" class="relative -top-6 bg-primary dark:bg-primary-dark text-white dark:text-google-bgDark w-16 h-16 rounded-[20px] shadow-google-hover flex items-center justify-center hover:scale-105 active:scale-95 transition-transform border-4 border-google-bgLight dark:border-google-bgDark">
-                <span class="material-symbols-outlined text-3xl font-bold">add</span>
+            <button data-tab="players" class="nav-btn flex flex-col items-center justify-center w-14 h-12 rounded-2xl text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
+                <span class="material-symbols-outlined text-[22px]">group</span>
             </button>
             
-            <button data-tab="live" class="nav-btn flex flex-col items-center justify-center w-12 h-12 rounded-full text-google-textMuted dark:text-google-textDark hover:bg-primary-light dark:hover:bg-primary/20 transition-colors relative">
-                <span class="material-symbols-outlined icon-unfilled text-2xl nav-icon">podcasts</span>
-                <span id="live-indicator" class="absolute top-2 right-2 w-2.5 h-2.5 bg-google-red rounded-full animate-pulse hidden border-2 border-white dark:border-google-surfaceDark"></span>
+            <!-- Floating Add Button -->
+            <div class="relative -top-5 mx-2">
+                <button id="btn-add-round" onclick="vibe(50)" class="bg-primary text-white w-14 h-14 rounded-full shadow-lg shadow-primary/30 flex items-center justify-center hover:scale-105 active:scale-95 transition-transform border-[4px] border-background-light dark:border-background-dark">
+                    <span class="material-symbols-outlined text-3xl font-medium">add</span>
+                </button>
+            </div>
+            
+            <button data-tab="live" class="nav-btn flex flex-col items-center justify-center w-14 h-12 rounded-2xl text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors relative">
+                <span class="material-symbols-outlined text-[22px]">podcasts</span>
+                <span id="live-indicator" class="absolute top-2 right-3 w-2 h-2 bg-red-500 rounded-full animate-pulse hidden"></span>
             </button>
-            <button data-tab="history" class="nav-btn flex flex-col items-center justify-center w-12 h-12 rounded-full text-google-textMuted dark:text-google-textDark hover:bg-primary-light dark:hover:bg-primary/20 transition-colors">
-                <span class="material-symbols-outlined icon-unfilled text-2xl nav-icon">history</span>
+            <button data-tab="history" class="nav-btn flex flex-col items-center justify-center w-14 h-12 rounded-2xl text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
+                <span class="material-symbols-outlined text-[22px]">history</span>
             </button>
         </nav>
     </div>
 
     <!-- Modals Container -->
-    <div id="modal-container" class="fixed inset-0 z-50 hidden bg-black/50 backdrop-blur-sm flex items-end sm:items-center justify-center pb-0 sm:pb-0">
-        <div id="modal-content" class="bg-google-surfaceLight dark:bg-google-surfaceDark w-full max-w-md rounded-t-3xl sm:rounded-3xl p-6 shadow-2xl transform transition-transform translate-y-full max-h-[85vh] overflow-y-auto">
-            <!-- Modal inner content -->
+    <div id="modal-container" class="fixed inset-0 z-50 hidden bg-zinc-900/40 backdrop-blur-sm flex items-end sm:items-center justify-center pb-0 sm:pb-0">
+        <div id="modal-content" class="bg-surface-light dark:bg-surface-dark w-full max-w-md rounded-t-[32px] sm:rounded-[32px] shadow-2xl transform transition-transform translate-y-full max-h-[90vh] flex flex-col">
+            <!-- Modal Handle -->
+            <div class="w-12 h-1.5 bg-zinc-300 dark:bg-zinc-700 rounded-full mx-auto mt-4 mb-2"></div>
+            <div id="modal-inner" class="flex-1 overflow-y-auto px-6 pb-6 pt-2"></div>
         </div>
     </div>
 
     <!-- Toast Container -->
-    <div id="toast-container" class="fixed bottom-28 left-1/2 -translate-x-1/2 z-50 flex flex-col gap-2 w-[calc(100%-2rem)] max-w-[400px]"></div>
+    <div id="toast-container" class="fixed top-6 left-1/2 -translate-x-1/2 z-[100] flex flex-col gap-2 w-[calc(100%-2.5rem)] max-w-sm pointer-events-none"></div>
 
     <!-- Onboarding Container -->
-    <div id="onboarding-container" class="fixed inset-0 z-[100] hidden bg-google-bgLight dark:bg-google-bgDark flex flex-col items-center justify-center p-6">
-        <div class="w-full max-w-sm text-center bg-google-surfaceLight dark:bg-google-surfaceDark p-8 rounded-[32px] shadow-google page-enter">
+    <div id="onboarding-container" class="fixed inset-0 z-[100] hidden bg-background-light dark:bg-background-dark flex flex-col items-center justify-center p-6">
+        <div class="w-full max-w-sm bg-surface-light dark:bg-surface-dark p-8 rounded-[32px] shadow-soft border border-zinc-100 dark:border-zinc-800 page-enter">
             
             <!-- View: Create New Profile -->
-            <div id="view-create-profile" class="flex flex-col gap-4">
-                <span class="material-symbols-outlined text-6xl text-primary dark:text-primary-dark mb-4">account_circle</span>
-                <h2 class="text-3xl font-bold text-google-textLight dark:text-google-textDark mb-2">Welcome</h2>
-                <p class="text-google-textMuted dark:text-gray-400 mb-2 text-sm">Create your profile to join the global roster.</p>
-                
-                <div class="flex justify-center mb-2">
-                    <div id="ob-avatar-preview" class="w-24 h-24 rounded-full bg-google-bgLight dark:bg-google-bgDark border-2 border-dashed border-google-borderLight dark:border-google-borderDark flex items-center justify-center overflow-hidden relative">
-                        <span class="material-symbols-outlined text-3xl opacity-50">add_a_photo</span>
-                    </div>
+            <div id="view-create-profile" class="flex flex-col gap-4 items-center">
+                <div class="w-16 h-16 rounded-2xl bg-primary-light text-primary flex items-center justify-center mb-2">
+                    <span class="material-symbols-outlined text-4xl">account_circle</span>
                 </div>
-                <label class="bg-primary-light dark:bg-google-surfaceDark text-primary dark:text-primary-dark px-4 py-2 rounded-full font-medium cursor-pointer text-sm hover:bg-black/5 transition-colors mx-auto border border-primary/20">
-                    Choose Photo
-                    <input type="file" accept="image/*" class="hidden" onchange="previewOnboardingAvatar(event)">
-                </label>
+                <h2 class="text-2xl font-bold text-zinc-900 dark:text-white">Welcome to Scorat</h2>
+                <p class="text-zinc-500 text-sm text-center mb-2">Create your profile to join the global roster and start tracking.</p>
                 
-                <input type="text" id="ob-player-name" placeholder="Enter Nickname" class="w-full mt-2 bg-google-bgLight dark:bg-google-bgDark border border-google-borderLight dark:border-google-borderDark text-google-textLight dark:text-google-textDark px-4 py-3 rounded-full font-medium focus:border-primary focus:ring-1 focus:ring-primary outline-none text-center select-text">
+                <div class="relative mb-2">
+                    <div id="ob-avatar-preview" class="w-24 h-24 rounded-full bg-zinc-100 dark:bg-zinc-800 border-2 border-dashed border-zinc-300 dark:border-zinc-600 flex items-center justify-center overflow-hidden">
+                        <span class="material-symbols-outlined text-3xl text-zinc-400">add_a_photo</span>
+                    </div>
+                    <label class="absolute bottom-0 right-0 bg-primary text-white p-2 rounded-full cursor-pointer shadow-md hover:scale-105 transition-transform">
+                        <span class="material-symbols-outlined text-[16px]">edit</span>
+                        <input type="file" accept="image/*" class="hidden" onchange="previewOnboardingAvatar(event)">
+                    </label>
+                </div>
                 
-                <button onclick="vibe(); saveUserProfile()" class="w-full mt-2 bg-primary dark:bg-primary-dark text-white dark:text-google-bgDark py-3 rounded-full font-bold shadow-md hover:shadow-google-hover active:scale-95 transition-all">Start Playing</button>
-                <button onclick="vibe(); toggleRestoreView(true)" class="mt-2 text-sm text-primary dark:text-primary-dark font-bold hover:underline">Already have an account? Restore by ID</button>
+                <input type="text" id="ob-player-name" placeholder="Enter Nickname" class="w-full bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 px-4 py-3.5 rounded-2xl font-medium focus:border-primary focus:ring-1 focus:ring-primary outline-none text-center select-text transition-colors">
+                
+                <button onclick="vibe(); saveUserProfile()" class="w-full mt-2 bg-primary text-white py-3.5 rounded-2xl font-semibold shadow-md shadow-primary/20 hover:bg-primary-dark active:scale-95 transition-all">Start Playing</button>
+                <button onclick="vibe(); toggleRestoreView(true)" class="mt-3 text-sm text-zinc-500 font-medium hover:text-primary transition-colors">Already have an account? Restore ID</button>
             </div>
 
             <!-- View: Restore Profile by ID -->
-            <div id="view-restore-profile" class="hidden flex-col gap-4">
-                <span class="material-symbols-outlined text-6xl text-primary dark:text-primary-dark mb-4 mx-auto">manage_search</span>
-                <h2 class="text-2xl font-bold text-google-textLight dark:text-google-textDark mb-2">Restore Your Account</h2>
-                <p class="text-google-textMuted dark:text-gray-400 mb-4 text-sm">Enter your ID to restore your stats and previous matches.</p>
+            <div id="view-restore-profile" class="hidden flex-col gap-4 items-center">
+                <div class="w-16 h-16 rounded-2xl bg-zinc-100 dark:bg-zinc-800 text-zinc-500 flex items-center justify-center mb-2">
+                    <span class="material-symbols-outlined text-4xl">manage_search</span>
+                </div>
+                <h2 class="text-2xl font-bold text-zinc-900 dark:text-white text-center">Restore Account</h2>
+                <p class="text-zinc-500 text-sm text-center mb-4">Enter your unique ID to restore your stats and previous matches.</p>
                 
-                <input type="text" id="restore-id-input" placeholder="Enter ID here..." class="w-full bg-google-bgLight dark:bg-google-bgDark border border-google-borderLight dark:border-google-borderDark text-google-textLight dark:text-google-textDark px-4 py-4 rounded-xl font-mono font-bold focus:border-primary focus:ring-1 focus:ring-primary outline-none text-center select-text">
+                <input type="text" id="restore-id-input" placeholder="Paste ID here..." class="w-full bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 px-4 py-4 rounded-2xl font-mono text-sm focus:border-primary outline-none text-center select-text transition-colors">
                 
-                <button onclick="vibe(); restoreAccount()" class="w-full mt-2 bg-primary dark:bg-primary-dark text-white dark:text-google-bgDark py-3 rounded-full font-bold shadow-md hover:shadow-google-hover active:scale-95 transition-all">Confirm & Restore</button>
-                <button onclick="vibe(); toggleRestoreView(false)" class="mt-2 text-sm text-google-textMuted font-bold hover:underline">Back to Create New Account</button>
+                <button onclick="vibe(); restoreAccount()" class="w-full mt-2 bg-zinc-900 dark:bg-white dark:text-zinc-900 text-white py-3.5 rounded-2xl font-semibold shadow-md active:scale-95 transition-all">Confirm & Restore</button>
+                <button onclick="vibe(); toggleRestoreView(false)" class="mt-3 text-sm text-zinc-500 font-medium hover:text-primary transition-colors">Back to Create Account</button>
             </div>
 
         </div>
@@ -205,14 +216,23 @@
 
         const appId = 'scorat-app'; 
         let db, auth, currentUser;
+
+        /* --- Game Modes Config --- */
+        const GAME_MODES = {
+            'concan': { name: 'Concan (Partner)', teams: 2, win: 'lowest', target: true, t1: 351, t2: 551 },
+            'tarneeb41': { name: 'Tarneeb 41', teams: 2, win: 'highest', target: true, t1: 31, t2: 41 },
+            'trix_partner': { name: 'Trix (Partner)', teams: 2, win: 'highest', target: false, t1: 0, t2: 0 },
+            'trix_complex': { name: 'Trix Complex', teams: 2, win: 'highest', target: false, t1: 0, t2: 0 },
+            'trix_individual': { name: 'Trix Individual', teams: 4, win: 'highest', target: false, t1: 0, t2: 0 }
+        };
         
         /* --- Global State --- */
         const state = {
             currentTab: 'main',
-            settings: { haptics: true, notifications: false, m1: 351, m2: 551 },
+            settings: { haptics: true, notifications: false, gameMode: 'concan', m1: 351, m2: 551 },
             players: [], history: [], liveGames: [],
             spectatingMatchId: null, hostChatData: [],
-            activeGame: { team1: [null, null], team2: [null, null], rounds: [], m1Triggered: false, m2Triggered: false, gameOver: false },
+            activeGame: { mode: 'concan', team1: [null, null], team2: [null, null], team3: [], team4: [], rounds: [], m1Triggered: false, m2Triggered: false, gameOver: false },
             tempHistoryId: null, lastActiveState: null, notifiedGames: new Set()
         };
         window.state = state;
@@ -220,69 +240,66 @@
         let debounceTimer; let onboardingAvatarBase64 = null;
         let unsubLiveGame = null; let unsubLiveChat = null; let unsubHostChat = null;
 
-        /* --- Custom Active UID Getter --- */
-        window.getActiveUid = function() {
-            return localStorage.getItem('scorat_uid') || (currentUser ? currentUser.uid : null);
-        };
+        window.getActiveUid = function() { return localStorage.getItem('scorat_uid') || (currentUser ? currentUser.uid : null); };
+
+        /* --- Match Result Engine --- */
+        window.getMatchResult = function(gameData) {
+            const mode = gameData.mode || 'concan';
+            const md = GAME_MODES[mode] || GAME_MODES['concan'];
+            const isInd = md.teams === 4;
+            let s = { 1: 0, 2: 0, 3: 0, 4: 0 };
+            
+            (gameData.rounds || []).forEach(r => {
+                s[1] += (r.t1||0); s[2] += (r.t2||0);
+                if (isInd) { s[3] += (r.t3||0); s[4] += (r.t4||0); }
+            });
+            
+            let scores = [ {t: 1, v: s[1]}, {t: 2, v: s[2]} ];
+            if (isInd) scores.push({t: 3, v: s[3]}, {t: 4, v: s[4]});
+            
+            scores.sort((a,b) => md.win === 'lowest' ? a.v - b.v : b.v - a.v);
+            return { scoresObj: s, winnerT: scores[0].t, leaderboard: scores, isInd, md };
+        }
 
         /* --- UI Logic Utilities --- */
         function getTeamName(teamIds, defaultName) {
-            if (!teamIds || teamIds.length === 0) return defaultName;
+            if (!teamIds || teamIds.length === 0 || !teamIds[0]) return defaultName;
             const names = teamIds.filter(id => id).map(id => {
-                const p = state.players.find(x => x.id === id);
-                return p ? p.name : '';
+                const p = state.players.find(x => x.id === id); return p ? p.name : '';
             });
             return names.length > 0 ? names.join(' + ') : defaultName;
         }
 
         /* --- PWA Setup --- */
         let deferredPrompt;
-        const manifest = { "name": "Scorat", "short_name": "Scorat", "start_url": ".", "display": "standalone", "background_color": "#f8f9fa", "theme_color": "#1a73e8", "icons": [{ "src": ".logo.png", "sizes": "512x512", "type": "image/svg+xml", "purpose": "any maskable" }] };
+        const manifest = { "name": "Scorat", "short_name": "Scorat", "start_url": ".", "display": "standalone", "background_color": "#ffffff", "theme_color": "#2563eb", "icons": [{ "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%232563eb'%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm4.59-12.42L10 14.17l-2.59-2.58L6 13l4 4 8-8z'/%3E%3C/svg%3E", "sizes": "512x512", "type": "image/svg+xml", "purpose": "any maskable" }] };
         const manifestLink = document.createElement('link'); manifestLink.rel = 'manifest'; 
         manifestLink.href = 'data:application/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(manifest));
         document.head.appendChild(manifestLink);
 
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault(); deferredPrompt = e;
-            setTimeout(() => {
-                if (document.getElementById('toast-container')) {
-                    showToast("Install Scorat to your Home Screen!", "Install", () => {
-                        if (deferredPrompt) { deferredPrompt.prompt(); deferredPrompt = null; }
-                    });
-                }
-            }, 3000);
+            setTimeout(() => { if (document.getElementById('toast-container')) { showToast("Install Scorat App to Home Screen", "Install", () => { if (deferredPrompt) { deferredPrompt.prompt(); deferredPrompt = null; } }); } }, 3000);
         });
 
-        window.installPWA = function() {
-            if (deferredPrompt) { deferredPrompt.prompt(); deferredPrompt = null; }
-        };
+        window.installPWA = function() { if (deferredPrompt) { deferredPrompt.prompt(); deferredPrompt = null; } };
 
         /* --- Initialization --- */
         async function init() {
             try {
                 const app = initializeApp(firebaseConfig);
-                auth = getAuth(app);
-                db = getFirestore(app);
-                
+                auth = getAuth(app); db = getFirestore(app);
                 try { await enableIndexedDbPersistence(db); } catch (err) { console.warn("Offline persistence failed", err); }
-
                 await signInAnonymously(auth);
-                onAuthStateChanged(auth, async (user) => {
-                    if (user) { 
-                        currentUser = user; 
-                        await checkUserProfile(getActiveUid()); 
-                    }
-                });
-            } catch (error) { console.error("Firebase Init Error:", error); showToast("Failed to connect to database."); }
+                onAuthStateChanged(auth, async (user) => { if (user) { currentUser = user; await checkUserProfile(getActiveUid()); } });
+            } catch (error) { console.error("Firebase Init Error:", error); showToast("Failed to connect.", "error"); }
             bindEvents();
         }
 
         window.vibe = function(ms = 40) { if (navigator.vibrate && state.settings.haptics) navigator.vibrate(ms); };
 
         function sendPushNotification(title, body) {
-            if (state.settings.notifications && Notification.permission === 'granted') {
-                new Notification(title, { body, icon: './logo.png' });
-            }
+            if (state.settings.notifications && Notification.permission === 'granted') { new Notification(title, { body }); }
         }
 
         /* --- Auth / Restore Methods --- */
@@ -290,41 +307,26 @@
             if(!uid) return;
             try {
                 const userDoc = await getDoc(doc(db, 'artifacts', appId, 'public', 'data', 'users', uid));
-                if (!userDoc.exists()) {
-                    document.getElementById('onboarding-container').classList.remove('hidden');
-                } else {
-                    document.getElementById('onboarding-container').classList.add('hidden'); 
-                    setupListeners(); 
-                }
+                if (!userDoc.exists()) { document.getElementById('onboarding-container').classList.remove('hidden'); } 
+                else { document.getElementById('onboarding-container').classList.add('hidden'); setupListeners(); }
             } catch(e) { console.error(e); }
         }
 
         window.toggleRestoreView = function(showRestore) {
-            if (showRestore) {
-                document.getElementById('view-create-profile').classList.add('hidden');
-                document.getElementById('view-restore-profile').classList.remove('hidden');
-                document.getElementById('view-restore-profile').style.display = 'flex';
-            } else {
-                document.getElementById('view-restore-profile').classList.add('hidden');
-                document.getElementById('view-restore-profile').style.display = '';
-                document.getElementById('view-create-profile').classList.remove('hidden');
-            }
+            const vCreate = document.getElementById('view-create-profile');
+            const vRestore = document.getElementById('view-restore-profile');
+            if (showRestore) { vCreate.classList.add('hidden'); vRestore.classList.remove('hidden'); vRestore.style.display = 'flex'; } 
+            else { vRestore.classList.add('hidden'); vRestore.style.display = ''; vCreate.classList.remove('hidden'); }
         }
 
         window.restoreAccount = async function() {
             const id = document.getElementById('restore-id-input').value.trim();
             if (!id) return showToast("Please enter your ID", "error");
-            
             try {
                 const userDoc = await getDoc(doc(db, 'artifacts', appId, 'public', 'data', 'users', id));
-                if (userDoc.exists()) {
-                    localStorage.setItem('scorat_uid', id);
-                    showToast("Account restored successfully!");
-                    setTimeout(() => location.reload(), 1000);
-                } else {
-                    showToast("No account found matching this ID", "error");
-                }
-            } catch (e) { showToast("Error connecting to the database", "error"); }
+                if (userDoc.exists()) { localStorage.setItem('scorat_uid', id); showToast("Account restored!"); setTimeout(() => location.reload(), 1000); } 
+                else { showToast("No account found matching this ID", "error"); }
+            } catch (e) { showToast("Connection error", "error"); }
         }
 
         window.previewOnboardingAvatar = function(e) {
@@ -341,26 +343,30 @@
         }
 
         window.saveUserProfile = async function() {
-            const name = document.getElementById('ob-player-name').value.trim(); if (!name) return showToast("Nickname is required!");
+            const name = document.getElementById('ob-player-name').value.trim(); if (!name) return showToast("Nickname required!");
             try {
                 await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'users', currentUser.uid), { name, avatar: onboardingAvatarBase64, joinedAt: Date.now(), wins: 0, losses: 0 });
-                localStorage.setItem('scorat_uid', currentUser.uid); // Save explicitly as the active ID
+                localStorage.setItem('scorat_uid', currentUser.uid); 
                 document.getElementById('onboarding-container').classList.add('hidden'); showToast("Profile created!"); setupListeners();
-            } catch (e) { showToast("Error creating profile."); }
+            } catch (e) { showToast("Error creating profile.", "error"); }
         }
 
         /* --- Listeners --- */
         function setupListeners() {
-            const uid = getActiveUid();
-            if (!uid) return;
+            const uid = getActiveUid(); if (!uid) return;
 
-            // Load Settings & apply logic
             const sStr = localStorage.getItem('scorat_settings');
             if(sStr) state.settings = { ...state.settings, ...JSON.parse(sStr) };
+            if(!state.settings.gameMode) state.settings.gameMode = 'concan';
 
             onSnapshot(doc(db, 'artifacts', appId, 'users', uid, 'state', 'activeGame'), (snap) => {
-                if (snap.exists()) { state.activeGame = snap.data(); checkMilestones(); } 
-                else setDoc(doc(db, 'artifacts', appId, 'users', uid, 'state', 'activeGame'), state.activeGame);
+                if (snap.exists()) { 
+                    state.activeGame = snap.data();
+                    if(!state.activeGame.mode) state.activeGame.mode = 'concan';
+                    if(!state.activeGame.team3) state.activeGame.team3 = [];
+                    if(!state.activeGame.team4) state.activeGame.team4 = [];
+                    checkMilestones(); 
+                } else { window.applyModeChange(state.settings.gameMode, true); }
                 if (state.currentTab === 'main') renderMain();
             });
 
@@ -374,38 +380,58 @@
                 if (['history', 'stats'].includes(state.currentTab)) renderActiveTab();
             });
 
-            // Live Games Listener (Notifications & Co-op Host Sync)
             onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'liveGames'), (snap) => {
                 const games = snap.docs.map(d => ({ id: d.id, ...d.data() }));
                 state.liveGames = games.filter(g => g.id !== uid);
                 
-                // Notifications logic
                 state.liveGames.forEach(g => {
                     if (!state.notifiedGames.has(g.id)) {
                         state.notifiedGames.add(g.id);
-                        if (g.game.team1.includes(uid) || g.game.team2.includes(uid)) {
-                            sendPushNotification("You've been added to a match!", `${g.hostName} is hosting a game with you.`);
-                        }
+                        const isCoop = (g.game.team1||[]).includes(uid) || (g.game.team2||[]).includes(uid) || (g.game.team3||[]).includes(uid) || (g.game.team4||[]).includes(uid);
+                        if (isCoop) sendPushNotification("Joined Match", `${g.hostName} is hosting a game with you.`);
                     }
                 });
 
                 document.getElementById('live-indicator').classList.toggle('hidden', state.liveGames.length === 0);
                 if (state.currentTab === 'live') renderActiveTab();
 
-                // Co-op Host Sync: If someone updated my hosted game
                 const myLiveGame = games.find(g => g.id === uid);
                 if (myLiveGame && myLiveGame.updatedBy && myLiveGame.updatedBy !== uid) {
-                    state.activeGame = myLiveGame.game;
-                    saveActiveGameLocalOnly(); 
+                    state.activeGame = myLiveGame.game; saveActiveGameLocalOnly(); 
                     if(state.currentTab === 'main') renderMain();
                 }
             });
         }
 
-        /* --- Game Logic --- */
+        /* --- Game & Rules Logic --- */
+        window.handleModeChange = function(newMode) {
+            if (state.activeGame.rounds && state.activeGame.rounds.length > 0) {
+                showModal("Change Game Mode?", `
+                    <p class="text-sm text-zinc-500 mb-6 text-center">Changing the mode will clear your current board. Continue?</p>
+                    <div class="flex gap-3">
+                        <button onclick="closeModal(); document.getElementById('setting-game-mode').value = '${state.settings.gameMode}';" class="flex-1 bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 py-3.5 rounded-xl font-semibold">Cancel</button>
+                        <button onclick="applyModeChange('${newMode}')" class="flex-1 bg-red-500 text-white py-3.5 rounded-xl font-semibold shadow-md active:scale-95">Reset</button>
+                    </div>
+                `);
+            } else { applyModeChange(newMode); }
+        }
+
+        window.applyModeChange = function(newMode, silent = false) {
+            closeModal(); state.settings.gameMode = newMode; const md = GAME_MODES[newMode];
+            if (md.target) { state.settings.m1 = md.t1; state.settings.m2 = md.t2; }
+
+            const isInd = md.teams === 4;
+            state.activeGame = { 
+                mode: newMode, team1: isInd ? [null] : [null, null], team2: isInd ? [null] : [null, null], 
+                team3: isInd ? [null] : [], team4: isInd ? [null] : [], rounds: [], m1Triggered: false, m2Triggered: false, gameOver: false 
+            };
+            
+            saveSettings(); saveActiveGame();
+            if(!silent) { showToast("Mode changed to " + md.name); renderSettings(); }
+        }
+
         function saveActiveGame() {
-            const uid = getActiveUid();
-            if (!uid) return; clearTimeout(debounceTimer);
+            const uid = getActiveUid(); if (!uid) return; clearTimeout(debounceTimer);
             debounceTimer = setTimeout(() => {
                 setDoc(doc(db, 'artifacts', appId, 'users', uid, 'state', 'activeGame'), state.activeGame).catch(e=>console.error(e));
                 const liveRef = doc(db, 'artifacts', appId, 'public', 'data', 'liveGames', uid);
@@ -416,47 +442,70 @@
         }
 
         function saveActiveGameLocalOnly() {
-            const uid = getActiveUid();
-            if (!uid) return;
+            const uid = getActiveUid(); if (!uid) return;
             setDoc(doc(db, 'artifacts', appId, 'users', uid, 'state', 'activeGame'), state.activeGame).catch(e=>console.error(e));
         }
 
         window.saveSettings = function() {
             localStorage.setItem('scorat_settings', JSON.stringify(state.settings));
             if(state.settings.notifications && Notification.permission !== 'granted') Notification.requestPermission();
-            showToast("Settings saved.");
         }
 
         function checkMilestones() {
-            let t1 = 0; let t2 = 0; (state.activeGame.rounds || []).forEach(r => { t1 += (parseInt(r.t1) || 0); t2 += (parseInt(r.t2) || 0); });
+            const md = GAME_MODES[state.activeGame.mode || 'concan'];
+            if (!md.target) return;
+            
+            const res = getMatchResult(state.activeGame);
+            const topScore = res.leaderboard[0].v;
             const { m1, m2 } = state.settings;
-            if ((t1 >= m1 || t2 >= m1) && !state.activeGame.m1Triggered) { state.activeGame.m1Triggered = true; playAlertSound('m1'); saveActiveGame(); }
-            if ((t1 >= m2 || t2 >= m2) && !state.activeGame.gameOver) { state.activeGame.m2Triggered = true; state.activeGame.gameOver = true; playAlertSound('m2'); triggerCelebration(); saveActiveGame(); }
+            let maxScore = res.leaderboard[res.leaderboard.length - 1].v;
+            
+            if (md.win === 'lowest') {
+                if (maxScore >= m1 && !state.activeGame.m1Triggered) { state.activeGame.m1Triggered = true; playAlertSound('m1'); saveActiveGame(); }
+                if (maxScore >= m2 && !state.activeGame.gameOver) { state.activeGame.m2Triggered = true; state.activeGame.gameOver = true; playAlertSound('m2'); triggerCelebration(); saveActiveGame(); }
+            } else {
+                if (topScore >= m1 && !state.activeGame.m1Triggered) { state.activeGame.m1Triggered = true; playAlertSound('m1'); saveActiveGame(); }
+                if (topScore >= m2 && !state.activeGame.gameOver) { state.activeGame.m2Triggered = true; state.activeGame.gameOver = true; playAlertSound('m2'); triggerCelebration(); saveActiveGame(); }
+            }
         }
 
         window.resetGame = async function() {
-            vibe();
-            const uid = getActiveUid();
-            if (!uid || !state.activeGame.rounds || state.activeGame.rounds.length === 0) return showToast("Board is clear.");
+            vibe(); const uid = getActiveUid();
+            if (!uid || !state.activeGame.rounds || state.activeGame.rounds.length === 0) return showToast("Board is empty.", "error");
+            
             state.lastActiveState = JSON.parse(JSON.stringify(state.activeGame)); 
-            const docRef = await addDoc(collection(db, 'artifacts', appId, 'users', uid, 'history'), { date: Date.now(), team1: state.activeGame.team1, team2: state.activeGame.team2, rounds: state.activeGame.rounds });
+            const docRef = await addDoc(collection(db, 'artifacts', appId, 'users', uid, 'history'), { 
+                date: Date.now(), mode: state.activeGame.mode || 'concan', team1: state.activeGame.team1 || [], 
+                team2: state.activeGame.team2 || [], team3: state.activeGame.team3 || [], team4: state.activeGame.team4 || [],
+                rounds: state.activeGame.rounds 
+            });
             state.tempHistoryId = docRef.id;
 
-            let t1 = 0; let t2 = 0; state.activeGame.rounds.forEach(r => { t1 += (r.t1||0); t2 += (r.t2||0); }); const t1Won = t1 < t2;
-            const updateStats = async (team, won) => { for (const pid of team) { if (pid) { try { await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'users', pid), { wins: increment(won ? 1 : 0), losses: increment(won ? 0 : 1) }); } catch(e) {} } } };
-            await updateStats(state.activeGame.team1, t1Won); await updateStats(state.activeGame.team2, !t1Won);
+            const res = getMatchResult(state.activeGame);
+            const updateStats = async (teamArr, won) => { 
+                for (const pid of teamArr) { if (pid) { try { await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'users', pid), { wins: increment(won ? 1 : 0), losses: increment(won ? 0 : 1) }); } catch(e) {} } } 
+            };
+            
+            await updateStats(state.activeGame.team1, res.winnerT === 1); await updateStats(state.activeGame.team2, res.winnerT === 2);
+            if(res.isInd) { await updateStats(state.activeGame.team3, res.winnerT === 3); await updateStats(state.activeGame.team4, res.winnerT === 4); }
 
-            state.activeGame = { team1: state.activeGame.team1, team2: state.activeGame.team2, rounds: [], m1Triggered: false, m2Triggered: false, gameOver: false };
-            saveActiveGame(); deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'liveGames', uid)).catch(()=>{});
-            showToast("Game saved & reset.", "Undo", undoReset);
+            applyModeChange(state.settings.gameMode, true);
+            deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'liveGames', uid)).catch(()=>{});
+            showToast("Game saved & cleared.", "Undo", undoReset);
         }
 
         async function undoReset() {
             const uid = getActiveUid();
             if (!uid || !state.lastActiveState || !state.tempHistoryId) return;
-            let t1 = 0; let t2 = 0; state.lastActiveState.rounds.forEach(r => { t1 += (r.t1||0); t2 += (r.t2||0); }); const t1Won = t1 < t2;
-            const revertStats = async (team, won) => { for (const pid of team) { if (pid) { try { await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'users', pid), { wins: increment(won ? -1 : 0), losses: increment(won ? 0 : -1) }); } catch(e) {} } } };
-            await revertStats(state.lastActiveState.team1, t1Won); await revertStats(state.lastActiveState.team2, !t1Won);
+            
+            const res = getMatchResult(state.lastActiveState);
+            const revertStats = async (teamArr, won) => { 
+                for (const pid of teamArr) { if (pid) { try { await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'users', pid), { wins: increment(won ? -1 : 0), losses: increment(won ? 0 : -1) }); } catch(e) {} } } 
+            };
+            
+            await revertStats(state.lastActiveState.team1, res.winnerT === 1); await revertStats(state.lastActiveState.team2, res.winnerT === 2);
+            if(res.isInd) { await revertStats(state.lastActiveState.team3, res.winnerT === 3); await revertStats(state.lastActiveState.team4, res.winnerT === 4); }
+            
             state.activeGame = state.lastActiveState; saveActiveGame();
             await deleteDoc(doc(db, 'artifacts', appId, 'users', uid, 'history', state.tempHistoryId));
             state.tempHistoryId = null; state.lastActiveState = null; showToast("Reset undone.");
@@ -469,19 +518,14 @@
             if(unsubLiveChat) { unsubLiveChat(); unsubLiveChat = null; }
             state.currentTab = tabName;
             document.querySelectorAll('.nav-btn').forEach(btn => {
-                const icon = btn.querySelector('.nav-icon');
                 if (btn.dataset.tab === tabName) { 
-                    btn.classList.add('text-primary', 'dark:text-primary-dark'); btn.classList.remove('text-google-textMuted', 'dark:text-google-textDark');
-                    if(icon) icon.classList.remove('icon-unfilled');
+                    btn.classList.add('text-primary'); btn.classList.remove('text-zinc-400');
                 } else { 
-                    btn.classList.remove('text-primary', 'dark:text-primary-dark'); btn.classList.add('text-google-textMuted', 'dark:text-google-textDark');
-                    if(icon) icon.classList.add('icon-unfilled');
+                    btn.classList.remove('text-primary'); btn.classList.add('text-zinc-400');
                 }
             });
             const c = document.getElementById('content');
-            c.classList.remove('page-enter');
-            void c.offsetWidth; // trigger reflow
-            c.classList.add('page-enter');
+            c.classList.remove('page-enter'); void c.offsetWidth; c.classList.add('page-enter');
             renderActiveTab();
         }
 
@@ -497,71 +541,107 @@
             else if (state.currentTab === 'leaderboard') renderLeaderboard();
         }
 
-        function getPlayerAvatarHTML(id, teamIndex, posIndex, readOnly = false) {
+        function getPlayerAvatarHTML(id, teamIndex, posIndex, readOnly = false, isSmall = false) {
             const p = state.players.find(x => x.id === id) || { name: 'Select', avatar: null };
-            const content = p.avatar ? `<img src="${p.avatar}" class="w-full h-full object-cover">` : `<span class="text-sm font-bold text-google-textMuted">${p.name.charAt(0).toUpperCase()}</span>`;
-            return `<div ${!readOnly ? `onclick="vibe(); openPlayerSelect(${teamIndex}, ${posIndex})"` : ''} class="w-12 h-12 rounded-full border-2 border-google-surfaceLight dark:border-google-surfaceDark bg-google-bgLight dark:bg-google-bgDark flex items-center justify-center overflow-hidden shadow-sm z-10 -ml-3 first:ml-0 ${!readOnly ? 'cursor-pointer hover:scale-105 active:scale-95 transition-transform' : ''}">${content}</div>`;
-        }
-
-        /* --- Reusable Chat HTML Generator --- */
-        function generateChatHTML(chatData) {
-            const myUid = getActiveUid();
-            return chatData.map(msg => {
-                const isMe = msg.uid === myUid;
-                const p = state.players.find(x => x.id === msg.uid) || { avatar: null, name: msg.name };
-                return `
-                    <div class="flex ${isMe ? 'justify-end' : 'justify-start'} mb-3">
-                        <div class="max-w-[85%] flex items-end gap-2 ${isMe ? 'flex-row-reverse' : 'flex-row'}">
-                            <img src="${p.avatar || 'https://api.dicebear.com/7.x/initials/svg?seed=' + msg.name}" class="w-6 h-6 rounded-full object-cover shadow-sm border border-google-borderLight dark:border-google-borderDark">
-                            <div class="${isMe ? 'bg-primary text-white rounded-tl-2xl rounded-tr-2xl rounded-bl-2xl' : 'bg-google-surfaceLight dark:bg-[#3c4043] text-google-textLight dark:text-google-textDark rounded-tl-2xl rounded-tr-2xl rounded-br-2xl border border-google-borderLight dark:border-google-borderDark'} px-3 py-2 text-[13px] shadow-sm flex flex-col">
-                                <span class="text-[9px] font-black ${isMe ? 'text-white/80' : 'text-primary dark:text-primary-dark'} mb-0.5 uppercase tracking-wider">${isMe ? 'You' : msg.name}</span>
-                                <span>${msg.text}</span>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
+            const content = p.avatar ? `<img src="${p.avatar}" class="w-full h-full object-cover">` : `<span class="text-xs font-semibold text-zinc-400">${p.name.charAt(0).toUpperCase()}</span>`;
+            const sizeClass = isSmall ? 'w-10 h-10' : 'w-12 h-12';
+            return `<div ${!readOnly ? `onclick="vibe(); openPlayerSelect(${teamIndex}, ${posIndex})"` : ''} class="${sizeClass} rounded-full border-[3px] border-surface-light dark:border-surface-dark bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center overflow-hidden shadow-sm z-10 -ml-3 first:ml-0 ${!readOnly ? 'cursor-pointer hover:scale-105 active:scale-95 transition-transform' : ''}">${content}</div>`;
         }
 
         /* --- Main Scoreboard --- */
         function renderMain() {
-            let t1 = 0; let t2 = 0;
+            const mode = state.activeGame.mode || 'concan';
+            const md = GAME_MODES[mode] || GAME_MODES['concan'];
+            const isInd = md.teams === 4;
+
+            let t1=0, t2=0, t3=0, t4=0;
             const roundsHtml = (state.activeGame.rounds || []).map((r, i) => {
                 t1 += (parseInt(r.t1) || 0); t2 += (parseInt(r.t2) || 0);
-                return `
-                    <div class="flex items-center justify-between bg-google-surfaceLight dark:bg-google-surfaceDark p-2 rounded-[20px] mb-2 shadow-sm border border-google-borderLight dark:border-google-borderDark transition-all hover:border-primary/30">
-                        <input type="number" value="${r.t1 !== null ? r.t1 : ''}" oninput="updateRoundData(${i}, 't1', this.value)" class="w-20 text-center bg-google-bgLight dark:bg-google-bgDark text-google-textLight dark:text-google-textDark py-3 px-2 rounded-2xl font-bold focus:border-primary focus:ring-1 focus:ring-primary outline-none select-text ${state.activeGame.gameOver?'opacity-50 pointer-events-none':''}">
-                        <span class="font-bold text-google-textMuted text-sm">R${i+1}</span>
-                        <input type="number" value="${r.t2 !== null ? r.t2 : ''}" oninput="updateRoundData(${i}, 't2', this.value)" class="w-20 text-center bg-google-bgLight dark:bg-google-bgDark text-google-textLight dark:text-google-textDark py-3 px-2 rounded-2xl font-bold focus:border-primary focus:ring-1 focus:ring-primary outline-none select-text ${state.activeGame.gameOver?'opacity-50 pointer-events-none':''}">
-                    </div>
-                `;
+                if(isInd) { t3 += (parseInt(r.t3)||0); t4 += (parseInt(r.t4)||0); }
+                const lblHtml = r.label ? `<span class="text-[9px] text-primary whitespace-nowrap block truncate w-full opacity-80">${r.label}</span>` : '';
+                
+                if (isInd) {
+                    return `
+                    <div class="flex items-center gap-1 bg-surface-light dark:bg-surface-dark p-2 rounded-2xl mb-2 shadow-sm border border-zinc-100 dark:border-zinc-800/50">
+                        <div class="w-10 text-center"><span class="font-bold text-zinc-400 text-[10px]">R${i+1}</span>${lblHtml}</div>
+                        <input type="number" value="${r.t1 !== null ? r.t1 : ''}" oninput="updateRoundData(${i}, 't1', this.value)" class="flex-1 min-w-0 text-center bg-background-light dark:bg-background-dark py-2.5 rounded-xl font-semibold focus:ring-2 focus:ring-primary outline-none select-text ${state.activeGame.gameOver?'opacity-50 pointer-events-none':''}">
+                        <input type="number" value="${r.t2 !== null ? r.t2 : ''}" oninput="updateRoundData(${i}, 't2', this.value)" class="flex-1 min-w-0 text-center bg-background-light dark:bg-background-dark py-2.5 rounded-xl font-semibold focus:ring-2 focus:ring-primary outline-none select-text ${state.activeGame.gameOver?'opacity-50 pointer-events-none':''}">
+                        <input type="number" value="${r.t3 !== null ? r.t3 : ''}" oninput="updateRoundData(${i}, 't3', this.value)" class="flex-1 min-w-0 text-center bg-background-light dark:bg-background-dark py-2.5 rounded-xl font-semibold focus:ring-2 focus:ring-primary outline-none select-text ${state.activeGame.gameOver?'opacity-50 pointer-events-none':''}">
+                        <input type="number" value="${r.t4 !== null ? r.t4 : ''}" oninput="updateRoundData(${i}, 't4', this.value)" class="flex-1 min-w-0 text-center bg-background-light dark:bg-background-dark py-2.5 rounded-xl font-semibold focus:ring-2 focus:ring-primary outline-none select-text ${state.activeGame.gameOver?'opacity-50 pointer-events-none':''}">
+                    </div>`;
+                } else {
+                    return `
+                    <div class="flex items-center justify-between bg-surface-light dark:bg-surface-dark p-2 rounded-3xl mb-2 shadow-sm border border-zinc-100 dark:border-zinc-800/50">
+                        <input type="number" value="${r.t1 !== null ? r.t1 : ''}" oninput="updateRoundData(${i}, 't1', this.value)" class="w-24 text-center bg-transparent py-4 text-xl font-bold focus:bg-background-light dark:focus:bg-background-dark rounded-2xl outline-none select-text transition-colors ${state.activeGame.gameOver?'opacity-50 pointer-events-none':''}">
+                        <div class="w-12 text-center flex flex-col"><span class="font-bold text-zinc-300 text-xs">R${i+1}</span>${lblHtml}</div>
+                        <input type="number" value="${r.t2 !== null ? r.t2 : ''}" oninput="updateRoundData(${i}, 't2', this.value)" class="w-24 text-center bg-transparent py-4 text-xl font-bold focus:bg-background-light dark:focus:bg-background-dark rounded-2xl outline-none select-text transition-colors ${state.activeGame.gameOver?'opacity-50 pointer-events-none':''}">
+                    </div>`;
+                }
             }).join('');
 
-            const t1Name = getTeamName(state.activeGame.team1, 'Team 1');
-            const t2Name = getTeamName(state.activeGame.team2, 'Team 2');
+            const t1Name = getTeamName(state.activeGame.team1, isInd?'Player 1':'Team 1');
+            const t2Name = getTeamName(state.activeGame.team2, isInd?'Player 2':'Team 2');
+            const t3Name = isInd ? getTeamName(state.activeGame.team3, 'Player 3') : '';
+            const t4Name = isInd ? getTeamName(state.activeGame.team4, 'Player 4') : '';
+
+            let scoreCardsHtml = '';
+            if (isInd) {
+                scoreCardsHtml = `
+                <div class="grid grid-cols-4 gap-2 mb-4">
+                    <div class="bg-surface-light dark:bg-surface-dark p-3 rounded-3xl flex flex-col items-center justify-between shadow-soft border border-zinc-100 dark:border-zinc-800/50">
+                        <div class="mb-2 pl-3">${getPlayerAvatarHTML(state.activeGame.team1[0], 1, 0, false, true)}</div>
+                        <h2 id="t1-total" class="text-xl font-black">${t1}</h2>
+                        <span class="text-[9px] text-zinc-400 mt-1 uppercase font-semibold truncate w-full text-center px-1">${t1Name}</span>
+                    </div>
+                    <div class="bg-surface-light dark:bg-surface-dark p-3 rounded-3xl flex flex-col items-center justify-between shadow-soft border border-zinc-100 dark:border-zinc-800/50">
+                        <div class="mb-2 pl-3">${getPlayerAvatarHTML(state.activeGame.team2[0], 2, 0, false, true)}</div>
+                        <h2 id="t2-total" class="text-xl font-black text-primary">${t2}</h2>
+                        <span class="text-[9px] text-zinc-400 mt-1 uppercase font-semibold truncate w-full text-center px-1">${t2Name}</span>
+                    </div>
+                    <div class="bg-surface-light dark:bg-surface-dark p-3 rounded-3xl flex flex-col items-center justify-between shadow-soft border border-zinc-100 dark:border-zinc-800/50">
+                        <div class="mb-2 pl-3">${getPlayerAvatarHTML(state.activeGame.team3[0], 3, 0, false, true)}</div>
+                        <h2 id="t3-total" class="text-xl font-black text-emerald-500">${t3}</h2>
+                        <span class="text-[9px] text-zinc-400 mt-1 uppercase font-semibold truncate w-full text-center px-1">${t3Name}</span>
+                    </div>
+                    <div class="bg-surface-light dark:bg-surface-dark p-3 rounded-3xl flex flex-col items-center justify-between shadow-soft border border-zinc-100 dark:border-zinc-800/50">
+                        <div class="mb-2 pl-3">${getPlayerAvatarHTML(state.activeGame.team4[0], 4, 0, false, true)}</div>
+                        <h2 id="t4-total" class="text-xl font-black text-rose-500">${t4}</h2>
+                        <span class="text-[9px] text-zinc-400 mt-1 uppercase font-semibold truncate w-full text-center px-1">${t4Name}</span>
+                    </div>
+                </div>`;
+            } else {
+                scoreCardsHtml = `
+                <div class="grid grid-cols-2 gap-3 mb-4">
+                    <div class="bg-surface-light dark:bg-surface-dark py-6 px-4 rounded-[32px] flex flex-col items-center justify-between shadow-soft border border-zinc-100 dark:border-zinc-800/50 ${t1 >= state.settings.m2 && md.target ? 'border-red-500 shadow-red-500/20' : ''} transition-all relative overflow-hidden">
+                        <div class="absolute top-0 right-0 w-16 h-16 bg-gradient-to-bl from-zinc-100 dark:from-zinc-800 rounded-bl-full opacity-50 pointer-events-none"></div>
+                        <div class="flex mb-3 justify-center pl-3">${getPlayerAvatarHTML(state.activeGame.team1[0], 1, 0)}${getPlayerAvatarHTML(state.activeGame.team1[1], 1, 1)}</div>
+                        <h2 id="t1-total" class="text-5xl font-black tracking-tighter text-zinc-900 dark:text-white">${t1}</h2>
+                        <span class="text-[11px] text-zinc-400 mt-2 uppercase font-semibold truncate w-full text-center">${t1Name}</span>
+                    </div>
+                    <div class="bg-surface-light dark:bg-surface-dark py-6 px-4 rounded-[32px] flex flex-col items-center justify-between shadow-soft border border-zinc-100 dark:border-zinc-800/50 ${t2 >= state.settings.m2 && md.target ? 'border-red-500 shadow-red-500/20' : ''} transition-all relative overflow-hidden">
+                        <div class="absolute top-0 right-0 w-16 h-16 bg-gradient-to-bl from-primary-light dark:from-primary/10 rounded-bl-full opacity-50 pointer-events-none"></div>
+                        <div class="flex mb-3 justify-center pl-3">${getPlayerAvatarHTML(state.activeGame.team2[0], 2, 0)}${getPlayerAvatarHTML(state.activeGame.team2[1], 2, 1)}</div>
+                        <h2 id="t2-total" class="text-5xl font-black tracking-tighter text-primary">${t2}</h2>
+                        <span class="text-[11px] text-zinc-400 mt-2 uppercase font-semibold truncate w-full text-center">${t2Name}</span>
+                    </div>
+                </div>`;
+            }
 
             document.getElementById('content').innerHTML = `
-                <div class="flex justify-between items-center mb-2 px-2">
-                    <span class="text-xs font-bold text-google-textMuted uppercase tracking-wider">Targets: ${state.settings.m1} / ${state.settings.m2}</span>
-                    <div class="flex gap-2">
-                        ${(state.activeGame.rounds && state.activeGame.rounds.length > 0) ? `<button onclick="vibe(); openHostChat()" class="text-xs text-primary bg-primary-light dark:bg-primary/10 px-3 py-1 rounded-full font-bold flex items-center gap-1 transition-colors hover:opacity-80 active:scale-95"><span class="material-symbols-outlined text-[16px]">chat</span> Chat</button>` : ''}
-                        <button onclick="resetGame()" class="text-xs text-google-red hover:bg-google-redLight dark:hover:bg-google-red/10 px-3 py-1 rounded-full font-bold flex items-center gap-1 transition-colors active:scale-95"><span class="material-symbols-outlined text-[16px]">restart_alt</span> End</button>
+                <div class="flex justify-between items-center mb-3 px-1">
+                    <div class="flex flex-col">
+                        <span class="text-xs font-bold text-primary tracking-wide uppercase">${md.name}</span>
+                        ${md.target ? `<span class="text-[10px] font-semibold text-zinc-400 uppercase">Target: ${state.settings.m1} / ${state.settings.m2}</span>` : ''}
+                    </div>
+                    <div class="flex gap-1.5 bg-surface-light dark:bg-surface-dark p-1 rounded-2xl shadow-sm border border-zinc-100 dark:border-zinc-800/50">
+                        ${(state.activeGame.mode.startsWith('trix')) ? `<button onclick="vibe(); openTrixCalculator()" class="w-10 h-10 rounded-xl bg-primary-light text-primary flex items-center justify-center hover:bg-primary hover:text-white transition-all active:scale-95"><span class="material-symbols-outlined text-[20px]">calculate</span></button>` : ''}
+                        ${(state.activeGame.rounds && state.activeGame.rounds.length > 0) ? `<button onclick="vibe(); openHostChat()" class="w-10 h-10 rounded-xl bg-primary-light text-primary flex items-center justify-center hover:bg-primary hover:text-white transition-all active:scale-95"><span class="material-symbols-outlined text-[20px]">forum</span></button>` : ''}
+                        <button onclick="resetGame()" class="w-10 h-10 rounded-xl bg-red-50 text-red-500 flex items-center justify-center hover:bg-red-500 hover:text-white transition-all active:scale-95"><span class="material-symbols-outlined text-[20px]">stop_circle</span></button>
                     </div>
                 </div>
-                <div class="grid grid-cols-2 gap-3 mb-4">
-                    <div class="bg-google-surfaceLight dark:bg-google-surfaceDark p-5 rounded-[24px] flex flex-col items-center justify-between shadow-google border ${t1 >= state.settings.m2 ? 'border-google-red' : 'border-google-borderLight dark:border-google-borderDark'} transition-colors">
-                        <div class="flex mb-3 justify-center pl-3">${getPlayerAvatarHTML(state.activeGame.team1[0], 1, 0)}${getPlayerAvatarHTML(state.activeGame.team1[1], 1, 1)}</div>
-                        <h2 id="t1-total" class="text-5xl font-black text-google-textLight dark:text-google-textDark">${t1}</h2>
-                        <span class="text-[10px] text-google-textMuted mt-1 uppercase font-bold tracking-widest text-center truncate w-full px-1">${t1Name}</span>
-                    </div>
-                    <div class="bg-google-surfaceLight dark:bg-google-surfaceDark p-5 rounded-[24px] flex flex-col items-center justify-between shadow-google border ${t2 >= state.settings.m2 ? 'border-google-red' : 'border-google-borderLight dark:border-google-borderDark'} transition-colors">
-                        <div class="flex mb-3 justify-center pl-3">${getPlayerAvatarHTML(state.activeGame.team2[0], 2, 0)}${getPlayerAvatarHTML(state.activeGame.team2[1], 2, 1)}</div>
-                        <h2 id="t2-total" class="text-5xl font-black text-primary dark:text-primary-dark">${t2}</h2>
-                        <span class="text-[10px] text-google-textMuted mt-1 uppercase font-bold tracking-widest text-center truncate w-full px-1">${t2Name}</span>
-                    </div>
-                </div>
-                <div class="flex-1 overflow-y-auto pb-6 px-1" id="rounds-container">
-                    ${roundsHtml || `<div class="flex flex-col items-center justify-center h-40 opacity-50 text-center"><span class="material-symbols-outlined text-4xl mb-2">edit_document</span><p class="text-sm">No rounds yet.<br>Tap + to start.</p></div>`}
+                ${scoreCardsHtml}
+                <div class="flex-1 overflow-y-auto pb-4" id="rounds-container">
+                    ${roundsHtml || `<div class="flex flex-col items-center justify-center h-48 text-zinc-300 dark:text-zinc-700 text-center"><span class="material-symbols-outlined text-5xl mb-3">note_add</span><p class="text-sm font-medium">Board is clean.<br>Tap + to start a round.</p></div>`}
                 </div>
             `;
         }
@@ -569,48 +649,306 @@
         window.updateRoundData = function(index, team, value) {
             state.activeGame.rounds[index][team] = value === '' ? null : parseInt(value);
             saveActiveGame();
-            let t1 = 0; let t2 = 0; state.activeGame.rounds.forEach(r => { t1 += (parseInt(r.t1)||0); t2 += (parseInt(r.t2)||0); });
+            let t1=0, t2=0, t3=0, t4=0;
+            state.activeGame.rounds.forEach(r => { t1+=(r.t1||0); t2+=(r.t2||0); t3+=(r.t3||0); t4+=(r.t4||0); });
             const h1 = document.getElementById('t1-total'); if(h1) h1.innerText = t1;
             const h2 = document.getElementById('t2-total'); if(h2) h2.innerText = t2;
+            const h3 = document.getElementById('t3-total'); if(h3) h3.innerText = t3;
+            const h4 = document.getElementById('t4-total'); if(h4) h4.innerText = t4;
             checkMilestones();
         }
 
         window.openPlayerSelect = function(teamIndex, posIndex) {
             let html = state.players.map(p => `
-                <div onclick="vibe(); selectPlayer(${teamIndex}, ${posIndex}, '${p.id}')" class="flex items-center gap-4 p-3 hover:bg-google-bgLight dark:bg-google-bgDark rounded-2xl cursor-pointer transition-colors border border-transparent hover:border-google-borderLight dark:hover:border-google-borderDark active:scale-[0.98]">
+                <div onclick="vibe(); selectPlayer(${teamIndex}, ${posIndex}, '${p.id}')" class="flex items-center gap-4 p-3 bg-background-light dark:bg-background-dark hover:bg-zinc-200 dark:hover:bg-zinc-800 rounded-2xl cursor-pointer transition-colors active:scale-[0.98] mb-2">
                     <img src="${p.avatar || 'https://api.dicebear.com/7.x/initials/svg?seed=' + p.name}" class="w-10 h-10 rounded-full object-cover">
-                    <span class="font-bold">${p.name}</span>
+                    <span class="font-semibold text-sm">${p.name}</span>
                 </div>
             `).join('');
-            showModal('Select Player', `<div class="flex flex-col gap-2 max-h-60 overflow-y-auto"><div onclick="vibe(); selectPlayer(${teamIndex}, ${posIndex}, null)" class="flex items-center gap-4 p-3 hover:bg-google-redLight dark:hover:bg-google-red/10 text-google-red rounded-2xl cursor-pointer transition-colors active:scale-[0.98]"><span class="material-symbols-outlined">person_remove</span><span class="font-bold">Clear Slot</span></div>${html}</div>`);
+            showModal('Assign Player', `
+                <div class="flex flex-col max-h-[50vh] overflow-y-auto pr-2 pb-2">
+                    <div onclick="vibe(); selectPlayer(${teamIndex}, ${posIndex}, null)" class="flex items-center gap-4 p-3 bg-red-50 dark:bg-red-900/20 text-red-500 rounded-2xl cursor-pointer transition-colors active:scale-[0.98] mb-4">
+                        <div class="w-10 h-10 rounded-full flex items-center justify-center"><span class="material-symbols-outlined">person_remove</span></div>
+                        <span class="font-semibold text-sm">Clear Slot</span>
+                    </div>
+                    ${html}
+                </div>`);
         }
+        
         window.selectPlayer = function(teamIndex, posIndex, playerId) {
-            if (teamIndex === 1) state.activeGame.team1[posIndex] = playerId; else state.activeGame.team2[posIndex] = playerId;
+            if (teamIndex === 1) state.activeGame.team1[posIndex] = playerId; 
+            else if (teamIndex === 2) state.activeGame.team2[posIndex] = playerId;
+            else if (teamIndex === 3) state.activeGame.team3[posIndex] = playerId;
+            else if (teamIndex === 4) state.activeGame.team4[posIndex] = playerId;
             saveActiveGame(); closeModal(); renderMain();
+        }
+
+        /* --- Trix Calculator Logic --- */
+        window.openTrixCalculator = function() {
+            const mode = state.activeGame.mode;
+            const isComplex = mode === 'trix_complex';
+
+            let gameOptions = '';
+            if (isComplex) {
+                gameOptions = `<option value="complex">Complex (All Negatives)</option><option value="trix">Trix (+200, +150...)</option>`;
+            } else {
+                gameOptions = `
+                    <option value="king">King of Hearts (-75)</option>
+                    <option value="queens">Queens (-25)</option>
+                    <option value="diamonds">Diamonds (-10)</option>
+                    <option value="slaps">Slaps (-15)</option>
+                    <option value="trix">Trix (+200, +150...)</option>
+                `;
+            }
+
+            showModal("Smart Calculator", `
+                <div class="flex-1 overflow-y-auto max-h-[60vh] pb-4 pr-1">
+                    <div class="mb-5">
+                        <label class="block text-xs font-semibold text-zinc-500 mb-2">Select Current Game</label>
+                        <select id="trix-calc-type" onchange="renderTrixCalcInputs()" class="w-full bg-background-light dark:bg-background-dark px-4 py-3.5 rounded-2xl font-semibold border-none focus:ring-2 focus:ring-primary outline-none text-sm appearance-none">
+                            ${gameOptions}
+                        </select>
+                    </div>
+                    <div id="trix-calc-dynamic-inputs" class="space-y-4"></div>
+                </div>
+                <div class="pt-4 mt-2 flex gap-3">
+                    <button onclick="closeModal()" class="w-1/3 bg-background-light dark:bg-background-dark py-3.5 rounded-2xl text-sm font-semibold text-zinc-500 hover:bg-zinc-200 active:scale-95 transition-all">Cancel</button>
+                    <button onclick="calculateAndAddTrix()" class="flex-1 bg-primary py-3.5 rounded-2xl text-sm font-semibold text-white shadow-md active:scale-95 transition-all">Calculate & Add</button>
+                </div>
+            `);
+
+            renderTrixCalcInputs();
+        }
+
+        window.renderTrixCalcInputs = function() {
+            const type = document.getElementById('trix-calc-type').value;
+            const container = document.getElementById('trix-calc-dynamic-inputs');
+            const mode = state.activeGame.mode;
+            const isInd = mode === 'trix_individual';
+
+            let participants = [
+                { id: 't1', name: getTeamName(state.activeGame.team1, isInd?'P1':'Team 1') },
+                { id: 't2', name: getTeamName(state.activeGame.team2, isInd?'P2':'Team 2') }
+            ];
+            if (isInd) {
+                participants.push({ id: 't3', name: getTeamName(state.activeGame.team3, 'P3') });
+                participants.push({ id: 't4', name: getTeamName(state.activeGame.team4, 'P4') });
+            }
+
+            const buildNumberInput = (label, key, max, colorClass) => `
+                <div class="bg-surface-light dark:bg-surface-dark p-5 rounded-3xl shadow-sm border border-zinc-100 dark:border-zinc-800">
+                    <h4 class="text-xs font-bold ${colorClass} mb-4 uppercase tracking-wider">${label}</h4>
+                    ${participants.map(p => `
+                        <div class="flex items-center justify-between mb-3 pb-3 border-b border-zinc-100 dark:border-zinc-800 last:mb-0 last:pb-0 last:border-0">
+                            <span class="text-sm font-semibold truncate w-1/2">${p.name}</span>
+                            <div class="flex items-center gap-1 bg-background-light dark:bg-background-dark rounded-xl p-1">
+                                <button onclick="document.getElementById('trix-${key}-${p.id}').stepDown()" class="w-8 h-8 rounded-lg hover:bg-surface-light dark:hover:bg-surface-dark flex items-center justify-center font-bold text-zinc-500 transition-colors">-</button>
+                                <input type="number" min="0" max="${max}" id="trix-${key}-${p.id}" value="0" class="w-10 text-center bg-transparent py-1 font-bold text-lg outline-none select-text pointer-events-none">
+                                <button onclick="document.getElementById('trix-${key}-${p.id}').stepUp()" class="w-8 h-8 rounded-lg hover:bg-surface-light dark:hover:bg-surface-dark flex items-center justify-center font-bold text-zinc-500 transition-colors">+</button>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+
+            const buildKingInput = () => `
+                <div class="bg-surface-light dark:bg-surface-dark p-5 rounded-3xl shadow-sm border border-zinc-100 dark:border-zinc-800">
+                    <h4 class="text-xs font-bold text-rose-500 mb-4 uppercase tracking-wider">King of Hearts (-75)</h4>
+                    <div class="mb-5">
+                        <label class="block text-xs font-semibold text-zinc-400 mb-3">Who got the King?</label>
+                        <div class="grid grid-cols-2 gap-2">
+                            ${participants.map(p => `
+                            <label class="flex items-center gap-2 cursor-pointer bg-background-light dark:bg-background-dark p-3 rounded-xl border border-transparent hover:border-zinc-300 transition-all">
+                                <input type="radio" name="trix-king" value="${p.id}" class="w-4 h-4 text-primary focus:ring-primary accent-primary">
+                                <span class="text-xs font-semibold truncate">${p.name}</span>
+                            </label>`).join('')}
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-zinc-400 mb-2">Was it doubled? (Optional)</label>
+                        <select id="trix-king-doubler" class="w-full bg-background-light dark:bg-background-dark px-4 py-3 rounded-xl border-none text-xs font-semibold outline-none focus:ring-2 focus:ring-primary appearance-none">
+                            <option value="">Not doubled</option>
+                            ${participants.map(p => `<option value="${p.id}">Doubled by: ${p.name}</option>`).join('')}
+                        </select>
+                    </div>
+                </div>
+            `;
+
+            const buildQueensInput = () => `
+                <div class="bg-surface-light dark:bg-surface-dark p-5 rounded-3xl shadow-sm border border-zinc-100 dark:border-zinc-800">
+                    <h4 class="text-xs font-bold text-purple-500 mb-4 uppercase tracking-wider">Queens (-25 each)</h4>
+                    ${participants.map(p => `
+                        <div class="mb-4 pb-4 border-b border-zinc-100 dark:border-zinc-800 last:mb-0 last:pb-0 last:border-0">
+                            <span class="text-sm font-semibold block mb-3">${p.name}</span>
+                            <div class="flex gap-2">
+                                <div class="flex-1 text-center bg-background-light dark:bg-background-dark p-2 rounded-xl">
+                                    <label class="block text-[9px] font-bold text-zinc-400 mb-1">Eaten</label>
+                                    <input type="number" id="trix-queens-eaten-${p.id}" value="0" min="0" max="4" class="w-full bg-transparent text-center font-black text-lg outline-none select-text">
+                                </div>
+                                <div class="flex-1 text-center bg-rose-50 dark:bg-rose-900/20 p-2 rounded-xl">
+                                    <label class="block text-[9px] font-bold text-rose-500 mb-1">Doubled (Eaten)</label>
+                                    <input type="number" id="trix-queens-doubled-eaten-${p.id}" value="0" min="0" max="4" class="w-full bg-transparent text-center font-black text-lg outline-none select-text text-rose-500">
+                                </div>
+                                <div class="flex-1 text-center bg-emerald-50 dark:bg-emerald-900/20 p-2 rounded-xl">
+                                    <label class="block text-[9px] font-bold text-emerald-600 mb-1">Doubled (By them)</label>
+                                    <input type="number" id="trix-queens-doubled-by-${p.id}" value="0" min="0" max="4" class="w-full bg-transparent text-center font-black text-lg outline-none select-text text-emerald-600">
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+
+            let html = '';
+            if (type === 'king') html = buildKingInput();
+            else if (type === 'queens') html = buildQueensInput();
+            else if (type === 'diamonds') html = buildNumberInput('Diamonds (-10 each)', 'diamonds', 13, 'text-rose-500');
+            else if (type === 'slaps') html = buildNumberInput('Slaps (-15 each)', 'slaps', 13, 'text-orange-500');
+            else if (type === 'complex') {
+                html = `
+                    ${buildKingInput()}
+                    <div class="mt-4"></div>
+                    ${buildQueensInput()}
+                    <div class="mt-4"></div>
+                    ${buildNumberInput('Diamonds (-10 each)', 'diamonds', 13, 'text-rose-500')}
+                    <div class="mt-4"></div>
+                    ${buildNumberInput('Slaps (-15 each)', 'slaps', 13, 'text-orange-500')}
+                `;
+            } else if (type === 'trix') {
+                const places = [
+                    { label: '1st Place (+200)', val: 200, color: 'text-primary' },
+                    { label: '2nd Place (+150)', val: 150, color: 'text-blue-400' },
+                    { label: '3rd Place (+100)', val: 100, color: 'text-blue-300' },
+                    { label: '4th Place (+50)', val: 50, color: 'text-blue-200' }
+                ];
+                html = `
+                    <div class="bg-surface-light dark:bg-surface-dark p-5 rounded-3xl shadow-sm border border-zinc-100 dark:border-zinc-800">
+                        <h4 class="text-xs font-bold text-emerald-500 mb-4 uppercase tracking-wider">Assign Trix Placements</h4>
+                        ${places.map((place, i) => `
+                            <div class="flex items-center justify-between mb-4 last:mb-0">
+                                <span class="text-sm font-black ${place.color}">${place.label}</span>
+                                <select id="trix-place-${i}" class="w-40 bg-background-light dark:bg-background-dark py-2.5 px-4 rounded-xl border-none outline-none focus:ring-2 focus:ring-primary text-xs font-bold appearance-none">
+                                    <option value="">Select...</option>
+                                    ${participants.map(p => `<option value="${p.id}">${p.name}</option>`).join('')}
+                                </select>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+            container.innerHTML = html;
+        }
+
+        window.calculateAndAddTrix = function() {
+            const type = document.getElementById('trix-calc-type').value;
+            const labelsMap = {king: 'King', queens: 'Queens', diamonds: 'Diamonds', slaps: 'Slaps', trix: 'Trix', complex: 'Complex'};
+            const typeLabel = labelsMap[type]; 
+            const mode = state.activeGame.mode;
+            const isInd = mode === 'trix_individual';
+            const ids = isInd ? ['t1', 't2', 't3', 't4'] : ['t1', 't2'];
+            
+            let scores = { t1: 0, t2: 0, t3: 0, t4: 0 };
+            const addScore = (id, pts) => { scores[id] += pts; };
+            const getNum = (key, id) => parseInt(document.getElementById(`trix-${key}-${id}`).value) || 0;
+            let errorOccurred = false;
+
+            if (type === 'king' || type === 'complex') {
+                const kingEl = document.querySelector('input[name="trix-king"]:checked');
+                if (!kingEl && type === 'king') { errorOccurred = true; showToast("Must select who got the King!", "error"); }
+                if (!kingEl && type === 'complex') { errorOccurred = true; showToast("Complex: Who got the King?", "error"); }
+                
+                if(kingEl) {
+                    const eater = kingEl.value;
+                    const doubler = document.getElementById('trix-king-doubler').value;
+                    addScore(eater, -75);
+                    if (doubler) { addScore(eater, -75); addScore(doubler, +75); }
+                }
+            }
+            
+            if (errorOccurred) return;
+
+            if (['queens', 'complex'].includes(type)) {
+                let sumEaten = 0, sumDoubledEaten = 0, sumDoubledBy = 0;
+                
+                ids.forEach(id => {
+                    const eaten = getNum('queens-eaten', id);
+                    const dEaten = getNum('queens-doubled-eaten', id);
+                    const dBy = getNum('queens-doubled-by', id);
+                    
+                    sumEaten += eaten; sumDoubledEaten += dEaten; sumDoubledBy += dBy;
+                    if(dEaten > eaten) { errorOccurred = true; showToast("Doubled eaten cannot exceed total eaten!", "error"); }
+                    
+                    const score = ((eaten - dEaten) * -25) + (dEaten * -50) + (dBy * 25);
+                    addScore(id, score);
+                });
+
+                if(errorOccurred) return;
+                if (sumEaten !== 4) return showToast("Total eaten Queens must be exactly 4.", "error");
+                if (sumDoubledEaten !== sumDoubledBy) return showToast("Doubled Queens mismatch!", "error");
+            }
+
+            if (['diamonds', 'slaps', 'complex'].includes(type)) {
+                const toCheck = type === 'complex' ? ['diamonds', 'slaps'] : [type];
+                for (let game of toCheck) {
+                    let sum = 0; const pts = game === 'diamonds' ? -10 : -15; const max = 13;
+                    ids.forEach(id => { const val = getNum(game, id); sum += val; addScore(id, val * pts); });
+                    if (sum !== max) return showToast(`Total ${game} must be exactly 13.`, "error");
+                }
+            }
+
+            if (type === 'trix') {
+                for (let i = 0; i < 4; i++) {
+                    const el = document.getElementById(`trix-place-${i}`);
+                    if (!el.value) return showToast("Must select a player for all placements.", "error");
+                    const pts = [200, 150, 100, 50][i];
+                    addScore(el.value, pts);
+                }
+            }
+
+            let roundObj = { t1: scores.t1, t2: scores.t2, label: typeLabel };
+            if (isInd) { roundObj.t3 = scores.t3; roundObj.t4 = scores.t4; }
+
+            state.activeGame.rounds.push(roundObj);
+            
+            saveActiveGame(); renderMain(); closeModal(); vibe(100); showToast("Round added successfully!");
+            setTimeout(() => { const c = document.getElementById('rounds-container'); if (c) c.scrollTop = c.scrollHeight; }, 100);
         }
 
         /* --- Live Spectate & Co-Op --- */
         function renderLiveList() {
             const uid = getActiveUid();
             let html = state.liveGames.map(live => {
-                let t1 = 0; let t2 = 0; (live.game.rounds || []).forEach(r => { t1 += (r.t1||0); t2 += (r.t2||0); });
-                const isCoop = live.game.team1.includes(uid) || live.game.team2.includes(uid);
-                const t1Name = getTeamName(live.game.team1, 'Team 1');
-                const t2Name = getTeamName(live.game.team2, 'Team 2');
+                const res = getMatchResult(live.game);
+                const isCoop = (live.game.team1||[]).includes(uid) || (live.game.team2||[]).includes(uid) || (live.game.team3||[]).includes(uid) || (live.game.team4||[]).includes(uid);
                 
+                let boardPreview = '';
+                if(res.isInd) {
+                    boardPreview = `
+                        <div class="flex justify-between items-center bg-background-light dark:bg-background-dark p-3 rounded-2xl mt-3">
+                            <div class="text-center w-1/4"><div class="font-black text-sm">${res.scoresObj[1]}</div></div>
+                            <div class="text-center w-1/4"><div class="font-black text-sm text-primary">${res.scoresObj[2]}</div></div>
+                            <div class="text-center w-1/4"><div class="font-black text-sm text-emerald-500">${res.scoresObj[3]}</div></div>
+                            <div class="text-center w-1/4"><div class="font-black text-sm text-rose-500">${res.scoresObj[4]}</div></div>
+                        </div>`;
+                } else {
+                    boardPreview = `
+                        <div class="flex justify-between items-center mt-3">
+                            <div class="flex-1 text-center overflow-hidden"><h3 class="text-3xl font-black">${res.scoresObj[1]}</h3><p class="text-[10px] font-semibold mt-1 text-zinc-400 truncate w-full px-1">${getTeamName(live.game.team1, 'Team 1')}</p></div>
+                            <div class="px-2 text-zinc-200 dark:text-zinc-700 font-black text-xl">VS</div>
+                            <div class="flex-1 text-center overflow-hidden"><h3 class="text-3xl font-black text-primary">${res.scoresObj[2]}</h3><p class="text-[10px] font-semibold mt-1 text-zinc-400 truncate w-full px-1">${getTeamName(live.game.team2, 'Team 2')}</p></div>
+                        </div>`;
+                }
+
                 return `
-                    <div onclick="vibe(); openSpectate('${live.id}')" class="bg-google-surfaceLight dark:bg-google-surfaceDark rounded-[24px] p-5 mb-4 shadow-google hover:shadow-google-hover active:scale-[0.98] transition-all cursor-pointer border ${isCoop ? 'border-primary' : 'border-google-borderLight dark:border-google-borderDark'} relative overflow-hidden">
-                        <div class="absolute top-4 right-4 flex items-center gap-1 text-google-red text-[10px] font-black uppercase tracking-widest animate-pulse"><span class="w-2 h-2 bg-google-red rounded-full"></span> LIVE</div>
-                        <div class="text-sm font-bold text-google-textMuted mb-3 flex items-center gap-2"><span class="material-symbols-outlined text-[18px] ${isCoop?'text-primary':''}">${isCoop?'group':'podcasts'}</span> ${isCoop ? 'Your Co-op Match' : live.hostName + "'s Match"}</div>
-                        <div class="flex justify-between items-center">
-                            <div class="flex-1 text-center overflow-hidden"><h3 class="text-3xl font-black">${t1}</h3><p class="text-[10px] font-bold mt-1 uppercase text-google-textMuted truncate w-full px-1">${t1Name}</p></div>
-                            <div class="px-2 text-google-borderLight dark:text-google-borderDark font-black text-xl">VS</div>
-                            <div class="flex-1 text-center overflow-hidden"><h3 class="text-3xl font-black text-primary dark:text-primary-dark">${t2}</h3><p class="text-[10px] font-bold mt-1 uppercase text-google-textMuted truncate w-full px-1">${t2Name}</p></div>
-                        </div>
+                    <div onclick="vibe(); openSpectate('${live.id}')" class="bg-surface-light dark:bg-surface-dark rounded-3xl p-5 mb-4 shadow-soft hover:-translate-y-1 active:scale-[0.98] transition-all cursor-pointer border ${isCoop ? 'border-primary/50 shadow-primary/10' : 'border-zinc-100 dark:border-zinc-800'} relative overflow-hidden">
+                        <div class="absolute top-5 right-5 flex items-center gap-1.5 text-[9px] font-black text-rose-500 uppercase tracking-widest animate-pulse bg-rose-50 dark:bg-rose-900/20 px-2 py-1 rounded-lg"><span class="w-1.5 h-1.5 bg-rose-500 rounded-full"></span> LIVE</div>
+                        <div class="text-sm font-bold text-zinc-700 dark:text-zinc-300 mb-1 flex items-center gap-2"><span class="material-symbols-outlined text-[18px] ${isCoop?'text-primary':''}">${isCoop?'group':'podcasts'}</span> ${isCoop ? 'Your Co-op Match' : live.hostName + "'s Match"}</div>
+                        <div class="text-[10px] font-bold text-primary uppercase tracking-wide mb-2">${res.md.name}</div>
+                        ${boardPreview}
                     </div>
                 `;
             }).join('');
-            document.getElementById('content').innerHTML = `<h2 class="text-2xl font-bold mb-4">Live Matches</h2><div class="flex-1 overflow-y-auto pb-6">${html || `<div class="text-center text-google-textMuted mt-10">No live matches.</div>`}</div>`;
+            document.getElementById('content').innerHTML = `<h2 class="text-2xl font-bold mb-4 tracking-tight px-1">Live Matches</h2><div class="flex-1 overflow-y-auto pb-6">${html || `<div class="text-center text-zinc-400 mt-10">No live matches currently.</div>`}</div>`;
         }
 
         window.openSpectate = function(hostId) {
@@ -622,31 +960,27 @@
             });
             unsubLiveChat = onSnapshot(query(collection(db, 'artifacts', appId, 'public', 'data', 'liveGames', hostId, 'chat'), orderBy('timestamp', 'asc')), (snap) => {
                 const box = document.getElementById('spectate-chat');
-                const wasAtBottom = box && (box.scrollTop + box.clientHeight >= box.scrollHeight - 10);
-                
                 const chats = snap.docs.map(d => ({ id: d.id, ...d.data() }));
                 renderSpectateChat(chats);
-                
-                // Chat Push Notification logic
                 if (chats.length > 0 && document.hidden) {
                     const lastMsg = chats[chats.length - 1];
-                    if (lastMsg.uid !== uid) sendPushNotification(`New message from ${lastMsg.name}`, lastMsg.text);
+                    if (lastMsg.uid !== uid) sendPushNotification(`Message from ${lastMsg.name}`, lastMsg.text);
                 }
             });
         }
 
         function renderSpectateMatch() {
             document.getElementById('content').innerHTML = `
-                <div class="flex justify-between items-center mb-2 px-1">
-                    <button onclick="vibe(); switchTab('live')" class="text-sm bg-google-surfaceLight dark:bg-google-surfaceDark border border-google-borderLight dark:border-google-borderDark px-3 py-1 rounded-full font-bold flex items-center gap-1 hover:bg-black/5 active:scale-95 transition-all"><span class="material-symbols-outlined text-[18px]">arrow_back</span> Back</button>
-                    <span id="spec-status" class="text-xs font-bold text-google-red uppercase tracking-wider animate-pulse flex items-center gap-1"><span class="w-2 h-2 bg-google-red rounded-full"></span> Spectating</span>
+                <div class="flex justify-between items-center mb-3 px-1">
+                    <button onclick="vibe(); switchTab('live')" class="w-10 h-10 rounded-xl bg-surface-light dark:bg-surface-dark shadow-sm flex items-center justify-center hover:scale-105 active:scale-95 transition-all"><span class="material-symbols-outlined text-[20px]">arrow_back</span></button>
+                    <span id="spec-status" class="text-xs font-bold text-rose-500 uppercase tracking-widest animate-pulse flex items-center gap-1.5"><span class="w-2 h-2 bg-rose-500 rounded-full"></span> Spectating</span>
                 </div>
                 <div id="spectate-top"></div>
-                <div class="flex-1 bg-google-surfaceLight dark:bg-google-surfaceDark rounded-[24px] mt-2 flex flex-col overflow-hidden shadow-google border border-google-borderLight dark:border-google-borderDark">
+                <div class="flex-1 bg-surface-light dark:bg-surface-dark rounded-3xl mt-2 flex flex-col overflow-hidden shadow-soft border border-zinc-100 dark:border-zinc-800">
                     <div id="spectate-chat" class="flex-1 overflow-y-auto p-4 scroll-smooth"></div>
-                    <div class="p-3 bg-google-bgLight dark:bg-google-bgDark border-t border-google-borderLight dark:border-google-borderDark flex items-center gap-2">
-                        <input type="text" id="chat-input" placeholder="Message..." onkeypress="if(event.key==='Enter') sendChatMessage()" class="flex-1 bg-google-surfaceLight dark:bg-google-surfaceDark px-4 py-2 rounded-full border border-google-borderLight dark:border-google-borderDark outline-none focus:border-primary text-sm select-text">
-                        <button onclick="vibe(); sendChatMessage()" class="w-10 h-10 bg-primary text-white rounded-full flex items-center justify-center hover:shadow-google-hover active:scale-95 transition-all"><span class="material-symbols-outlined text-[20px]">send</span></button>
+                    <div class="p-3 bg-background-light dark:bg-background-dark border-t border-zinc-100 dark:border-zinc-800 flex items-center gap-2">
+                        <input type="text" id="chat-input" placeholder="Message..." onkeypress="if(event.key==='Enter') sendChatMessage()" class="flex-1 bg-surface-light dark:bg-surface-dark px-4 py-3 rounded-2xl border-none outline-none focus:ring-2 focus:ring-primary text-sm select-text shadow-sm">
+                        <button onclick="vibe(); sendChatMessage()" class="w-12 h-12 bg-primary text-white rounded-2xl flex items-center justify-center shadow-md shadow-primary/20 hover:scale-105 active:scale-95 transition-all"><span class="material-symbols-outlined text-[20px]">send</span></button>
                     </div>
                 </div>
             `;
@@ -655,38 +989,61 @@
         function renderSpectateScoreboard(gameData) {
             const container = document.getElementById('spectate-top'); if(!container) return;
             const uid = getActiveUid();
-            const isCoop = uid && (gameData.team1.includes(uid) || gameData.team2.includes(uid));
+            const res = getMatchResult(gameData);
+            const isCoop = uid && ((gameData.team1||[]).includes(uid) || (gameData.team2||[]).includes(uid) || (gameData.team3||[]).includes(uid) || (gameData.team4||[]).includes(uid));
             
             if (isCoop) {
                 document.getElementById('spec-status').innerHTML = `<span class="w-2 h-2 bg-primary rounded-full"></span> CO-OP HOST`;
-                document.getElementById('spec-status').classList.replace('text-google-red', 'text-primary');
+                document.getElementById('spec-status').classList.replace('text-rose-500', 'text-primary');
             }
 
-            const t1Name = getTeamName(gameData.team1, 'Team 1');
-            const t2Name = getTeamName(gameData.team2, 'Team 2');
-
-            let t1 = 0; let t2 = 0;
-            const roundsHtml = (gameData.rounds || []).map((r, i) => {
-                t1 += (r.t1||0); t2 += (r.t2||0);
-                if (isCoop) {
+            let roundsHtml = '';
+            if (res.isInd) {
+                roundsHtml = (gameData.rounds || []).map((r, i) => {
+                    const lbl = r.label ? `<br><span class="text-[7px] text-primary whitespace-nowrap leading-tight">${r.label}</span>` : '';
                     return `
-                        <div class="flex items-center justify-between py-1 border-b border-google-borderLight dark:border-google-borderDark last:border-0">
-                            <input type="number" value="${r.t1 !== null ? r.t1 : ''}" oninput="updateCoopRound(${i}, 't1', this.value)" class="w-14 text-center bg-transparent py-1 font-bold outline-none select-text">
-                            <span class="font-bold text-google-textMuted text-[10px]">R${i+1}</span>
-                            <input type="number" value="${r.t2 !== null ? r.t2 : ''}" oninput="updateCoopRound(${i}, 't2', this.value)" class="w-14 text-center bg-transparent py-1 font-bold outline-none select-text">
-                        </div>`;
-                }
-                return `<div class="flex justify-between py-1 border-b border-google-borderLight dark:border-google-borderDark text-sm last:border-0"><span class="w-1/3 text-center font-bold">${r.t1||0}</span><span class="w-1/3 text-center text-google-textMuted text-[10px] flex items-center justify-center">R${i+1}</span><span class="w-1/3 text-center font-bold">${r.t2||0}</span></div>`;
-            }).join('');
+                    <div class="flex items-center gap-1 py-1.5 border-b border-zinc-100 dark:border-zinc-800 last:border-0">
+                        <span class="font-bold text-zinc-400 text-[9px] w-8 text-center leading-tight flex flex-col justify-center">R${i+1}${lbl}</span>
+                        <input type="number" value="${r.t1 !== null ? r.t1 : ''}" ${isCoop?'':'readonly'} oninput="updateCoopRound(${i}, 't1', this.value)" class="flex-1 min-w-0 text-center bg-transparent py-1 font-bold outline-none select-text text-sm">
+                        <input type="number" value="${r.t2 !== null ? r.t2 : ''}" ${isCoop?'':'readonly'} oninput="updateCoopRound(${i}, 't2', this.value)" class="flex-1 min-w-0 text-center bg-transparent py-1 font-bold outline-none select-text text-sm">
+                        <input type="number" value="${r.t3 !== null ? r.t3 : ''}" ${isCoop?'':'readonly'} oninput="updateCoopRound(${i}, 't3', this.value)" class="flex-1 min-w-0 text-center bg-transparent py-1 font-bold outline-none select-text text-sm">
+                        <input type="number" value="${r.t4 !== null ? r.t4 : ''}" ${isCoop?'':'readonly'} oninput="updateCoopRound(${i}, 't4', this.value)" class="flex-1 min-w-0 text-center bg-transparent py-1 font-bold outline-none select-text text-sm">
+                    </div>`;
+                }).join('');
+            } else {
+                roundsHtml = (gameData.rounds || []).map((r, i) => {
+                    const lbl = r.label ? `<br><span class="text-[7px] text-primary whitespace-nowrap leading-tight">${r.label}</span>` : '';
+                    return `
+                    <div class="flex items-center justify-between py-1.5 border-b border-zinc-100 dark:border-zinc-800 last:border-0">
+                        <input type="number" value="${r.t1 !== null ? r.t1 : ''}" ${isCoop?'':'readonly'} oninput="updateCoopRound(${i}, 't1', this.value)" class="w-16 text-center bg-transparent py-1 font-bold outline-none select-text">
+                        <span class="font-bold text-zinc-400 text-[10px] text-center flex flex-col justify-center">R${i+1}${lbl}</span>
+                        <input type="number" value="${r.t2 !== null ? r.t2 : ''}" ${isCoop?'':'readonly'} oninput="updateCoopRound(${i}, 't2', this.value)" class="w-16 text-center bg-transparent py-1 font-bold outline-none select-text">
+                    </div>`;
+                }).join('');
+            }
+
+            let topBoard = '';
+            if (res.isInd) {
+                topBoard = `
+                    <div class="flex justify-between items-end mb-3 px-1">
+                        <div class="text-center w-1/4"><h2 id="coop-t1" class="text-xl font-black">${res.scoresObj[1]}</h2><span class="text-[8px] uppercase font-bold text-zinc-400 truncate block w-full px-1">${getTeamName(gameData.team1, 'P1')}</span></div>
+                        <div class="text-center w-1/4"><h2 id="coop-t2" class="text-xl font-black text-primary">${res.scoresObj[2]}</h2><span class="text-[8px] uppercase font-bold text-zinc-400 truncate block w-full px-1">${getTeamName(gameData.team2, 'P2')}</span></div>
+                        <div class="text-center w-1/4"><h2 id="coop-t3" class="text-xl font-black text-emerald-500">${res.scoresObj[3]}</h2><span class="text-[8px] uppercase font-bold text-zinc-400 truncate block w-full px-1">${getTeamName(gameData.team3, 'P3')}</span></div>
+                        <div class="text-center w-1/4"><h2 id="coop-t4" class="text-xl font-black text-rose-500">${res.scoresObj[4]}</h2><span class="text-[8px] uppercase font-bold text-zinc-400 truncate block w-full px-1">${getTeamName(gameData.team4, 'P4')}</span></div>
+                    </div>`;
+            } else {
+                topBoard = `
+                    <div class="flex justify-between items-end mb-3 px-2">
+                        <div class="text-center w-1/3 overflow-hidden"><h2 id="coop-t1" class="text-4xl font-black tracking-tight">${res.scoresObj[1]}</h2><span class="text-[10px] uppercase font-semibold text-zinc-400 truncate block w-full mt-1">${getTeamName(gameData.team1, 'Team 1')}</span></div>
+                        <div class="text-center w-1/3 pb-2"><span class="material-symbols-outlined text-zinc-200 dark:text-zinc-700">handshake</span></div>
+                        <div class="text-center w-1/3 overflow-hidden"><h2 id="coop-t2" class="text-4xl font-black tracking-tight text-primary">${res.scoresObj[2]}</h2><span class="text-[10px] uppercase font-semibold text-zinc-400 truncate block w-full mt-1">${getTeamName(gameData.team2, 'Team 2')}</span></div>
+                    </div>`;
+            }
 
             container.innerHTML = `
-                <div class="bg-google-surfaceLight dark:bg-google-surfaceDark rounded-[20px] p-3 shadow-sm border border-google-borderLight dark:border-google-borderDark">
-                    <div class="flex justify-between items-end mb-2 px-2">
-                        <div class="text-center w-1/3 overflow-hidden"><h2 id="coop-t1" class="text-3xl font-black">${t1}</h2><span class="text-[9px] uppercase font-bold text-google-textMuted truncate block w-full px-1">${t1Name}</span></div>
-                        <div class="text-center w-1/3 pb-1"><span class="material-symbols-outlined text-google-borderLight dark:text-google-borderDark">handshake</span></div>
-                        <div class="text-center w-1/3 overflow-hidden"><h2 id="coop-t2" class="text-3xl font-black text-primary dark:text-primary-dark">${t2}</h2><span class="text-[9px] uppercase font-bold text-google-textMuted truncate block w-full px-1">${t2Name}</span></div>
-                    </div>
-                    <div class="max-h-24 overflow-y-auto px-2 bg-google-bgLight dark:bg-google-bgDark rounded-xl">${roundsHtml}</div>
+                <div class="bg-surface-light dark:bg-surface-dark rounded-3xl p-4 shadow-soft border border-zinc-100 dark:border-zinc-800">
+                    ${topBoard}
+                    <div class="max-h-32 overflow-y-auto px-2 bg-background-light dark:bg-background-dark rounded-2xl p-2">${roundsHtml}</div>
                 </div>
             `;
         }
@@ -700,10 +1057,9 @@
             const gameData = liveGameDoc.game;
             gameData.rounds[index][team] = value === '' ? null : parseInt(value);
             
-            // Local visual update instantly
-            let t1 = 0; let t2 = 0; gameData.rounds.forEach(r => { t1 += (r.t1||0); t2 += (r.t2||0); });
-            const h1 = document.getElementById('coop-t1'); if(h1) h1.innerText = t1;
-            const h2 = document.getElementById('coop-t2'); if(h2) h2.innerText = t2;
+            let s = { 1: 0, 2: 0, 3: 0, 4: 0 };
+            gameData.rounds.forEach(r => { s[1]+=(r.t1||0); s[2]+=(r.t2||0); s[3]+=(r.t3||0); s[4]+=(r.t4||0); });
+            for(let i=1; i<=4; i++) { const h = document.getElementById('coop-t'+i); if(h) h.innerText = s[i]; }
 
             clearTimeout(debounceTimer);
             debounceTimer = setTimeout(() => {
@@ -729,10 +1085,10 @@
             const uid = getActiveUid();
             showModal("Live Game Chat", `
                 <div class="flex flex-col h-[50vh]">
-                    <div id="host-chat-box" class="flex-1 overflow-y-auto p-2 mb-2 scroll-smooth"></div>
-                    <div class="flex items-center gap-2 mt-auto bg-google-bgLight dark:bg-google-bgDark p-2 rounded-full border border-google-borderLight dark:border-google-borderDark">
-                        <input type="text" id="host-chat-input" placeholder="Chat with spectators..." onkeypress="if(event.key==='Enter') sendHostChatMessage()" class="flex-1 bg-transparent px-2 outline-none text-sm text-google-textLight dark:text-google-textDark select-text">
-                        <button onclick="vibe(); sendHostChatMessage()" class="w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center hover:scale-105 active:scale-95 transition-transform"><span class="material-symbols-outlined text-[16px]">send</span></button>
+                    <div id="host-chat-box" class="flex-1 overflow-y-auto pb-4 scroll-smooth pr-1"></div>
+                    <div class="flex items-center gap-2 mt-auto bg-background-light dark:bg-background-dark p-2 rounded-3xl border border-zinc-100 dark:border-zinc-800">
+                        <input type="text" id="host-chat-input" placeholder="Message..." onkeypress="if(event.key==='Enter') sendHostChatMessage()" class="flex-1 bg-transparent px-3 py-2 outline-none text-sm select-text">
+                        <button onclick="vibe(); sendHostChatMessage()" class="w-10 h-10 bg-primary text-white rounded-2xl flex items-center justify-center shadow-md hover:scale-105 active:scale-95 transition-all"><span class="material-symbols-outlined text-[18px]">send</span></button>
                     </div>
                 </div>
             `);
@@ -740,7 +1096,7 @@
             unsubHostChat = onSnapshot(query(collection(db, 'artifacts', appId, 'public', 'data', 'liveGames', uid, 'chat'), orderBy('timestamp', 'asc')), (snap) => {
                 state.hostChatData = snap.docs.map(d => ({ id: d.id, ...d.data() }));
                 const box = document.getElementById('host-chat-box'); if(!box) return;
-                box.innerHTML = generateChatHTML(state.hostChatData) || '<div class="text-center text-google-textMuted text-sm mt-10">No messages yet.</div>';
+                box.innerHTML = generateChatHTML(state.hostChatData) || '<div class="text-center text-zinc-400 text-sm mt-10">No messages yet.</div>';
                 requestAnimationFrame(() => box.scrollTop = box.scrollHeight);
             });
         }
@@ -756,12 +1112,12 @@
         function renderPlayers() {
             const uid = getActiveUid();
             let html = state.players.map(p => `
-                <div onclick="vibe(); openPlayerProfile('${p.id}')" class="flex items-center gap-4 p-4 bg-google-surfaceLight dark:bg-google-surfaceDark rounded-[24px] mb-3 shadow-sm border ${p.id === uid ? 'border-primary' : 'border-google-borderLight dark:border-google-borderDark'} cursor-pointer hover:shadow-google active:scale-[0.98] transition-all">
-                    <img src="${p.avatar || 'https://api.dicebear.com/7.x/initials/svg?seed=' + p.name}" class="w-12 h-12 rounded-full object-cover shadow-sm">
-                    <div class="flex flex-col"><span class="font-bold">${p.name}</span>${p.id === uid ? '<span class="text-[10px] text-primary font-bold uppercase tracking-wider">You</span>' : ''}</div>
+                <div onclick="vibe(); openPlayerProfile('${p.id}')" class="flex items-center gap-4 p-4 bg-surface-light dark:bg-surface-dark rounded-3xl mb-3 shadow-soft border ${p.id === uid ? 'border-primary/50' : 'border-zinc-100 dark:border-zinc-800'} cursor-pointer hover:-translate-y-1 active:scale-[0.98] transition-all">
+                    <img src="${p.avatar || 'https://api.dicebear.com/7.x/initials/svg?seed=' + p.name}" class="w-14 h-14 rounded-2xl object-cover shadow-sm">
+                    <div class="flex flex-col"><span class="font-bold text-zinc-800 dark:text-zinc-100">${p.name}</span>${p.id === uid ? '<span class="text-[10px] text-primary font-bold uppercase tracking-wider mt-0.5">You</span>' : ''}</div>
                 </div>
             `).join('');
-            document.getElementById('content').innerHTML = `<div class="flex justify-between items-center mb-4"><h2 class="text-2xl font-bold">Roster</h2><span class="text-xs font-bold bg-primary-light text-primary px-3 py-1 rounded-full">${state.players.length} Players</span></div><div class="flex-1 overflow-y-auto pb-6">${html}</div>`;
+            document.getElementById('content').innerHTML = `<div class="flex justify-between items-center mb-4 px-1"><h2 class="text-2xl font-bold tracking-tight">Roster</h2><span class="text-xs font-bold bg-primary-light text-primary px-3 py-1.5 rounded-full">${state.players.length} Players</span></div><div class="flex-1 overflow-y-auto pb-6">${html}</div>`;
         }
 
         window.openPlayerProfile = function(playerId) {
@@ -769,34 +1125,33 @@
             const player = state.players.find(p => p.id === playerId); if (!player || !uid) return;
             
             let h2hWins = 0; let h2hLosses = 0; let coopWins = 0; let coopLosses = 0;
-            let teammates = {}; // to find loyal duo
+            let teammates = {}; 
 
             state.history.forEach(match => {
-                const t1 = match.team1 || []; const t2 = match.team2 || [];
-                const pInT1 = t1.includes(playerId); const pInT2 = t2.includes(playerId);
+                const res = getMatchResult(match);
+                const t1 = match.team1 || []; const t2 = match.team2 || []; 
+                const t3 = match.team3 || []; const t4 = match.team4 || [];
                 
-                // Track Teammates
-                if(pInT1 || pInT2) {
-                    const myT = pInT1 ? t1 : t2;
-                    myT.forEach(id => { if(id && id !== playerId) teammates[id] = (teammates[id]||0)+1; });
+                if (!res.isInd) {
+                    if(t1.includes(playerId)) t1.forEach(id => { if(id && id !== playerId) teammates[id] = (teammates[id]||0)+1; });
+                    if(t2.includes(playerId)) t2.forEach(id => { if(id && id !== playerId) teammates[id] = (teammates[id]||0)+1; });
                 }
 
-                // H2H logic
                 if (playerId !== uid) {
-                    const myT1 = t1.includes(uid); const myT2 = t2.includes(uid);
-                    if ((!myT1 && !myT2) || (!pInT1 && !pInT2)) return; 
-                    let s1 = 0; let s2 = 0; match.rounds.forEach(r => { s1 += (r.t1||0); s2 += (r.t2||0); });
-                    const t1Won = s1 < s2; const iWon = (myT1 && t1Won) || (myT2 && !t1Won);
+                    const myTeamIdx = t1.includes(uid) ? 1 : (t2.includes(uid) ? 2 : (t3.includes(uid) ? 3 : (t4.includes(uid) ? 4 : 0)));
+                    const theirTeamIdx = t1.includes(playerId) ? 1 : (t2.includes(playerId) ? 2 : (t3.includes(playerId) ? 3 : (t4.includes(playerId) ? 4 : 0)));
+                    
+                    if (myTeamIdx === 0 || theirTeamIdx === 0) return; 
+                    const iWon = res.winnerT === myTeamIdx;
 
-                    if ((myT1 && pInT1) || (myT2 && pInT2)) { if (iWon) coopWins++; else coopLosses++; } 
-                    else if ((myT1 && pInT2) || (myT2 && pInT1)) { if (iWon) h2hWins++; else h2hLosses++; }
+                    if (myTeamIdx === theirTeamIdx) { if (iWon) coopWins++; else coopLosses++; } 
+                    else { if (iWon) h2hWins++; else h2hLosses++; }
                 }
             });
 
             const total = (player.wins||0) + (player.losses||0);
             const rate = total > 0 ? ((player.wins||0) / total * 100).toFixed(0) : 0;
             
-            // Badges
             let badges = [];
             if (total >= 10) badges.push({icon: 'shield', label: 'Veteran', color: 'text-purple-500', bg: 'bg-purple-100 dark:bg-purple-900/30'});
             if (total >= 5 && rate >= 60) badges.push({icon: 'local_fire_department', label: 'On Fire', color: 'text-orange-500', bg: 'bg-orange-100 dark:bg-orange-900/30'});
@@ -808,29 +1163,29 @@
             }
 
             const badgesHtml = badges.length > 0 ? `
-                <div class="flex gap-2 justify-center flex-wrap mb-4">
-                    ${badges.map(b => `<div class="${b.bg} ${b.color} px-3 py-1 rounded-full flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest"><span class="material-symbols-outlined text-[14px]">${b.icon}</span> ${b.label}</div>`).join('')}
-                </div>` : '';
+                <div class="flex gap-2 justify-center flex-wrap mb-6">
+                    ${badges.map(b => `<div class="${b.bg} ${b.color} px-3 py-1.5 rounded-full flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest"><span class="material-symbols-outlined text-[14px]">${b.icon}</span> ${b.label}</div>`).join('')}
+                </div>` : '<div class="mb-4"></div>';
 
             showModal("Player Profile", `
-                <div class="flex flex-col items-center mb-6">
-                    <img src="${player.avatar || 'https://api.dicebear.com/7.x/initials/svg?seed=' + player.name}" class="w-24 h-24 rounded-full object-cover shadow-md mb-3 border-4 border-primary-light">
-                    <h3 class="text-2xl font-black text-center mb-2">${player.name}</h3>
+                <div class="flex flex-col items-center">
+                    <img src="${player.avatar || 'https://api.dicebear.com/7.x/initials/svg?seed=' + player.name}" class="w-28 h-28 rounded-[2rem] object-cover shadow-lg mb-4 border-4 border-surface-light dark:border-surface-dark">
+                    <h3 class="text-3xl font-black text-center mb-2 tracking-tight">${player.name}</h3>
                     ${badgesHtml}
-                    <div class="flex gap-6 mt-2 text-sm bg-google-surfaceLight dark:bg-google-surfaceDark px-6 py-3 rounded-[24px] shadow-sm border border-google-borderLight dark:border-google-borderDark">
-                        <div class="text-center"><div class="font-black text-xl text-primary">${player.wins || 0}</div><div class="text-[10px] uppercase text-google-textMuted font-bold">Wins</div></div>
-                        <div class="text-center"><div class="font-black text-xl text-google-red">${player.losses || 0}</div><div class="text-[10px] uppercase text-google-textMuted font-bold">Losses</div></div>
-                        <div class="text-center"><div class="font-black text-xl">${rate}%</div><div class="text-[10px] uppercase text-google-textMuted font-bold">Win Rate</div></div>
+                    <div class="flex gap-4 w-full text-sm bg-background-light dark:bg-background-dark p-4 rounded-3xl mb-6">
+                        <div class="flex-1 text-center bg-surface-light dark:bg-surface-dark p-3 rounded-2xl shadow-sm"><div class="font-black text-2xl text-primary">${player.wins || 0}</div><div class="text-[9px] uppercase text-zinc-400 font-bold mt-1">Wins</div></div>
+                        <div class="flex-1 text-center bg-surface-light dark:bg-surface-dark p-3 rounded-2xl shadow-sm"><div class="font-black text-2xl text-rose-500">${player.losses || 0}</div><div class="text-[9px] uppercase text-zinc-400 font-bold mt-1">Losses</div></div>
+                        <div class="flex-1 text-center bg-surface-light dark:bg-surface-dark p-3 rounded-2xl shadow-sm"><div class="font-black text-2xl">${rate}%</div><div class="text-[9px] uppercase text-zinc-400 font-bold mt-1">Win Rate</div></div>
                     </div>
                 </div>
                 ${playerId !== uid ? `
-                <div class="bg-google-bgLight dark:bg-google-bgDark rounded-[24px] p-5 border border-google-borderLight dark:border-google-borderDark mb-2 shadow-inner">
-                    <h4 class="text-[11px] font-bold uppercase tracking-wider text-google-textMuted mb-3 flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">compare_arrows</span> Head-to-Head vs You</h4>
-                    <div class="flex justify-between items-center bg-google-surfaceLight dark:bg-google-surfaceDark p-3 rounded-2xl shadow-sm mb-2 border border-google-borderLight dark:border-google-borderDark">
-                        <span class="text-sm font-medium">As Opponents</span><div class="font-bold text-sm"><span class="text-primary">${h2hWins}W</span> - <span class="text-google-red">${h2hLosses}L</span></div>
+                <div class="bg-surface-light dark:bg-surface-dark rounded-3xl p-5 border border-zinc-100 dark:border-zinc-800 shadow-sm">
+                    <h4 class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-4 flex items-center gap-1.5"><span class="material-symbols-outlined text-[16px]">compare_arrows</span> Head-to-Head vs You</h4>
+                    <div class="flex justify-between items-center bg-background-light dark:bg-background-dark p-3.5 rounded-2xl mb-2">
+                        <span class="text-sm font-semibold">As Opponents</span><div class="font-bold text-sm"><span class="text-primary">${h2hWins}W</span> <span class="text-zinc-300 mx-1">|</span> <span class="text-rose-500">${h2hLosses}L</span></div>
                     </div>
-                    <div class="flex justify-between items-center bg-google-surfaceLight dark:bg-google-surfaceDark p-3 rounded-2xl shadow-sm border border-google-borderLight dark:border-google-borderDark">
-                        <span class="text-sm font-medium">As Teammates</span><div class="font-bold text-sm"><span class="text-primary">${coopWins}W</span> - <span class="text-google-red">${coopLosses}L</span></div>
+                    <div class="flex justify-between items-center bg-background-light dark:bg-background-dark p-3.5 rounded-2xl">
+                        <span class="text-sm font-semibold">As Teammates</span><div class="font-bold text-sm"><span class="text-primary">${coopWins}W</span> <span class="text-zinc-300 mx-1">|</span> <span class="text-rose-500">${coopLosses}L</span></div>
                     </div>
                 </div>` : ''}
             `);
@@ -843,163 +1198,225 @@
             }).sort((a,b) => b.rate!==a.rate ? b.rate-a.rate : (b.wins||0)-(a.wins||0));
 
             let html = ranked.map((p, index) => {
-                let badge = `<span class="font-black text-google-textMuted text-lg w-6 text-center">${index + 1}</span>`;
-                if(index===0) badge = `<span class="text-2xl">🥇</span>`; if(index===1) badge = `<span class="text-2xl">🥈</span>`; if(index===2) badge = `<span class="text-2xl">🥉</span>`;
+                let badge = `<span class="font-black text-zinc-300 text-xl w-8 text-center">${index + 1}</span>`;
+                if(index===0) badge = `<span class="text-3xl drop-shadow-md">🥇</span>`; if(index===1) badge = `<span class="text-3xl drop-shadow-md">🥈</span>`; if(index===2) badge = `<span class="text-3xl drop-shadow-md">🥉</span>`;
                 return `
-                    <div onclick="vibe(); openPlayerProfile('${p.id}')" class="flex items-center p-4 bg-google-surfaceLight dark:bg-google-surfaceDark rounded-[24px] mb-3 shadow-sm border border-google-borderLight dark:border-google-borderDark cursor-pointer hover:shadow-google transition-all active:scale-[0.98]">
-                        <div class="mr-3 flex justify-center w-8">${badge}</div>
-                        <img src="${p.avatar || 'https://api.dicebear.com/7.x/initials/svg?seed=' + p.name}" class="w-10 h-10 rounded-full mr-3 object-cover shadow-sm">
-                        <div class="flex-1"><h4 class="font-bold text-sm">${p.name}</h4><span class="text-[10px] font-medium text-google-textMuted">${p.wins||0}W - ${p.losses||0}L</span></div>
-                        <div class="text-right"><div class="text-xl font-black ${index<3 ? 'text-primary' : ''}">${p.rate.toFixed(0)}%</div></div>
+                    <div onclick="vibe(); openPlayerProfile('${p.id}')" class="flex items-center p-4 bg-surface-light dark:bg-surface-dark rounded-3xl mb-3 shadow-soft border border-zinc-100 dark:border-zinc-800 cursor-pointer hover:-translate-y-1 transition-all active:scale-[0.98]">
+                        <div class="mr-2 flex justify-center w-10">${badge}</div>
+                        <img src="${p.avatar || 'https://api.dicebear.com/7.x/initials/svg?seed=' + p.name}" class="w-12 h-12 rounded-2xl mr-4 object-cover shadow-sm">
+                        <div class="flex-1"><h4 class="font-bold text-sm mb-0.5">${p.name}</h4><span class="text-[10px] font-semibold text-zinc-400 bg-background-light dark:bg-background-dark px-2 py-1 rounded-lg">${p.wins||0}W - ${p.losses||0}L</span></div>
+                        <div class="text-right"><div class="text-2xl font-black ${index<3 ? 'text-primary' : 'text-zinc-600 dark:text-zinc-300'} tracking-tight">${p.rate.toFixed(0)}%</div></div>
                     </div>`;
             }).join('');
-            document.getElementById('content').innerHTML = `<div class="flex justify-between items-center mb-4"><button onclick="vibe(); switchTab('main')" class="p-2 -ml-2 rounded-full hover:bg-black/5 active:scale-95 transition-transform"><span class="material-symbols-outlined">arrow_back</span></button><h2 class="text-xl font-bold flex-1 ml-2">Global Leaderboard</h2></div><div class="flex-1 overflow-y-auto pb-6">${html || `<div class="text-center text-google-textMuted mt-10">No ranked players.</div>`}</div>`;
+            document.getElementById('content').innerHTML = `<div class="flex justify-between items-center mb-4 px-1"><h2 class="text-2xl font-bold tracking-tight">Leaderboard</h2></div><div class="flex-1 overflow-y-auto pb-6">${html || `<div class="text-center text-zinc-400 mt-10">No ranked players yet.</div>`}</div>`;
         }
 
         /* --- Settings & History --- */
         function renderHistory() {
             let html = state.history.map(h => {
-                let t1 = 0; let t2 = 0; (h.rounds || []).forEach(r => { t1 += (r.t1||0); t2 += (r.t2||0); }); const t1Won = t1 < t2;
-                const t1Name = getTeamName(h.team1, 'Team 1');
-                const t2Name = getTeamName(h.team2, 'Team 2');
+                const res = getMatchResult(h);
+                let topRender = '';
+
+                if (res.isInd) {
+                    topRender = `
+                    <div class="flex justify-between items-center bg-background-light dark:bg-background-dark p-3 rounded-2xl mb-1 mt-3">
+                        <div class="text-center w-1/4"><div class="font-black text-sm">${res.scoresObj[1]}</div></div>
+                        <div class="text-center w-1/4"><div class="font-black text-sm text-primary">${res.scoresObj[2]}</div></div>
+                        <div class="text-center w-1/4"><div class="font-black text-sm text-emerald-500">${res.scoresObj[3]}</div></div>
+                        <div class="text-center w-1/4"><div class="font-black text-sm text-rose-500">${res.scoresObj[4]}</div></div>
+                    </div>`;
+                } else {
+                    const t1Won = res.winnerT === 1;
+                    topRender = `
+                    <div class="flex justify-between items-center mt-3">
+                        <div class="flex-1 text-center overflow-hidden"><h3 class="text-3xl font-black tracking-tight ${t1Won ? 'text-primary' : 'text-zinc-300 dark:text-zinc-600'}">${res.scoresObj[1]}</h3><div class="text-[9px] font-semibold mt-1 uppercase text-zinc-400 truncate w-full px-1">${getTeamName(h.team1, 'Team 1')}</div></div>
+                        <div class="px-2 text-zinc-200 dark:text-zinc-700 font-black">VS</div>
+                        <div class="flex-1 text-center overflow-hidden"><h3 class="text-3xl font-black tracking-tight ${!t1Won ? 'text-primary' : 'text-zinc-300 dark:text-zinc-600'}">${res.scoresObj[2]}</h3><div class="text-[9px] font-semibold mt-1 uppercase text-zinc-400 truncate w-full px-1">${getTeamName(h.team2, 'Team 2')}</div></div>
+                    </div>`;
+                }
+
                 return `
-                    <div class="bg-google-surfaceLight dark:bg-google-surfaceDark rounded-[24px] p-4 mb-3 shadow-sm border border-google-borderLight dark:border-google-borderDark cursor-pointer hover:shadow-google transition-shadow active:scale-[0.98]" onclick="vibe(); viewMatchDetails('${h.id}')">
-                        <div class="text-[10px] text-google-textMuted font-bold mb-2 uppercase">${new Date(h.date).toLocaleDateString()}</div>
-                        <div class="flex justify-between items-center">
-                            <div class="flex-1 text-center overflow-hidden"><h3 class="text-2xl font-black ${t1Won ? 'text-primary dark:text-primary-dark' : 'text-google-textMuted'}">${t1}</h3><div class="text-[9px] font-bold mt-1 uppercase text-google-textMuted truncate w-full px-1">${t1Name}</div></div>
-                            <div class="px-2 text-google-borderLight dark:text-google-borderDark font-black">VS</div>
-                            <div class="flex-1 text-center overflow-hidden"><h3 class="text-2xl font-black ${!t1Won ? 'text-primary dark:text-primary-dark' : 'text-google-textMuted'}">${t2}</h3><div class="text-[9px] font-bold mt-1 uppercase text-google-textMuted truncate w-full px-1">${t2Name}</div></div>
+                    <div class="bg-surface-light dark:bg-surface-dark rounded-3xl p-5 mb-4 shadow-soft border border-zinc-100 dark:border-zinc-800 cursor-pointer hover:-translate-y-1 transition-all active:scale-[0.98]" onclick="vibe(); viewMatchDetails('${h.id}')">
+                        <div class="flex justify-between items-center mb-1">
+                            <div class="text-[10px] text-zinc-400 font-bold uppercase">${new Date(h.date).toLocaleDateString()}</div>
+                            <div class="text-[9px] text-primary font-bold uppercase tracking-widest bg-primary-light px-2 py-1 rounded-md">${res.md.name}</div>
                         </div>
+                        ${topRender}
                     </div>`;
             }).join('');
-            document.getElementById('content').innerHTML = `<h2 class="text-2xl font-bold mb-4">Match History</h2><div class="flex-1 overflow-y-auto pb-6">${html || `<div class="text-center text-google-textMuted mt-10">No history.</div>`}</div>`;
+            document.getElementById('content').innerHTML = `<h2 class="text-2xl font-bold tracking-tight mb-4 px-1">History</h2><div class="flex-1 overflow-y-auto pb-6">${html || `<div class="text-center text-zinc-400 mt-10">No history.</div>`}</div>`;
         }
 
         window.viewMatchDetails = function(matchId) {
             const match = state.history.find(m => m.id === matchId); if(!match) return;
-            let t1 = 0; let t2 = 0;
-            const roundsHtml = (match.rounds || []).map((r, i) => { t1 += (r.t1||0); t2 += (r.t2||0); return `<div class="flex justify-between py-2 border-b border-google-borderLight dark:border-google-borderDark text-sm"><span class="w-1/3 text-center font-bold">${r.t1||0}</span><span class="w-1/3 text-center text-google-textMuted">R${i+1}</span><span class="w-1/3 text-center font-bold">${r.t2||0}</span></div>`; }).join('');
+            const res = getMatchResult(match);
             
-            const t1Name = getTeamName(match.team1, 'Team 1');
-            const t2Name = getTeamName(match.team2, 'Team 2');
+            let roundsHtml = '';
+            if (res.isInd) {
+                roundsHtml = (match.rounds || []).map((r, i) => {
+                    const lbl = r.label ? `<span class="text-[8px] text-primary block truncate max-w-[40px] opacity-80">${r.label}</span>` : '';
+                    return `
+                    <div class="flex justify-between items-center py-2 border-b border-zinc-100 dark:border-zinc-800 text-sm last:border-0">
+                        <div class="w-10 text-center flex flex-col items-center justify-center leading-tight"><span class="text-zinc-400 text-[10px] font-bold">R${i+1}</span>${lbl}</div>
+                        <span class="flex-1 text-center font-bold">${r.t1||0}</span>
+                        <span class="flex-1 text-center font-bold">${r.t2||0}</span>
+                        <span class="flex-1 text-center font-bold">${r.t3||0}</span>
+                        <span class="flex-1 text-center font-bold">${r.t4||0}</span>
+                    </div>`;
+                }).join('');
+            } else {
+                roundsHtml = (match.rounds || []).map((r, i) => {
+                    const lbl = r.label ? `<span class="text-[8px] text-primary block truncate max-w-[60px] opacity-80">${r.label}</span>` : '';
+                    return `
+                    <div class="flex justify-between items-center py-3 border-b border-zinc-100 dark:border-zinc-800 text-sm last:border-0">
+                        <span class="w-1/3 text-center font-bold text-lg">${r.t1||0}</span>
+                        <div class="w-1/3 text-center flex flex-col items-center justify-center leading-tight"><span class="text-zinc-400 text-[10px] font-bold">R${i+1}</span>${lbl}</div>
+                        <span class="w-1/3 text-center font-bold text-lg">${r.t2||0}</span>
+                    </div>`;
+                }).join('');
+            }
 
-            showModal("Match Details", `
-                <div class="flex justify-between mb-4 bg-google-bgLight dark:bg-[#3c4043] p-4 rounded-2xl border border-google-borderLight dark:border-google-borderDark">
-                    <div class="text-center w-1/2 border-r border-google-borderLight dark:border-google-borderDark overflow-hidden pr-2">
-                        <div class="text-3xl font-black">${t1}</div>
-                        <div class="text-[10px] font-bold mt-1 text-google-textMuted truncate w-full">${t1Name}</div>
-                    </div>
-                    <div class="text-center w-1/2 overflow-hidden pl-2">
-                        <div class="text-3xl font-black">${t2}</div>
-                        <div class="text-[10px] font-bold mt-1 text-google-textMuted truncate w-full">${t2Name}</div>
-                    </div>
-                </div>
-                <div class="max-h-60 overflow-y-auto px-2">${roundsHtml}</div>
+            let topBoard = '';
+            if(res.isInd) {
+                topBoard = `
+                    <div class="flex justify-between mb-6 bg-background-light dark:bg-background-dark p-4 rounded-3xl">
+                        <div class="text-center w-1/4 overflow-hidden pr-1"><div class="text-2xl font-black">${res.scoresObj[1]}</div><div class="text-[8px] font-bold mt-1 text-zinc-400 truncate w-full uppercase">${getTeamName(match.team1, 'P1')}</div></div>
+                        <div class="text-center w-1/4 overflow-hidden px-1"><div class="text-2xl font-black text-primary">${res.scoresObj[2]}</div><div class="text-[8px] font-bold mt-1 text-zinc-400 truncate w-full uppercase">${getTeamName(match.team2, 'P2')}</div></div>
+                        <div class="text-center w-1/4 overflow-hidden px-1"><div class="text-2xl font-black text-emerald-500">${res.scoresObj[3]}</div><div class="text-[8px] font-bold mt-1 text-zinc-400 truncate w-full uppercase">${getTeamName(match.team3, 'P3')}</div></div>
+                        <div class="text-center w-1/4 overflow-hidden pl-1"><div class="text-2xl font-black text-rose-500">${res.scoresObj[4]}</div><div class="text-[8px] font-bold mt-1 text-zinc-400 truncate w-full uppercase">${getTeamName(match.team4, 'P4')}</div></div>
+                    </div>`;
+            } else {
+                topBoard = `
+                    <div class="flex justify-between mb-6 bg-background-light dark:bg-background-dark p-5 rounded-3xl">
+                        <div class="text-center w-1/2 border-r border-zinc-200 dark:border-zinc-700 overflow-hidden pr-3">
+                            <div class="text-4xl font-black tracking-tight">${res.scoresObj[1]}</div>
+                            <div class="text-[10px] font-bold mt-2 text-zinc-400 truncate w-full uppercase">${getTeamName(match.team1, 'Team 1')}</div>
+                        </div>
+                        <div class="text-center w-1/2 overflow-hidden pl-3">
+                            <div class="text-4xl font-black tracking-tight">${res.scoresObj[2]}</div>
+                            <div class="text-[10px] font-bold mt-2 text-zinc-400 truncate w-full uppercase">${getTeamName(match.team2, 'Team 2')}</div>
+                        </div>
+                    </div>`;
+            }
+
+            showModal("Match Summary", `
+                ${topBoard}
+                <div class="max-h-64 overflow-y-auto px-2">${roundsHtml}</div>
             `);
         }
 
-        function renderStats() { document.getElementById('content').innerHTML = `<div class="flex justify-between items-center mb-4"><button onclick="vibe(); switchTab('main')" class="p-2 -ml-2 rounded-full hover:bg-black/5 active:scale-95 transition-transform"><span class="material-symbols-outlined">arrow_back</span></button><h2 class="text-xl font-bold flex-1 ml-2">Stats Moved</h2></div><div class="text-center text-google-textMuted mt-10">Detailed stats are now on Player Profiles!<br>Tap the Leaderboard icon or Roster.</div>`; }
+        function renderStats() { document.getElementById('content').innerHTML = `<div class="flex justify-between items-center mb-4"><h2 class="text-2xl font-bold tracking-tight px-1">Stats Moved</h2></div><div class="bg-surface-light dark:bg-surface-dark p-8 rounded-3xl text-center text-zinc-500 shadow-soft border border-zinc-100 dark:border-zinc-800"><span class="material-symbols-outlined text-5xl mb-4 text-zinc-300">analytics</span><p class="text-sm font-medium">Detailed stats are now seamlessly integrated into Player Profiles!<br><br>Check the Roster or Leaderboard.</p></div>`; }
 
         window.copyMyId = function() {
             const uid = getActiveUid();
-            if(uid) {
-                navigator.clipboard.writeText(uid);
-                showToast("ID copied to clipboard!");
-            }
+            if(uid) { navigator.clipboard.writeText(uid); showToast("ID copied to clipboard!"); }
         }
 
         window.logoutAccount = function() {
-            localStorage.removeItem('scorat_uid');
-            showToast("Logged out successfully");
-            setTimeout(() => location.reload(), 1000);
+            localStorage.removeItem('scorat_uid'); showToast("Logged out successfully"); setTimeout(() => location.reload(), 1000);
         }
 
         function renderSettings() {
+            const mode = state.settings.gameMode || 'concan';
+            const md = GAME_MODES[mode];
+            
             document.getElementById('content').innerHTML = `
-                <div class="flex justify-between items-center mb-4"><button onclick="vibe(); switchTab('main')" class="p-2 -ml-2 rounded-full hover:bg-black/5 active:scale-95 transition-transform"><span class="material-symbols-outlined">arrow_back</span></button><h2 class="text-xl font-bold flex-1 ml-2">Settings</h2></div>
-                <div class="flex-1 overflow-y-auto pb-6 space-y-4 px-1">
+                <div class="flex justify-between items-center mb-4 px-1"><h2 class="text-2xl font-bold tracking-tight">Settings</h2></div>
+                <div class="flex-1 overflow-y-auto pb-6 space-y-4">
                     
                     ${deferredPrompt ? `
-                    <div class="bg-primary-light dark:bg-primary/20 p-5 rounded-[24px] shadow-sm border border-primary mb-4 flex justify-between items-center">
-                        <div class="flex flex-col"><span class="font-bold text-sm text-primary dark:text-primary-dark flex items-center gap-1"><span class="material-symbols-outlined text-[18px]">download</span> Install Scorat</span><span class="text-[10px] text-primary/70 dark:text-primary-dark/70 mt-1">Add App to Home Screen</span></div>
-                        <button onclick="vibe(); installPWA()" class="bg-primary text-white px-4 py-2 rounded-full font-bold active:scale-95 transition-all text-xs shadow-md">Install</button>
+                    <div class="bg-primary text-white p-5 rounded-3xl shadow-md mb-4 flex justify-between items-center">
+                        <div class="flex flex-col"><span class="font-bold text-sm flex items-center gap-1.5"><span class="material-symbols-outlined text-[20px]">install_mobile</span> Install App</span><span class="text-[10px] text-primary-light mt-1">Add to Home Screen</span></div>
+                        <button onclick="vibe(); installPWA()" class="bg-white text-primary px-5 py-2.5 rounded-xl font-bold active:scale-95 transition-all text-xs shadow-sm">Install</button>
                     </div>` : ''}
 
-                    <div class="bg-google-surfaceLight dark:bg-google-surfaceDark p-5 rounded-[24px] shadow-sm border border-google-borderLight dark:border-google-borderDark">
-                        <h3 class="text-[10px] font-bold uppercase text-google-textMuted mb-4 tracking-widest">Account Management</h3>
-                        <div class="flex justify-between items-center mb-3">
-                            <div class="flex flex-col"><span class="font-bold text-sm">Your ID</span><span class="text-[10px] text-google-textMuted mt-1 font-mono">${getActiveUid()}</span></div>
-                            <button onclick="vibe(); copyMyId()" class="bg-gray-100 dark:bg-gray-800 p-2 rounded-full active:scale-95 transition-transform"><span class="material-symbols-outlined text-[16px]">content_copy</span></button>
+                    <div class="bg-surface-light dark:bg-surface-dark p-6 rounded-3xl shadow-soft border border-zinc-100 dark:border-zinc-800">
+                        <h3 class="text-[10px] font-bold uppercase text-zinc-400 mb-5 tracking-widest flex items-center gap-2"><span class="material-symbols-outlined text-[16px]">sports_esports</span> Match Rules</h3>
+                        <div class="mb-5">
+                            <label class="block text-xs font-semibold text-zinc-500 mb-2">Game Mode</label>
+                            <select id="setting-game-mode" onchange="vibe(); handleModeChange(this.value)" class="w-full bg-background-light dark:bg-background-dark px-4 py-3.5 rounded-2xl font-bold border-none outline-none focus:ring-2 focus:ring-primary text-sm appearance-none">
+                                ${Object.keys(GAME_MODES).map(k => `<option value="${k}" ${mode === k ? 'selected' : ''}>${GAME_MODES[k].name}</option>`).join('')}
+                            </select>
+                            <div class="mt-2.5 text-[10px] text-zinc-400 font-bold uppercase tracking-widest">Rule: <span class="text-primary">${md.win === 'highest' ? 'Highest Score Wins' : 'Lowest Score Wins'}</span></div>
                         </div>
-                        <button onclick="vibe(); logoutAccount()" class="w-full bg-red-50 dark:bg-red-900/20 text-google-red py-3 rounded-xl text-xs font-bold mt-2 hover:bg-red-100 transition-colors">Log Out / Switch Account</button>
+
+                        ${md.target ? `
+                        <div class="flex gap-3">
+                            <div class="flex-1"><label class="block text-xs font-semibold text-zinc-500 mb-2">Target 1</label><input type="number" value="${state.settings.m1}" onchange="state.settings.m1=parseInt(this.value)||0; saveSettings()" class="w-full bg-background-light dark:bg-background-dark px-4 py-3 rounded-2xl font-bold border-none outline-none focus:ring-2 focus:ring-primary select-text"></div>
+                            <div class="flex-1"><label class="block text-xs font-semibold text-zinc-500 mb-2">Game Over</label><input type="number" value="${state.settings.m2}" onchange="state.settings.m2=parseInt(this.value)||0; saveSettings()" class="w-full bg-background-light dark:bg-background-dark px-4 py-3 rounded-2xl font-bold border-none outline-none focus:ring-2 focus:ring-rose-500 select-text"></div>
+                        </div>
+                        ` : ''}
                     </div>
 
-                    <div class="bg-google-surfaceLight dark:bg-google-surfaceDark p-5 rounded-[24px] shadow-sm border border-google-borderLight dark:border-google-borderDark">
-                        <h3 class="text-[10px] font-bold uppercase text-google-textMuted mb-4 tracking-widest">Appearance</h3>
+                    <div class="bg-surface-light dark:bg-surface-dark p-6 rounded-3xl shadow-soft border border-zinc-100 dark:border-zinc-800">
+                        <h3 class="text-[10px] font-bold uppercase text-zinc-400 mb-5 tracking-widest flex items-center gap-2"><span class="material-symbols-outlined text-[16px]">account_box</span> Account</h3>
+                        <div class="flex justify-between items-center mb-4 bg-background-light dark:bg-background-dark p-4 rounded-2xl border border-zinc-100 dark:border-zinc-800">
+                            <div class="flex flex-col"><span class="font-bold text-sm text-zinc-800 dark:text-white">Your ID</span><span class="text-[10px] text-zinc-400 mt-1 font-mono">${getActiveUid()}</span></div>
+                            <button onclick="vibe(); copyMyId()" class="bg-white dark:bg-zinc-700 p-2.5 rounded-xl shadow-sm active:scale-95 transition-transform"><span class="material-symbols-outlined text-[18px]">content_copy</span></button>
+                        </div>
+                        <button onclick="vibe(); logoutAccount()" class="w-full bg-rose-50 dark:bg-rose-900/20 text-rose-500 py-3.5 rounded-2xl text-sm font-bold hover:bg-rose-100 transition-colors">Log Out / Switch Account</button>
+                    </div>
+
+                    <div class="bg-surface-light dark:bg-surface-dark p-6 rounded-3xl shadow-soft border border-zinc-100 dark:border-zinc-800">
+                        <h3 class="text-[10px] font-bold uppercase text-zinc-400 mb-5 tracking-widest flex items-center gap-2"><span class="material-symbols-outlined text-[16px]">palette</span> Appearance</h3>
                         
-                        <div class="flex justify-between items-center mb-5">
-                            <span class="font-bold text-sm flex items-center gap-2"><span class="material-symbols-outlined text-[18px]">dark_mode</span> Dark Mode</span>
+                        <div class="flex justify-between items-center mb-6">
+                            <span class="font-semibold text-sm flex items-center gap-2">Dark Mode</span>
                             <label class="relative inline-flex items-center cursor-pointer">
                                 <input type="checkbox" class="sr-only peer" ${state.settings.darkMode ? 'checked' : ''} onchange="vibe(); state.settings.darkMode=this.checked; updateThemeLogic();">
-                                <div class="w-11 h-6 bg-google-borderLight dark:bg-google-borderDark peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                                <div class="w-11 h-6 bg-zinc-200 dark:bg-zinc-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary border border-transparent"></div>
                             </label>
                         </div>
 
                         <div>
-                            <span class="font-bold text-sm block mb-3">Theme Color</span>
+                            <span class="font-semibold text-sm block mb-3">Theme Color</span>
                             <div class="flex gap-4">
-                                <button onclick="vibe(); changeColor('blue')" class="w-10 h-10 rounded-full bg-[#1a73e8] shadow-sm focus:ring-4 focus:ring-blue-200 active:scale-90 transition-transform"></button>
-                                <button onclick="vibe(); changeColor('emerald')" class="w-10 h-10 rounded-full bg-[#10b981] shadow-sm focus:ring-4 focus:ring-emerald-200 active:scale-90 transition-transform"></button>
-                                <button onclick="vibe(); changeColor('purple')" class="w-10 h-10 rounded-full bg-[#8b5cf6] shadow-sm focus:ring-4 focus:ring-purple-200 active:scale-90 transition-transform"></button>
-                                <button onclick="vibe(); changeColor('rose')" class="w-10 h-10 rounded-full bg-[#f43f5e] shadow-sm focus:ring-4 focus:ring-rose-200 active:scale-90 transition-transform"></button>
+                                <button onclick="vibe(); changeColor('blue')" class="w-12 h-12 rounded-2xl bg-[#2563eb] shadow-sm active:scale-90 transition-transform focus:ring-4 focus:ring-blue-200"></button>
+                                <button onclick="vibe(); changeColor('emerald')" class="w-12 h-12 rounded-2xl bg-[#10b981] shadow-sm active:scale-90 transition-transform focus:ring-4 focus:ring-emerald-200"></button>
+                                <button onclick="vibe(); changeColor('purple')" class="w-12 h-12 rounded-2xl bg-[#8b5cf6] shadow-sm active:scale-90 transition-transform focus:ring-4 focus:ring-purple-200"></button>
+                                <button onclick="vibe(); changeColor('rose')" class="w-12 h-12 rounded-2xl bg-[#f43f5e] shadow-sm active:scale-90 transition-transform focus:ring-4 focus:ring-rose-200"></button>
                             </div>
                         </div>
                     </div>
 
-                    <div class="bg-google-surfaceLight dark:bg-google-surfaceDark p-5 rounded-[24px] shadow-sm border border-google-borderLight dark:border-google-borderDark">
-                        <h3 class="text-[10px] font-bold uppercase text-google-textMuted mb-4 tracking-widest">Device Features</h3>
+                    <div class="bg-surface-light dark:bg-surface-dark p-6 rounded-3xl shadow-soft border border-zinc-100 dark:border-zinc-800">
+                        <h3 class="text-[10px] font-bold uppercase text-zinc-400 mb-5 tracking-widest flex items-center gap-2"><span class="material-symbols-outlined text-[16px]">tune</span> Device</h3>
                         
-                        <div class="flex justify-between items-center mb-5">
-                            <div class="flex flex-col"><span class="font-bold text-sm flex items-center gap-2"><span class="material-symbols-outlined text-[18px]">vibration</span> Haptic Feedback</span></div>
+                        <div class="flex justify-between items-center mb-6">
+                            <span class="font-semibold text-sm">Haptic Feedback</span>
                             <label class="relative inline-flex items-center cursor-pointer">
                                 <input type="checkbox" class="sr-only peer" ${state.settings.haptics ? 'checked' : ''} onchange="state.settings.haptics=this.checked; vibe(); saveSettings();">
-                                <div class="w-11 h-6 bg-google-borderLight dark:bg-google-borderDark peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                                <div class="w-11 h-6 bg-zinc-200 dark:bg-zinc-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary border border-transparent"></div>
                             </label>
                         </div>
                         
                         <div class="flex justify-between items-center">
-                            <div class="flex flex-col"><span class="font-bold text-sm flex items-center gap-2"><span class="material-symbols-outlined text-[18px]">notifications</span> Push Notifications</span><span class="text-[10px] text-google-textMuted mt-1">Get alerts for live chats</span></div>
+                            <div class="flex flex-col"><span class="font-semibold text-sm">Push Notifications</span><span class="text-[10px] text-zinc-400 mt-1">Get alerts for live matches</span></div>
                             <label class="relative inline-flex items-center cursor-pointer">
                                 <input type="checkbox" class="sr-only peer" ${state.settings.notifications ? 'checked' : ''} onchange="vibe(); state.settings.notifications=this.checked; saveSettings();">
-                                <div class="w-11 h-6 bg-google-borderLight dark:bg-google-borderDark peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                                <div class="w-11 h-6 bg-zinc-200 dark:bg-zinc-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary border border-transparent"></div>
                             </label>
                         </div>
                     </div>
 
-                    <div class="bg-google-surfaceLight dark:bg-google-surfaceDark p-5 rounded-[24px] shadow-sm border border-google-borderLight dark:border-google-borderDark">
-                        <h3 class="text-[10px] font-bold uppercase text-google-textMuted mb-4 tracking-widest">Match Rules</h3>
-                        <div class="mb-3"><label class="block text-[10px] font-bold text-google-textMuted mb-1">Target 1</label><input type="number" value="${state.settings.m1}" onchange="state.settings.m1=parseInt(this.value)||0; saveSettings()" class="w-full bg-google-bgLight dark:bg-google-bgDark px-3 py-2 rounded-xl font-bold outline-none border border-google-borderLight dark:border-google-borderDark focus:border-primary select-text"></div>
-                        <div><label class="block text-[10px] font-bold text-google-textMuted mb-1">Game Over Target</label><input type="number" value="${state.settings.m2}" onchange="state.settings.m2=parseInt(this.value)||0; saveSettings()" class="w-full bg-google-bgLight dark:bg-google-bgDark px-3 py-2 rounded-xl font-bold outline-none border border-google-borderLight dark:border-google-borderDark focus:border-google-red select-text"></div>
-                    </div>
                 </div>
             `;
         }
 
         window.updateThemeLogic = function() {
             localStorage.setItem('scorat_theme', state.settings.darkMode ? 'dark' : 'light');
-            if (state.settings.darkMode) document.documentElement.classList.add('dark');
-            else document.documentElement.classList.remove('dark');
+            if (state.settings.darkMode) {
+                document.documentElement.classList.add('dark');
+                document.getElementById('meta-theme-color').setAttribute('content', '#09090b');
+            } else {
+                document.documentElement.classList.remove('dark');
+                document.getElementById('meta-theme-color').setAttribute('content', '#ffffff');
+            }
             saveSettings();
         }
 
         window.changeColor = function(colorName) {
             localStorage.setItem('scorat_color', colorName);
-            const colors = {
-                blue: { primary: '#1a73e8', light: '#e8f0fe', dark: '#8ab4f8' },
-                emerald: { primary: '#10b981', light: '#d1fae5', dark: '#34d399' },
-                purple: { primary: '#8b5cf6', light: '#ede9fe', dark: '#a78bfa' },
-                rose: { primary: '#f43f5e', light: '#ffe4e6', dark: '#fb7185' }
-            };
             const c = colors[colorName];
             document.documentElement.style.setProperty('--color-primary', c.primary);
             document.documentElement.style.setProperty('--color-primary-light', c.light);
@@ -1009,21 +1426,22 @@
         /* --- Utilities --- */
         const playAlertSound = (type) => { try { const ctx = new (window.AudioContext || window.webkitAudioContext)(); const osc = ctx.createOscillator(); const gain = ctx.createGain(); osc.connect(gain); gain.connect(ctx.destination); osc.type = 'sine'; osc.frequency.setValueAtTime(type==='m1'?500:800, ctx.currentTime); gain.gain.setValueAtTime(0.2, ctx.currentTime); gain.gain.exponentialRampToValueAtTime(0.00001, ctx.currentTime + (type==='m1'?0.4:0.6)); osc.start(); osc.stop(ctx.currentTime + (type==='m1'?0.4:0.6)); } catch(e) {} };
         
-        function applyTheme(isDark) { if (isDark) document.documentElement.classList.add('dark'); else document.documentElement.classList.remove('dark'); }
-
         function bindEvents() {
             document.querySelectorAll('.nav-btn').forEach(btn => btn.addEventListener('click', (e) => { const t = e.currentTarget.closest('.nav-btn').dataset.tab; if(t) switchTab(t); }));
             document.getElementById('btn-add-round').addEventListener('click', () => {
                 if(state.currentTab !== 'main') switchTab('main');
-                state.activeGame.rounds.push({ t1: null, t2: null }); saveActiveGame(); renderMain();
-                setTimeout(() => { const ins = document.querySelectorAll('input[type="number"]'); if(ins.length>0) ins[ins.length - 2].focus(); }, 100);
+                const md = GAME_MODES[state.activeGame.mode || 'concan'];
+                if(md.teams === 4) state.activeGame.rounds.push({ t1: null, t2: null, t3: null, t4: null, label: null });
+                else state.activeGame.rounds.push({ t1: null, t2: null, label: null });
+                saveActiveGame(); renderMain();
+                setTimeout(() => { const ins = document.querySelectorAll('input[type="number"]'); if(ins.length>0) ins[ins.length - (md.teams === 4 ? 4 : 2)].focus(); }, 100);
             });
-            document.getElementById('modal-container').addEventListener('click', (e) => { if(e.target.id === 'modal-container') closeModal(); });
+            document.getElementById('modal-container').addEventListener('mousedown', (e) => { if(e.target.id === 'modal-container') closeModal(); });
         }
 
         function showModal(title, content) {
             const container = document.getElementById('modal-container'); const modContent = document.getElementById('modal-content');
-            modContent.innerHTML = `<div class="flex justify-between items-center mb-6"><h2 class="text-xl font-bold">${title}</h2><button onclick="closeModal()" class="p-2 rounded-full hover:bg-black/5"><span class="material-symbols-outlined">close</span></button></div><div class="mb-4">${content}</div>`;
+            document.getElementById('modal-inner').innerHTML = `<div class="flex justify-between items-center mb-6"><h2 class="text-xl font-bold">${title}</h2><button onclick="closeModal()" class="w-8 h-8 rounded-full bg-background-light dark:bg-background-dark flex items-center justify-center hover:scale-105 active:scale-95 transition-transform"><span class="material-symbols-outlined text-[20px]">close</span></button></div><div>${content}</div>`;
             container.classList.remove('hidden'); setTimeout(() => modContent.classList.remove('translate-y-full'), 10);
         }
 
@@ -1035,14 +1453,14 @@
 
         window.showToast = function(msg, actionLabel = null, actionCallback = null) {
             const container = document.getElementById('toast-container'); const toast = document.createElement('div');
-            toast.className = `bg-google-textLight dark:bg-google-textDark text-white dark:text-google-bgDark px-4 py-3 rounded-xl shadow-google flex justify-between items-center transform transition-all duration-300 translate-y-10 opacity-0 mb-2`;
-            let btnHtml = ''; if (actionLabel) { const btnId = 'toast-btn-' + Date.now(); window[btnId] = () => { actionCallback(); toast.remove(); }; btnHtml = `<button onclick="window['${btnId}']()" class="text-primary-light font-bold uppercase text-[10px] ml-4 tracking-widest">${actionLabel}</button>`; }
-            toast.innerHTML = `<span class="font-medium text-sm">${msg}</span>${btnHtml}`; container.appendChild(toast);
-            requestAnimationFrame(() => toast.classList.remove('translate-y-10', 'opacity-0'));
-            setTimeout(() => { toast.classList.add('translate-y-10', 'opacity-0'); setTimeout(() => toast.remove(), 300); }, 5000);
+            toast.className = `bg-zinc-900 text-white dark:bg-white dark:text-zinc-900 px-5 py-4 rounded-2xl shadow-float flex justify-between items-center transform transition-all duration-300 -translate-y-10 opacity-0`;
+            let btnHtml = ''; if (actionLabel) { const btnId = 'toast-btn-' + Date.now(); window[btnId] = () => { actionCallback(); toast.remove(); }; btnHtml = `<button onclick="window['${btnId}']()" class="text-primary-light dark:text-primary font-bold uppercase text-[10px] ml-4 tracking-widest hover:underline">${actionLabel}</button>`; }
+            toast.innerHTML = `<span class="font-semibold text-sm">${msg}</span>${btnHtml}`; container.appendChild(toast);
+            requestAnimationFrame(() => toast.classList.remove('-translate-y-10', 'opacity-0'));
+            setTimeout(() => { toast.classList.add('-translate-y-10', 'opacity-0'); setTimeout(() => toast.remove(), 300); }, 4000);
         }
 
-        function triggerCelebration() { showToast("Game Over!"); }
+        function triggerCelebration() { showToast("Game Over Target Reached!"); }
 
         window.addEventListener('DOMContentLoaded', init);
     </script>
