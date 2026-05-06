@@ -5,8 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Scorat Games - Online Multiplayer</title>
 
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
+    <!-- Google Fonts & Material Symbols -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -41,7 +43,7 @@
 
         /* Dots & Boxes */
         .dots-grid {
-            display: grid;7
+            display: grid;
             grid-template-columns: 12px 50px 12px 50px 12px 50px 12px 50px 12px;
             grid-template-rows: 12px 50px 12px 50px 12px 50px 12px 50px 12px;
             gap: 0; margin: 0 auto; width: max-content;
@@ -54,15 +56,15 @@
         .box-cell { background-color: transparent; transition: background 0.3s; }
 
         /* Connect 4 */
-        .c4-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; background: #3b82f6; padding: 10px; border-radius: 16px; width: max-content; margin: 0 auto; }
-        .c4-cell { width: 40px; height: 40px; background: #f4f4f5; border-radius: 50%; cursor: pointer; position: relative; overflow: hidden; box-shadow: inset 0 4px 6px rgba(0,0,0,0.1); }
+        .c4-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; background: #3b82f6; padding: 8px; border-radius: 16px; width: max-content; margin: 0 auto; }
+        .c4-cell { width: 35px; height: 35px; background: #f4f4f5; border-radius: 50%; cursor: pointer; position: relative; overflow: hidden; box-shadow: inset 0 4px 6px rgba(0,0,0,0.1); }
         .c4-piece { width: 100%; height: 100%; border-radius: 50%; transform: translateY(-100%); transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
         .c4-piece.dropped { transform: translateY(0); box-shadow: 0 4px 6px rgba(0,0,0,0.2); }
 
         /* Ultimate Tic-Tac-Toe */
-        .uttt-macro { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; background: #27272a; padding: 6px; border-radius: 12px; width: max-content; margin: 0 auto; }
+        .uttt-macro { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; background: #27272a; padding: 6px; border-radius: 12px; width: max-content; margin: 0 auto; }
         .uttt-board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; background: #e4e4e7; padding: 2px; border-radius: 8px; position: relative; }
-        .uttt-cell { width: 35px; height: 35px; background: white; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 900; cursor: pointer; transition: background 0.2s; border-radius: 4px; }
+        .uttt-cell { width: 30px; height: 30px; background: white; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 900; cursor: pointer; transition: background 0.2s; border-radius: 4px; }
         .uttt-cell:hover { background: #f4f4f5; }
         .uttt-board.active { background: #3b82f6; box-shadow: 0 0 10px rgba(59, 130, 246, 0.5); }
         .uttt-board.won::after { content: attr(data-winner); position: absolute; inset: 0; background: rgba(255,255,255,0.9); display: flex; align-items: center; justify-content: center; font-size: 60px; font-weight: 900; border-radius: 8px; z-index: 10; color: #27272a; }
@@ -80,7 +82,7 @@
                 <p class="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">Multiplayer Hub</p>
             </div>
         </div>
-        <button id="btn-back" onclick="leaveMatch()" class="hidden w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center text-red-500 hover:bg-red-100 transition-colors">
+        <button id="btn-back" onclick="window.leaveMatch()" class="hidden w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center text-red-500 hover:bg-red-100 transition-colors">
             <span class="material-symbols-outlined">logout</span>
         </button>
     </header>
@@ -95,7 +97,7 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 
-                <div onclick="openLobby('dots')" class="bg-surface p-5 rounded-3xl shadow-soft border border-zinc-100 cursor-pointer hover:-translate-y-1 hover:shadow-md transition-all group">
+                <div onclick="window.openLobby('dots')" class="bg-surface p-5 rounded-3xl shadow-soft border border-zinc-100 cursor-pointer hover:-translate-y-1 hover:shadow-md transition-all group">
                     <div class="w-14 h-14 rounded-2xl bg-indigo-50 text-indigo-500 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                         <span class="material-symbols-outlined text-3xl">grid_on</span>
                     </div>
@@ -103,7 +105,7 @@
                     <p class="text-xs text-zinc-500 font-medium leading-relaxed">Connect the dots to claim boxes. The player with the most boxes wins.</p>
                 </div>
 
-                <div onclick="openLobby('connect4')" class="bg-surface p-5 rounded-3xl shadow-soft border border-zinc-100 cursor-pointer hover:-translate-y-1 hover:shadow-md transition-all group">
+                <div onclick="window.openLobby('connect4')" class="bg-surface p-5 rounded-3xl shadow-soft border border-zinc-100 cursor-pointer hover:-translate-y-1 hover:shadow-md transition-all group">
                     <div class="w-14 h-14 rounded-2xl bg-blue-50 text-blue-500 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                         <span class="material-symbols-outlined text-3xl">blur_on</span>
                     </div>
@@ -111,7 +113,7 @@
                     <p class="text-xs text-zinc-500 font-medium leading-relaxed">Drop your discs into the grid. Be the first to form a line of 4.</p>
                 </div>
 
-                <div onclick="openLobby('uttt')" class="bg-surface p-5 rounded-3xl shadow-soft border border-zinc-100 cursor-pointer hover:-translate-y-1 hover:shadow-md transition-all group">
+                <div onclick="window.openLobby('uttt')" class="bg-surface p-5 rounded-3xl shadow-soft border border-zinc-100 cursor-pointer hover:-translate-y-1 hover:shadow-md transition-all group">
                     <div class="w-14 h-14 rounded-2xl bg-rose-50 text-rose-500 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                         <span class="material-symbols-outlined text-3xl">close</span>
                     </div>
@@ -119,7 +121,7 @@
                     <p class="text-xs text-zinc-500 font-medium leading-relaxed">A massive game of X-O. Your move determines where your opponent must play.</p>
                 </div>
 
-                <div onclick="initMastermindSolo()" class="bg-surface p-5 rounded-3xl shadow-soft border border-zinc-100 cursor-pointer hover:-translate-y-1 hover:shadow-md transition-all group relative overflow-hidden">
+                <div onclick="window.initMastermindSolo()" class="bg-surface p-5 rounded-3xl shadow-soft border border-zinc-100 cursor-pointer hover:-translate-y-1 hover:shadow-md transition-all group relative overflow-hidden">
                     <div class="absolute top-4 right-4 text-[10px] font-bold bg-zinc-100 px-2 py-1 rounded-md text-zinc-500">SOLO</div>
                     <div class="w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-500 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                         <span class="material-symbols-outlined text-3xl">lock_open</span>
@@ -137,7 +139,7 @@
             <div class="bg-surface p-6 rounded-3xl shadow-soft border border-zinc-100 mb-4 text-center">
                 <span class="material-symbols-outlined text-4xl text-primary mb-2">cell_tower</span>
                 <h3 class="font-bold mb-4">Host a Match</h3>
-                <button onclick="hostMatch()" class="w-full bg-primary text-white py-3 rounded-2xl font-bold shadow-md hover:bg-blue-600 active:scale-95 transition-all">Create Room</button>
+                <button onclick="window.hostMatch()" class="w-full bg-primary text-white py-3 rounded-2xl font-bold shadow-md hover:bg-blue-600 active:scale-95 transition-all">Create Room</button>
             </div>
 
             <div class="flex items-center gap-4 my-6">
@@ -148,10 +150,10 @@
                 <span class="material-symbols-outlined text-4xl text-emerald-500 mb-2">login</span>
                 <h3 class="font-bold mb-4">Join a Friend</h3>
                 <input type="text" id="join-code" placeholder="Enter 5-Letter Code" class="w-full bg-background border border-zinc-200 text-center px-4 py-3 rounded-2xl font-mono font-bold tracking-widest uppercase focus:border-primary outline-none mb-3">
-                <button onclick="joinMatch()" class="w-full bg-zinc-900 text-white py-3 rounded-2xl font-bold shadow-md hover:bg-zinc-800 active:scale-95 transition-all">Join Room</button>
+                <button onclick="window.joinMatch()" class="w-full bg-zinc-900 text-white py-3 rounded-2xl font-bold shadow-md hover:bg-zinc-800 active:scale-95 transition-all">Join Room</button>
             </div>
             
-            <button onclick="showHub()" class="mt-6 w-full text-center text-sm font-bold text-zinc-500 hover:text-zinc-800">Cancel & Go Back</button>
+            <button onclick="window.showHub()" class="mt-6 w-full text-center text-sm font-bold text-zinc-500 hover:text-zinc-800">Cancel & Go Back</button>
         </div>
 
         <div id="waiting-view" class="hidden fade-in max-w-sm mx-auto mt-10 text-center">
@@ -161,16 +163,16 @@
                 </div>
                 <h2 class="text-xl font-bold mb-2">Waiting for opponent...</h2>
                 <p class="text-sm text-zinc-500 mb-6">Share this code with your friend:</p>
-                <div class="bg-background py-4 rounded-2xl border border-zinc-200 mb-4 cursor-pointer hover:bg-zinc-200 transition-colors" onclick="copyRoomCode()">
+                <div class="bg-background py-4 rounded-2xl border border-zinc-200 mb-4 cursor-pointer hover:bg-zinc-200 transition-colors" onclick="window.copyRoomCode()">
                     <span id="display-room-code" class="text-4xl font-black font-mono tracking-widest text-primary"></span>
                     <p class="text-[10px] text-zinc-400 mt-2 font-bold uppercase">Tap to Copy</p>
                 </div>
             </div>
-            <button onclick="leaveMatch()" class="mt-6 text-sm font-bold text-red-500 hover:underline">Cancel Match</button>
+            <button onclick="window.leaveMatch()" class="mt-6 text-sm font-bold text-red-500 hover:underline">Cancel Match</button>
         </div>
 
         <div id="game-view" class="hidden fade-in pb-10">
-            </div>
+        </div>
 
     </main>
 
@@ -179,7 +181,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, onSnapshot, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, getDoc, onSnapshot, collection, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAiX6ipa161rB1o715EfmtzfrHiz9zgChQ",
@@ -190,15 +192,16 @@
             appId: "1:324240314924:web:12866f2c25908f82fb7789"
         };
 
+        const appId = 'scorat-app';
         let db, auth;
-        let myUid = localStorage.getItem('scorat_uid'); // Uses existing Scorat Account
+        let myUid = localStorage.getItem('scorat_uid');
         
         let currentRoomId = null;
         let selectedGameType = null;
         let unsubscribeRoom = null;
         let isHost = false;
-
-        // Unified Game State
+        
+        window.players = [];
         let gameState = {};
 
         async function init() {
@@ -210,7 +213,22 @@
                     myUid = cred.user.uid;
                     localStorage.setItem('scorat_uid', myUid);
                 }
-            } catch (error) { showToast("Connection failed.", "error"); }
+
+                // Fetch Global Players List for Avatars & Names
+                onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'users'), (snap) => {
+                    window.players = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                    if (!document.getElementById('game-view').classList.contains('hidden') && currentRoomId) {
+                        renderActiveGame();
+                    }
+                });
+
+            } catch (error) { window.showToast("Connection failed.", "error"); }
+        }
+
+        window.getPlayerInfo = function(uid) {
+            if(!uid) return { name: 'Waiting...', avatar: 'https://api.dicebear.com/7.x/initials/svg?seed=wait' };
+            const p = window.players?.find(x => x.id === uid);
+            return p || { name: 'Player', avatar: 'https://api.dicebear.com/7.x/initials/svg?seed=' + uid };
         }
 
         window.showToast = function(msg, type = 'info') {
@@ -247,12 +265,12 @@
 
         window.copyRoomCode = function() {
             navigator.clipboard.writeText(currentRoomId);
-            showToast("Code Copied!");
+            window.showToast("Code Copied!");
         }
 
         /* --- Matchmaking Logic --- */
         window.hostMatch = async function() {
-            if(!db || !myUid) return showToast("Connecting to server...", "error");
+            if(!db || !myUid) return window.showToast("Connecting to server...", "error");
             currentRoomId = generateCode();
             isHost = true;
             
@@ -278,56 +296,55 @@
 
         window.joinMatch = async function() {
             const code = document.getElementById('join-code').value.trim().toUpperCase();
-            if(code.length !== 5) return showToast("Invalid Code", "error");
+            if(code.length !== 5) return window.showToast("Invalid Code", "error");
             
             const docRef = doc(db, 'minigames', code);
             const snap = await getDoc(docRef);
             
-            if(!snap.exists()) return showToast("Room not found", "error");
+            if(!snap.exists()) return window.showToast("Room not found", "error");
             const data = snap.data();
             
             if(data.status !== 'waiting' && data.p2 !== myUid && data.p1 !== myUid) {
-                return showToast("Room is full or already playing", "error");
+                return window.showToast("Room is full or playing", "error");
             }
 
             currentRoomId = code;
             isHost = (data.p1 === myUid);
             selectedGameType = data.type;
             
-            if (!isHost) {
+            if (!isHost && data.status === 'waiting') {
                 await setDoc(docRef, { p2: myUid, status: 'playing' }, { merge: true });
             }
 
             document.getElementById('lobby-view').classList.add('hidden');
             listenToRoom();
         }
-
+        
         window.leaveMatch = async function() {
             if (unsubscribeRoom) { unsubscribeRoom(); unsubscribeRoom = null; }
             if (currentRoomId && isHost) {
                 try { await deleteDoc(doc(db, 'minigames', currentRoomId)); } catch(e){}
             }
             currentRoomId = null;
-            showHub();
+            window.showHub();
         }
 
         function listenToRoom() {
             if (unsubscribeRoom) unsubscribeRoom();
             unsubscribeRoom = onSnapshot(doc(db, 'minigames', currentRoomId), (docSnap) => {
                 if (!docSnap.exists()) {
-                    showToast("The host closed the room.", "error");
-                    leaveMatch(); return;
+                    window.showToast("The host closed the room.", "error");
+                    window.leaveMatch(); return;
                 }
                 
                 const data = docSnap.data();
+                window.roomData = data; 
+
                 if (data.status === 'playing') {
                     document.getElementById('waiting-view').classList.add('hidden');
                     document.getElementById('game-view').classList.remove('hidden');
                     gameState = data.state;
-                    
-                    // Assign Roles based on UID
                     gameState.myRole = (myUid === data.p1) ? 1 : 2; 
-                    
                     renderActiveGame();
                 }
             });
@@ -341,7 +358,12 @@
         function getInitialState(type) {
             if (type === 'dots') return { turn: 1, scores: {1:0, 2:0}, lines: {}, boxes: {}, size: 4, gameOver: false };
             if (type === 'connect4') return { turn: 1, board: Array.from({length: 6}, () => Array(7).fill(0)), gameOver: false, winner: 0 };
-            if (type === 'uttt') return { turn: 1, activeMacro: -1, gameOver: false, macro: Array(9).fill(0), micro: Array.from({length: 9}, () => Array(9).fill(0)) };
+            if (type === 'uttt') return { turn: 1, activeMacro: -1, gameOver: false, winner: 0, macro: Array(9).fill(0), micro: Array.from({length: 9}, () => Array(9).fill(0)) };
+        }
+
+        window.requestRestart = function() {
+            const newState = getInitialState(selectedGameType);
+            syncMove(newState);
         }
 
         /* --- Rendering Engines --- */
@@ -349,6 +371,40 @@
             if (selectedGameType === 'dots') renderDots();
             else if (selectedGameType === 'connect4') renderConnect4();
             else if (selectedGameType === 'uttt') renderUTTT();
+        }
+
+        function renderPlayerHeader() {
+            const p1Info = window.getPlayerInfo(window.roomData.p1);
+            const p2Info = window.getPlayerInfo(window.roomData.p2);
+            
+            const myRole = gameState.myRole;
+            const myInfo = myRole === 1 ? p1Info : p2Info;
+            const oppInfo = myRole === 1 ? p2Info : p1Info;
+            const myColor = myRole === 1 ? 'border-primary' : 'border-rose-500';
+            const oppColor = myRole === 1 ? 'border-rose-500' : 'border-primary';
+
+            return `
+                <div class="flex justify-between items-center bg-surface p-4 rounded-3xl shadow-soft mb-6">
+                    <div class="flex flex-col items-center flex-1 overflow-hidden">
+                        <img src="${myInfo.avatar}" class="w-12 h-12 rounded-full mb-2 object-cover shadow-sm border-[3px] ${myColor}">
+                        <span class="text-xs font-bold truncate w-full text-center text-zinc-800">${myInfo.name} <span class="opacity-50">(You)</span></span>
+                    </div>
+                    <div class="text-xl font-black text-zinc-200 px-4">VS</div>
+                    <div class="flex flex-col items-center flex-1 overflow-hidden">
+                        <img src="${oppInfo.avatar}" class="w-12 h-12 rounded-full mb-2 object-cover shadow-sm border-[3px] ${oppColor}">
+                        <span class="text-xs font-bold truncate w-full text-center text-zinc-800">${oppInfo.name}</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderRestartButton() {
+            if (!gameState.gameOver) return '';
+            return `
+                <div class="mt-8 flex justify-center fade-in">
+                    <button onclick="window.requestRestart()" class="bg-zinc-900 text-white px-8 py-3.5 rounded-2xl font-bold shadow-md hover:scale-105 active:scale-95 transition-all">Play Again</button>
+                </div>
+            `;
         }
 
         /* ================= 1. Dots & Boxes Logic ================= */
@@ -388,22 +444,26 @@
             }
             gridHtml += '</div>';
 
-            const turnColor = st.turn === 1 ? 'text-primary' : 'text-rose-500';
-            const statusText = st.gameOver ? 'Game Over' : (isMyTurn ? 'YOUR TURN' : "Opponent's Turn");
+            const turnColor = st.turn === st.myRole ? (st.myRole===1?'text-primary':'text-rose-500') : (st.turn===1?'text-primary':'text-rose-500');
+            let statusText = '';
+            if(st.gameOver) statusText = (st.scores[st.myRole] > st.scores[st.myRole===1?2:1]) ? 'YOU WON! 🎉' : (st.scores[st.myRole] === st.scores[st.myRole===1?2:1] ? 'DRAW' : 'YOU LOST 💀');
+            else statusText = isMyTurn ? 'YOUR TURN' : "Opponent's Turn";
 
             document.getElementById('game-view').innerHTML = `
-                <div class="mb-6 flex justify-between items-center bg-surface p-4 rounded-3xl shadow-soft">
-                    <div class="flex-1 text-center border-r border-zinc-100">
-                        <span class="text-[10px] font-bold text-zinc-400 uppercase">You (Blue)</span>
-                        <div class="text-3xl font-black text-primary">${st.myRole === 1 ? st.scores[1] : st.scores[2]}</div>
+                ${renderPlayerHeader()}
+                <div class="flex justify-center gap-6 mb-6">
+                    <div class="text-center w-24">
+                        <span class="text-[10px] font-bold text-zinc-400 uppercase">Your Score</span>
+                        <div class="text-3xl font-black ${st.myRole===1?'text-primary':'text-rose-500'}">${st.scores[st.myRole]}</div>
                     </div>
-                    <div class="flex-1 text-center">
-                        <span class="text-[10px] font-bold text-zinc-400 uppercase">Opponent (Red)</span>
-                        <div class="text-3xl font-black text-rose-500">${st.myRole === 1 ? st.scores[2] : st.scores[1]}</div>
+                    <div class="text-center w-24">
+                        <span class="text-[10px] font-bold text-zinc-400 uppercase">Opp Score</span>
+                        <div class="text-3xl font-black ${st.myRole===1?'text-rose-500':'text-primary'}">${st.scores[st.myRole === 1 ? 2 : 1]}</div>
                     </div>
                 </div>
-                <div class="text-center font-black ${turnColor} mb-4 tracking-widest uppercase">${statusText}</div>
+                <div class="text-center font-black ${turnColor} mb-4 tracking-widest uppercase text-xl">${statusText}</div>
                 <div class="flex justify-center w-full pb-4 pointer-events-${isMyTurn ? 'auto' : 'none'}">${gridHtml}</div>
+                ${renderRestartButton()}
             `;
         }
 
@@ -411,8 +471,8 @@
             if(gameState.turn !== gameState.myRole || gameState.gameOver) return;
             const key = `${type}-${r}-${c}`;
             if (gameState.lines[key]) return; 
-4
-            let st = { ...gameState };
+
+            let st = JSON.parse(JSON.stringify(gameState));
             st.lines[key] = st.turn;
 
             let boxFormed = false;
@@ -439,7 +499,7 @@
             syncMove(st);
         }
 
-        /* ================= 2. Connect 4 Logic ================= */
+                /* ================= 2. Connect 4 Logic ================= */
         function renderConnect4() {
             const st = gameState;
             const isMyTurn = st.turn === st.myRole && !st.gameOver;
@@ -456,18 +516,22 @@
             gridHtml += '</div>';
 
             let status = '';
-            if(st.gameOver) status = st.winner === st.myRole ? 'YOU WON! 🎉' : 'YOU LOST 💀';
+            if(st.gameOver) status = st.winner === st.myRole ? 'YOU WON! 🎉' : (st.winner === 0 ? 'DRAW' : 'YOU LOST 💀');
             else status = isMyTurn ? 'YOUR TURN' : "Opponent's Turn";
 
+            const turnColor = st.turn === st.myRole ? (st.myRole===1?'text-primary':'text-rose-500') : (st.turn===1?'text-primary':'text-rose-500');
+
             document.getElementById('game-view').innerHTML = `
-                <div class="text-center font-black ${st.turn === 1 ? 'text-primary' : 'text-rose-500'} mb-6 tracking-widest uppercase text-xl">${status}</div>
+                ${renderPlayerHeader()}
+                <div class="text-center font-black ${turnColor} mb-6 tracking-widest uppercase text-xl">${status}</div>
                 <div class="flex justify-center w-full pb-4 pointer-events-${isMyTurn ? 'auto' : 'none'}">${gridHtml}</div>
+                ${renderRestartButton()}
             `;
         }
 
         window.c4Play = function(c) {
             if(gameState.turn !== gameState.myRole || gameState.gameOver) return;
-            let st = { ...gameState };
+            let st = JSON.parse(JSON.stringify(gameState));
             
             let dropR = -1;
             for(let r=5; r>=0; r--) { if(st.board[r][c] === 0) { dropR = r; break; } }
@@ -475,7 +539,6 @@
 
             st.board[dropR][c] = st.turn;
 
-            // Check Win
             const dirs = [[0,1], [1,0], [1,1], [1,-1]];
             let won = false;
             for (let [dr, dc] of dirs) {
@@ -495,7 +558,7 @@
         function renderUTTT() {
             const st = gameState;
             const isMyTurn = st.turn === st.myRole && !st.gameOver;
-            const symbols = {0: '', 1: 'X', 2: 'O', 3: 'D'};
+            const symbols = {0: '', 1: 'X', 2: 'O', 3: '-'};
             const colors = {1: '#2563eb', 2: '#f43f5e', 3: '#71717a'};
 
             let html = '<div class="uttt-macro shadow-xl">';
@@ -514,12 +577,16 @@
             html += '</div>';
 
             let status = '';
-            if(st.gameOver) status = st.winner === st.myRole ? 'YOU WON! 🎉' : 'YOU LOST 💀';
+            if(st.gameOver) status = st.winner === st.myRole ? 'YOU WON! 🎉' : (st.winner === 3 ? 'DRAW' : 'YOU LOST 💀');
             else status = isMyTurn ? 'YOUR TURN' : "Opponent's Turn";
 
+            const turnColor = st.turn === st.myRole ? (st.myRole===1?'text-primary':'text-rose-500') : (st.turn===1?'text-primary':'text-rose-500');
+
             document.getElementById('game-view').innerHTML = `
-                <div class="text-center font-black ${st.turn === 1 ? 'text-primary' : 'text-rose-500'} mb-6 tracking-widest uppercase text-xl">${status}</div>
+                ${renderPlayerHeader()}
+                <div class="text-center font-black ${turnColor} mb-6 tracking-widest uppercase text-xl">${status}</div>
                 <div class="flex justify-center w-full pb-4 pointer-events-${isMyTurn ? 'auto' : 'none'}">${html}</div>
+                ${renderRestartButton()}
             `;
         }
 
@@ -529,7 +596,7 @@
             if(gameState.micro[macIdx][micIdx] !== 0) return;
             if(gameState.activeMacro !== -1 && gameState.activeMacro !== macIdx) return;
 
-            let st = { ...gameState };
+            let st = JSON.parse(JSON.stringify(gameState));
             st.micro[macIdx][micIdx] = st.turn;
 
             const checkWin = (arr, p) => [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]].some(l => arr[l[0]]===p && arr[l[1]]===p && arr[l[2]]===p);
@@ -544,6 +611,8 @@
             // Check Macro win
             if(checkWin(st.macro, st.turn)) {
                 st.gameOver = true; st.winner = st.turn;
+            } else if (!st.macro.includes(0)) {
+                st.gameOver = true; st.winner = 3; // Overall Draw
             } else {
                 st.activeMacro = st.macro[micIdx] === 0 ? micIdx : -1;
                 st.turn = st.turn === 1 ? 2 : 1;
@@ -586,10 +655,10 @@
         window.mmGuess = function() {
             const inputEl = document.getElementById('mm-input');
             const val = inputEl.value;
-            if(val.length !== 4) return showToast("Must be exactly 4 digits!", "error");
+            if(val.length !== 4) return window.showToast("Must be exactly 4 digits!", "error");
             
             const guess = val.split('').map(Number);
-            if(guess.some(n => isNaN(n) || n<1 || n>9)) return showToast("Use numbers 1-9 only", "error");
+            if(guess.some(n => isNaN(n) || n<1 || n>9)) return window.showToast("Use numbers 1-9 only", "error");
 
             let bulls = 0, cows = 0;
             let secretCopy = [...mmState.secret]; let guessCopy = [...guess];
@@ -618,7 +687,7 @@
             `).join('');
 
             if(bulls === 4) {
-                showToast(`Code Cracked in ${mmState.attempts.length} attempts! 🏆`, 'success');
+                window.showToast(`Code Cracked in ${mmState.attempts.length} attempts! 🏆`, 'success');
                 inputEl.disabled = true;
             }
         }
