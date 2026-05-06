@@ -41,7 +41,7 @@
 
         /* Dots & Boxes */
         .dots-grid {
-            display: grid;
+            display: grid;7
             grid-template-columns: 12px 50px 12px 50px 12px 50px 12px 50px 12px;
             grid-template-rows: 12px 50px 12px 50px 12px 50px 12px 50px 12px;
             gap: 0; margin: 0 auto; width: max-content;
@@ -356,14 +356,6 @@
             const st = gameState;
             const isMyTurn = st.turn === st.myRole && !st.gameOver;
             
-            l            else if (selectedGameType === 'uttt') renderUTTT();
-        }
-      
-        /* ================= 1. Dots & Boxes Logic ================= */
-        function renderDots() {
-            const st = gameState;
-            const isMyTurn = st.turn === st.myRole && !st.gameOver;
-            
             let gridHtml = '<div class="dots-grid bg-white p-4 rounded-3xl shadow-soft border border-zinc-100">';
             for (let r = 0; r <= st.size * 2; r++) {
                 for (let c = 0; c <= st.size * 2; c++) {
@@ -419,7 +411,7 @@
             if(gameState.turn !== gameState.myRole || gameState.gameOver) return;
             const key = `${type}-${r}-${c}`;
             if (gameState.lines[key]) return; 
-
+4
             let st = { ...gameState };
             st.lines[key] = st.turn;
 
