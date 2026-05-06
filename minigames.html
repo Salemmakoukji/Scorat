@@ -419,7 +419,7 @@
             if(gameState.turn !== gameState.myRole || gameState.gameOver) return;
             const key = `${type}-${r}-${c}`;
             if (gameState.lines[key]) return; 
-4
+
             let st = { ...gameState };
             st.lines[key] = st.turn;
 
