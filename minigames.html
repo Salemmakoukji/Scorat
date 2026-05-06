@@ -204,33 +204,7 @@
         window.players = [];
         let gameState = {};
 
-        async function init() {
-            try {
-                const app = initializeApp(firebaseConfig);
-                auth = getAuth(app); db = getFirestore(app);
-                if (!myUid) {
-                    const cred = await signInAnonymously(auth);
-                    myUid = cred.user.uid;
-                    localStorage.setItem('scorat_uid', myUid);
-                }
-
-                // Fetch Global Players List for Avatars & Names
-                onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'users'), (snap) => {
-                    window.players = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-                    if (!document.getElementById('game-view').classList.contains('hidden') && currentRoomId) {
-                        renderActiveGame();
-                    }
-                });
-
-            } catch (error) { window.showToast("Connection failed.", "error"); }
-        }
-
-        window.getPlayerInfo = function(uid) {
-            if(!uid) return { name: 'Waiting...', avatar: 'https://api.dicebear.com/7.x/initials/svg?seed=wait' };
-            const p = window.players?.find(x => x.id === uid);
-            return p || { name: 'Player', avatar: 'https://api.dicebear.com/7.x/initials/svg?seed=' + uid };
-        }
-
+        // Hoist all global functions immediately to prevent "is not a function" errors
         window.showToast = function(msg, type = 'info') {
             const container = document.getElementById('toast-container'); const toast = document.createElement('div');
             const bg = type === 'success' ? 'bg-emerald-500' : (type === 'error' ? 'bg-rose-500' : 'bg-zinc-900');
@@ -239,23 +213,22 @@
             container.appendChild(toast);
             requestAnimationFrame(() => toast.classList.remove('-translate-y-10', 'opacity-0'));
             setTimeout(() => { toast.classList.add('-translate-y-10', 'opacity-0'); setTimeout(() => toast.remove(), 300); }, 3000);
-        }
+        };
 
         window.showHub = function() {
             ['game-view', 'lobby-view', 'waiting-view'].forEach(id => document.getElementById(id).classList.add('hidden'));
             document.getElementById('hub-view').classList.remove('hidden');
             document.getElementById('btn-back').classList.add('hidden');
-        }
+        };
 
         window.openLobby = function(gameType) {
             selectedGameType = gameType;
             const names = { 'dots': 'Dots & Boxes', 'connect4': 'Connect 4', 'uttt': 'Ultimate Tic-Tac-Toe' };
             document.getElementById('lobby-title').innerText = names[gameType];
-            
             document.getElementById('hub-view').classList.add('hidden');
             document.getElementById('lobby-view').classList.remove('hidden');
             document.getElementById('btn-back').classList.remove('hidden');
-        }
+        };
 
         function generateCode() {
             const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -265,10 +238,9 @@
 
         window.copyRoomCode = function() {
             navigator.clipboard.writeText(currentRoomId);
-            window.showToast("Code Copied!");
-        }
+            window.showToast("Code Copied!", "success");
+        };
 
-        /* --- Matchmaking Logic --- */
         window.hostMatch = async function() {
             if(!db || !myUid) return window.showToast("Connecting to server...", "error");
             currentRoomId = generateCode();
@@ -281,7 +253,7 @@
                 p1: myUid,
                 p2: null,
                 status: 'waiting',
-                state: gameState,
+                state: JSON.stringify(gameState), // Stringified to prevent nested array Firebase error
                 updatedAt: Date.now()
             };
 
@@ -292,7 +264,7 @@
             document.getElementById('display-room-code').innerText = currentRoomId;
             
             listenToRoom();
-        }
+        };
 
         window.joinMatch = async function() {
             const code = document.getElementById('join-code').value.trim().toUpperCase();
@@ -318,8 +290,8 @@
 
             document.getElementById('lobby-view').classList.add('hidden');
             listenToRoom();
-        }
-        
+        };
+
         window.leaveMatch = async function() {
             if (unsubscribeRoom) { unsubscribeRoom(); unsubscribeRoom = null; }
             if (currentRoomId && isHost) {
@@ -327,7 +299,7 @@
             }
             currentRoomId = null;
             window.showHub();
-        }
+        };
 
         function listenToRoom() {
             if (unsubscribeRoom) unsubscribeRoom();
@@ -343,7 +315,14 @@
                 if (data.status === 'playing') {
                     document.getElementById('waiting-view').classList.add('hidden');
                     document.getElementById('game-view').classList.remove('hidden');
-                    gameState = data.state;
+                    
+                    // Parse from JSON string to avoid nested array Firebase errors
+                    let parsedState = data.state;
+                    if (typeof parsedState === 'string') {
+                        parsedState = JSON.parse(parsedState);
+                    }
+                    
+                    gameState = parsedState;
                     gameState.myRole = (myUid === data.p1) ? 1 : 2; 
                     renderActiveGame();
                 }
@@ -352,7 +331,8 @@
 
         function syncMove(newState) {
             if (!currentRoomId) return;
-            setDoc(doc(db, 'minigames', currentRoomId), { state: newState, updatedAt: Date.now() }, { merge: true });
+            // Stringify to bypass Firebase's nested array restrictions
+            setDoc(doc(db, 'minigames', currentRoomId), { state: JSON.stringify(newState), updatedAt: Date.now() }, { merge: true });
         }
 
         function getInitialState(type) {
@@ -364,6 +344,32 @@
         window.requestRestart = function() {
             const newState = getInitialState(selectedGameType);
             syncMove(newState);
+        };
+window.getPlayerInfo = function(uid) {
+            if(!uid) return { name: 'Waiting...', avatar: 'https://api.dicebear.com/7.x/initials/svg?seed=wait' };
+            const p = window.players?.find(x => x.id === uid);
+            return p || { name: 'Player', avatar: 'https://api.dicebear.com/7.x/initials/svg?seed=' + uid };
+        };
+
+        async function init() {
+            try {
+                const app = initializeApp(firebaseConfig);
+                auth = getAuth(app); db = getFirestore(app);
+                if (!myUid) {
+                    const cred = await signInAnonymously(auth);
+                    myUid = cred.user.uid;
+                    localStorage.setItem('scorat_uid', myUid);
+                }
+
+                // Fetch Global Players List for Avatars & Names
+                onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'users'), (snap) => {
+                    window.players = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                    if (!document.getElementById('game-view').classList.contains('hidden') && currentRoomId) {
+                        renderActiveGame();
+                    }
+                });
+
+            } catch (error) { window.showToast("Connection failed.", "error"); }
         }
 
         /* --- Rendering Engines --- */
@@ -499,7 +505,7 @@
             syncMove(st);
         }
 
-                /* ================= 2. Connect 4 Logic ================= */
+        /* ================= 2. Connect 4 Logic ================= */
         function renderConnect4() {
             const st = gameState;
             const isMyTurn = st.turn === st.myRole && !st.gameOver;
@@ -635,13 +641,13 @@
             }
 
             document.getElementById('game-view').innerHTML = `
-                <div class="max-w-xs mx-auto mt-4">
-                    <div class="bg-emerald-50 text-emerald-700 text-[10px] font-bold text-center p-3 rounded-xl mb-6 border border-emerald-100 uppercase tracking-wide leading-relaxed">
-                        <span class="text-sm">🔥</span> = Correct Number & Position<br>
-                        <span class="text-sm">🟢</span> = Correct Number, Wrong Position
-                    </div>
-                    <div class="flex gap-2 mb-4">
-                        <input type="number" id="mm-input" placeholder="4 Digits (1-9)..." class="flex-1 bg-surface shadow-sm rounded-xl px-4 py-3.5 text-center font-black text-xl outline-none focus:ring-2 focus:ring-primary tracking-[0.3em]">
+                            <div class="max-w-xs mx-auto mt-4">
+                                                <div class="bg-emerald-50 text-emerald-700 text-[10px] font-bold text-center p-3 rounded-xl mb-6 border border-emerald-100 uppercase tracking-wide leading-relaxed">
+                                                                        <span class="text-sm">🔥</span> = Correct Number & Position<br>
+                                                                                                <span class="text-sm">🟢</span> = Correct Number, Wrong Position
+                                                                                                                    </div>
+                                                                                                                                        <div class="flex gap-2 mb-4">
+                                                                                                                                                                <input type="number" id="mm-input" placeholder="4 Digits (1-9)..." class="flex-1 bg-surface shadow-sm rounded-xl px-4 py-3.5 text-center font-black text-xl outline-none focus:ring-2 focus:ring-primary tracking-[0.3em]">
                         <button onclick="window.mmGuess()" class="bg-zinc-900 text-white px-5 rounded-xl font-bold shadow-md hover:bg-zinc-800 active:scale-95 transition-all">GUESS</button>
                     </div>
                     <div class="bg-surface rounded-3xl shadow-soft p-2 min-h-[200px] max-h-[300px] overflow-y-auto" id="mm-history">
@@ -697,3 +703,4 @@
     </script>
 </body>
 </html>
+        
