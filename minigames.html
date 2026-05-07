@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Scorat Games - Online Multiplayer</title>
+    <title>Scorat Games Hub</title>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -20,14 +20,10 @@
                 extend: {
                     fontFamily: { sans: ['Inter', 'sans-serif'] },
                     colors: {
-                        primary: '#2563eb',
-                        secondary: '#f43f5e',
-                        surface: '#ffffff',
-                        background: '#f4f4f5'
+                        primary: '#2563eb', secondary: '#f43f5e',
+                        surface: '#ffffff', background: '#f4f4f5'
                     },
-                    boxShadow: {
-                        'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.05)',
-                    }
+                    boxShadow: { 'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.05)' }
                 }
             }
         }
@@ -35,39 +31,66 @@
 
     <style>
         body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
-        ::-webkit-scrollbar { display: none; }
-        * { scrollbar-width: none; }
-        
+        ::-webkit-scrollbar { display: none; } * { scrollbar-width: none; }
         .fade-in { animation: fadeIn 0.4s ease-out forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Dots & Boxes */
-        .dots-grid {
-            display: grid;
-            grid-template-columns: 12px 50px 12px 50px 12px 50px 12px 50px 12px;
-            grid-template-rows: 12px 50px 12px 50px 12px 50px 12px 50px 12px;
-            gap: 0; margin: 0 auto; width: max-content;
-        }
+        /* Game Specific Grids */
+        .dots-grid { display: grid; grid-template-columns: 12px 50px 12px 50px 12px 50px 12px 50px 12px; gap: 0; margin: 0 auto; width: max-content; }
         .dot { background-color: #3f3f46; border-radius: 50%; }
         .line-h { height: 12px; cursor: pointer; transition: background 0.2s; }
         .line-h:hover:not(.claimed) { background-color: #e4e4e7; }
         .line-v { width: 12px; cursor: pointer; transition: background 0.2s; }
         .line-v:hover:not(.claimed) { background-color: #e4e4e7; }
-        .box-cell { background-color: transparent; transition: background 0.3s; }
+        .box-cell { transition: background 0.3s; }
 
-        /* Connect 4 */
         .c4-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; background: #3b82f6; padding: 8px; border-radius: 16px; width: max-content; margin: 0 auto; }
-        .c4-cell { width: 35px; height: 35px; background: #f4f4f5; border-radius: 50%; cursor: pointer; position: relative; overflow: hidden; box-shadow: inset 0 4px 6px rgba(0,0,0,0.1); }
-        .c4-piece { width: 100%; height: 100%; border-radius: 50%; transform: translateY(-100%); transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
-        .c4-piece.dropped { transform: translateY(0); box-shadow: 0 4px 6px rgba(0,0,0,0.2); }
+        .c4-cell { width: 35px; height: 35px; background: #f4f4f5; border-radius: 50%; cursor: pointer; position: relative; overflow: hidden; }
+        .c4-piece { width: 100%; height: 100%; border-radius: 50%; transform: translateY(-100%); transition: transform 0.4s; }
+        .c4-piece.dropped { transform: translateY(0); }
 
-        /* Ultimate Tic-Tac-Toe */
         .uttt-macro { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; background: #27272a; padding: 6px; border-radius: 12px; width: max-content; margin: 0 auto; }
         .uttt-board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; background: #e4e4e7; padding: 2px; border-radius: 8px; position: relative; }
-        .uttt-cell { width: 30px; height: 30px; background: white; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 900; cursor: pointer; transition: background 0.2s; border-radius: 4px; }
-        .uttt-cell:hover { background: #f4f4f5; }
-        .uttt-board.active { background: #3b82f6; box-shadow: 0 0 10px rgba(59, 130, 246, 0.5); }
-        .uttt-board.won::after { content: attr(data-winner); position: absolute; inset: 0; background: rgba(255,255,255,0.9); display: flex; align-items: center; justify-content: center; font-size: 60px; font-weight: 900; border-radius: 8px; z-index: 10; color: #27272a; }
+        .uttt-cell { width: 30px; height: 30px; background: white; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 900; cursor: pointer; }
+        .uttt-board.active { background: #3b82f6; }
+        .uttt-board.won::after { content: attr(data-winner); position: absolute; inset: 0; background: rgba(255,255,255,0.9); display: flex; align-items: center; justify-content: center; font-size: 60px; font-weight: 900; z-index: 10; color: #27272a; }
+
+        .reversi-grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 2px; background: #166534; padding: 4px; border-radius: 8px; width: max-content; margin: 0 auto; }
+        .reversi-cell { width: 35px; height: 35px; background: #22c55e; display: flex; align-items: center; justify-content: center; cursor: pointer; border-radius: 2px; }
+        .reversi-piece { width: 85%; height: 85%; border-radius: 50%; transition: all 0.3s; }
+        .reversi-piece.p1 { background: #18181b; box-shadow: inset -2px -2px 4px rgba(255,255,255,0.2); }
+        .reversi-piece.p2 { background: #f4f4f5; box-shadow: inset -2px -2px 4px rgba(0,0,0,0.2); }
+
+        .memory-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; width: max-content; margin: 0 auto; }
+        .memory-card { width: 60px; height: 60px; background: #3b82f6; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 30px; cursor: pointer; transition: transform 0.3s; transform-style: preserve-3d; }
+        .memory-card.flipped { background: white; transform: rotateY(180deg); border: 2px solid #e4e4e7; }
+        .memory-card.matched { visibility: hidden; }
+        .memory-content { transform: rotateY(180deg); display: none; }
+        .memory-card.flipped .memory-content { display: block; }
+
+        .wordle-grid { display: grid; grid-template-rows: repeat(6, 1fr); gap: 6px; width: max-content; margin: 0 auto; }
+        .wordle-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+        .wordle-cell { width: 50px; height: 50px; border: 2px solid #d4d4d8; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 900; text-transform: uppercase; }
+        .wordle-cell.correct { background: #22c55e; border-color: #22c55e; color: white; }
+        .wordle-cell.present { background: #eab308; border-color: #eab308; color: white; }
+        .wordle-cell.absent { background: #71717a; border-color: #71717a; color: white; }
+
+        .grid-2048 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; background: #a1a1aa; padding: 8px; border-radius: 12px; width: max-content; margin: 0 auto; }
+        .cell-2048 { width: 60px; height: 60px; background: #e4e4e7; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 24px; color: #3f3f46; transition: all 0.1s; }
+        .val-2 { background: #f8fafc; } .val-4 { background: #f1f5f9; } .val-8 { background: #fed7aa; color: white; }
+        .val-16 { background: #fdba74; color: white; } .val-32 { background: #fb923c; color: white; } .val-64 { background: #f97316; color: white; }
+        .val-128 { background: #fde047; color: white; font-size: 20px;} .val-256 { background: #facc15; color: white; font-size: 20px;}
+        .val-512 { background: #eab308; color: white; font-size: 20px;} .val-1024 { background: #ca8a04; color: white; font-size: 16px;} .val-2048 { background: #a16207; color: white; font-size: 16px;}
+
+        .mine-grid { display: grid; gap: 2px; background: #71717a; padding: 4px; border-radius: 8px; width: max-content; margin: 0 auto; }
+        .mine-cell { width: 30px; height: 30px; background: #d4d4d8; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 16px; cursor: pointer; box-shadow: inset 2px 2px 0px #fff, inset -2px -2px 0px #a1a1aa; }
+        .mine-cell.revealed { background: #e4e4e7; box-shadow: none; border: 1px solid #a1a1aa; }
+        
+        .battleship-grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 2px; background: #0369a1; padding: 4px; border-radius: 8px; width: max-content; margin: 0 auto; }
+        .bs-cell { width: 35px; height: 35px; background: #0ea5e9; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .bs-cell:hover { background: #38bdf8; }
+        .bs-hit { background: #ef4444; } .bs-hit::after { content: '💥'; font-size: 20px; }
+        .bs-miss { background: #e0f2fe; } .bs-miss::after { content: '💧'; font-size: 14px; opacity: 0.5; }
     </style>
 </head>
 <body class="bg-background text-zinc-800 min-h-screen flex flex-col">
@@ -79,88 +102,114 @@
             </div>
             <div>
                 <h1 class="text-xl font-black text-zinc-900 leading-tight">Scorat Games</h1>
-                <p class="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">Multiplayer Hub</p>
+                <p class="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">Mini-Games Hub</p>
             </div>
         </div>
-        <button id="btn-back" onclick="window.leaveMatch()" class="hidden w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center text-red-500 hover:bg-red-100 transition-colors">
-            <span class="material-symbols-outlined">logout</span>
-        </button>
+        
+        <div id="user-profile-widget" class="flex items-center gap-3 fade-in">
+            <div class="text-right hidden sm:block">
+                <div class="text-xs font-bold text-zinc-800" id="header-user-name">Loading...</div>
+                <div class="text-[10px] text-primary font-bold flex items-center justify-end gap-1"><span class="material-symbols-outlined text-[12px]">stars</span> <span id="header-user-points">0 Pts</span></div>
+            </div>
+            <img id="header-user-avatar" src="https://api.dicebear.com/7.x/initials/svg?seed=U" class="w-10 h-10 rounded-full border-2 border-primary object-cover shadow-sm">
+            <button id="btn-back" onclick="window.leaveMatch()" class="hidden w-10 h-10 rounded-full bg-red-50 flex items-center justify-center text-red-500 hover:bg-red-100 transition-colors ml-2">
+                <span class="material-symbols-outlined">logout</span>
+            </button>
+        </div>
     </header>
 
-    <main class="flex-1 p-6 overflow-y-auto relative">
+    <main class="flex-1 p-4 md:p-6 overflow-y-auto relative">
         
-        <div id="hub-view" class="fade-in">
-            <div class="bg-blue-50 text-blue-700 p-4 rounded-2xl mb-6 text-sm font-medium flex items-start gap-3">
-                <span class="material-symbols-outlined">info</span>
-                <div>Select a game below. You can either Host a new match and share the code, or Join a friend's match using their code.</div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div id="hub-view" class="fade-in max-w-4xl mx-auto pb-10">
+            
+            <h2 class="text-lg font-black text-zinc-800 mb-4 flex items-center gap-2"><span class="material-symbols-outlined text-primary">swords</span> Multiplayer Matches (1v1)</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-8">
                 
-                <div onclick="window.openLobby('dots')" class="bg-surface p-5 rounded-3xl shadow-soft border border-zinc-100 cursor-pointer hover:-translate-y-1 hover:shadow-md transition-all group">
-                    <div class="w-14 h-14 rounded-2xl bg-indigo-50 text-indigo-500 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                        <span class="material-symbols-outlined text-3xl">grid_on</span>
-                    </div>
-                    <h3 class="text-xl font-bold mb-1">Dots & Boxes</h3>
-                    <p class="text-xs text-zinc-500 font-medium leading-relaxed">Connect the dots to claim boxes. The player with the most boxes wins.</p>
+                <div onclick="window.openLobby('reversi')" class="bg-surface p-5 rounded-3xl shadow-soft border border-zinc-100 cursor-pointer hover:-translate-y-1 hover:shadow-md transition-all group">
+                    <div class="w-12 h-12 rounded-2xl bg-zinc-800 text-white flex items-center justify-center mb-3 group-hover:scale-110 transition-transform"><span class="material-symbols-outlined">tonality</span></div>
+                    <h3 class="text-lg font-bold mb-1">Reversi / Othello</h3>
+                    <p class="text-xs text-zinc-500 font-medium">Trap opponent pieces to flip them to your color.</p>
+                </div>
+
+                <div onclick="window.openLobby('memory')" class="bg-surface p-5 rounded-3xl shadow-soft border border-zinc-100 cursor-pointer hover:-translate-y-1 hover:shadow-md transition-all group">
+                    <div class="w-12 h-12 rounded-2xl bg-purple-50 text-purple-500 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform"><span class="material-symbols-outlined">style</span></div>
+                    <h3 class="text-lg font-bold mb-1">Memory Duel</h3>
+                    <p class="text-xs text-zinc-500 font-medium">Flip cards to find pairs. Highest matched pairs wins.</p>
+                </div>
+
+                <div onclick="window.openLobby('battleship')" class="bg-surface p-5 rounded-3xl shadow-soft border border-zinc-100 cursor-pointer hover:-translate-y-1 hover:shadow-md transition-all group">
+                    <div class="w-12 h-12 rounded-2xl bg-cyan-50 text-cyan-500 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform"><span class="material-symbols-outlined">sailing</span></div>
+                    <h3 class="text-lg font-bold mb-1">Fleet Strike</h3>
+                    <p class="text-xs text-zinc-500 font-medium">Bombard the grid to find all 5 hidden enemy ships first!</p>
                 </div>
 
                 <div onclick="window.openLobby('connect4')" class="bg-surface p-5 rounded-3xl shadow-soft border border-zinc-100 cursor-pointer hover:-translate-y-1 hover:shadow-md transition-all group">
-                    <div class="w-14 h-14 rounded-2xl bg-blue-50 text-blue-500 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                        <span class="material-symbols-outlined text-3xl">blur_on</span>
-                    </div>
-                    <h3 class="text-xl font-bold mb-1">Connect 4</h3>
-                    <p class="text-xs text-zinc-500 font-medium leading-relaxed">Drop your discs into the grid. Be the first to form a line of 4.</p>
+                    <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-500 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform"><span class="material-symbols-outlined">blur_on</span></div>
+                    <h3 class="text-lg font-bold mb-1">Connect 4</h3>
+                    <p class="text-xs text-zinc-500 font-medium">Drop discs to form a line of 4 before your opponent.</p>
                 </div>
 
                 <div onclick="window.openLobby('uttt')" class="bg-surface p-5 rounded-3xl shadow-soft border border-zinc-100 cursor-pointer hover:-translate-y-1 hover:shadow-md transition-all group">
-                    <div class="w-14 h-14 rounded-2xl bg-rose-50 text-rose-500 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                        <span class="material-symbols-outlined text-3xl">close</span>
-                    </div>
-                    <h3 class="text-xl font-bold mb-1">Ultimate Tic-Tac-Toe</h3>
-                    <p class="text-xs text-zinc-500 font-medium leading-relaxed">A massive game of X-O. Your move determines where your opponent must play.</p>
+                    <div class="w-12 h-12 rounded-2xl bg-rose-50 text-rose-500 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform"><span class="material-symbols-outlined">close</span></div>
+                    <h3 class="text-lg font-bold mb-1">Ultimate X-O</h3>
+                    <p class="text-xs text-zinc-500 font-medium">A massive grid where your move dictates the next board.</p>
                 </div>
 
-                <div onclick="window.initMastermindSolo()" class="bg-surface p-5 rounded-3xl shadow-soft border border-zinc-100 cursor-pointer hover:-translate-y-1 hover:shadow-md transition-all group relative overflow-hidden">
-                    <div class="absolute top-4 right-4 text-[10px] font-bold bg-zinc-100 px-2 py-1 rounded-md text-zinc-500">SOLO</div>
-                    <div class="w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-500 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                        <span class="material-symbols-outlined text-3xl">lock_open</span>
-                    </div>
-                    <h3 class="text-xl font-bold mb-1">Code Breaker</h3>
-                    <p class="text-xs text-zinc-500 font-medium leading-relaxed">Crack the secret 4-digit code in the fewest attempts possible.</p>
+                <div onclick="window.openLobby('dots')" class="bg-surface p-5 rounded-3xl shadow-soft border border-zinc-100 cursor-pointer hover:-translate-y-1 hover:shadow-md transition-all group">
+                    <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-500 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform"><span class="material-symbols-outlined">grid_on</span></div>
+                    <h3 class="text-lg font-bold mb-1">Dots & Boxes</h3>
+                    <p class="text-xs text-zinc-500 font-medium">Connect dots to claim boxes and score points.</p>
+                </div>
+            </div>
+
+            <h2 class="text-lg font-black text-zinc-800 mb-4 flex items-center gap-2 mt-8"><span class="material-symbols-outlined text-emerald-500">extension</span> Solo Puzzles</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                
+                <div onclick="window.initSoloGame('2048')" class="bg-surface p-4 rounded-3xl shadow-soft border border-zinc-100 cursor-pointer hover:-translate-y-1 hover:shadow-md transition-all group text-center">
+                    <div class="w-12 h-12 mx-auto rounded-2xl bg-orange-50 text-orange-500 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform"><span class="material-symbols-outlined">apps</span></div>
+                    <h3 class="font-bold">2048</h3>
+                </div>
+
+                <div onclick="window.initSoloGame('wordle')" class="bg-surface p-4 rounded-3xl shadow-soft border border-zinc-100 cursor-pointer hover:-translate-y-1 hover:shadow-md transition-all group text-center">
+                    <div class="w-12 h-12 mx-auto rounded-2xl bg-green-50 text-green-600 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform"><span class="material-symbols-outlined">font_download</span></div>
+                    <h3 class="font-bold">Wordle</h3>
+                </div>
+
+                <div onclick="window.initSoloGame('minesweeper')" class="bg-surface p-4 rounded-3xl shadow-soft border border-zinc-100 cursor-pointer hover:-translate-y-1 hover:shadow-md transition-all group text-center">
+                    <div class="w-12 h-12 mx-auto rounded-2xl bg-red-50 text-red-500 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform"><span class="material-symbols-outlined">brightness_high</span></div>
+                    <h3 class="font-bold">Minesweeper</h3>
+                </div>
+
+                <div onclick="window.initSoloGame('mastermind')" class="bg-surface p-4 rounded-3xl shadow-soft border border-zinc-100 cursor-pointer hover:-translate-y-1 hover:shadow-md transition-all group text-center">
+                    <div class="w-12 h-12 mx-auto rounded-2xl bg-emerald-50 text-emerald-500 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform"><span class="material-symbols-outlined">lock_open</span></div>
+                    <h3 class="font-bold">Code Breaker</h3>
                 </div>
 
             </div>
         </div>
 
+        <!-- Lobby View -->
         <div id="lobby-view" class="hidden fade-in max-w-sm mx-auto mt-10">
             <h2 id="lobby-title" class="text-2xl font-black text-center mb-8"></h2>
-            
             <div class="bg-surface p-6 rounded-3xl shadow-soft border border-zinc-100 mb-4 text-center">
                 <span class="material-symbols-outlined text-4xl text-primary mb-2">cell_tower</span>
                 <h3 class="font-bold mb-4">Host a Match</h3>
                 <button onclick="window.hostMatch()" class="w-full bg-primary text-white py-3 rounded-2xl font-bold shadow-md hover:bg-blue-600 active:scale-95 transition-all">Create Room</button>
             </div>
-
-            <div class="flex items-center gap-4 my-6">
-                <div class="flex-1 h-px bg-zinc-200"></div><span class="text-xs font-bold text-zinc-400 uppercase">OR</span><div class="flex-1 h-px bg-zinc-200"></div>
-            </div>
-
+            <div class="flex items-center gap-4 my-6"><div class="flex-1 h-px bg-zinc-200"></div><span class="text-xs font-bold text-zinc-400 uppercase">OR</span><div class="flex-1 h-px bg-zinc-200"></div></div>
             <div class="bg-surface p-6 rounded-3xl shadow-soft border border-zinc-100 text-center">
                 <span class="material-symbols-outlined text-4xl text-emerald-500 mb-2">login</span>
                 <h3 class="font-bold mb-4">Join a Friend</h3>
                 <input type="text" id="join-code" placeholder="Enter 5-Letter Code" class="w-full bg-background border border-zinc-200 text-center px-4 py-3 rounded-2xl font-mono font-bold tracking-widest uppercase focus:border-primary outline-none mb-3">
                 <button onclick="window.joinMatch()" class="w-full bg-zinc-900 text-white py-3 rounded-2xl font-bold shadow-md hover:bg-zinc-800 active:scale-95 transition-all">Join Room</button>
             </div>
-            
             <button onclick="window.showHub()" class="mt-6 w-full text-center text-sm font-bold text-zinc-500 hover:text-zinc-800">Cancel & Go Back</button>
         </div>
 
+        <!-- Waiting View -->
         <div id="waiting-view" class="hidden fade-in max-w-sm mx-auto mt-10 text-center">
             <div class="bg-surface p-8 rounded-3xl shadow-soft border border-zinc-100">
-                <div class="w-16 h-16 rounded-full bg-primary/10 text-primary flex items-center justify-center mx-auto mb-4 animate-pulse">
-                    <span class="material-symbols-outlined text-3xl">hourglass_empty</span>
-                </div>
+                <div class="w-16 h-16 rounded-full bg-primary/10 text-primary flex items-center justify-center mx-auto mb-4 animate-pulse"><span class="material-symbols-outlined text-3xl">hourglass_empty</span></div>
                 <h2 class="text-xl font-bold mb-2">Waiting for opponent...</h2>
                 <p class="text-sm text-zinc-500 mb-6">Share this code with your friend:</p>
                 <div class="bg-background py-4 rounded-2xl border border-zinc-200 mb-4 cursor-pointer hover:bg-zinc-200 transition-colors" onclick="window.copyRoomCode()">
@@ -171,8 +220,8 @@
             <button onclick="window.leaveMatch()" class="mt-6 text-sm font-bold text-red-500 hover:underline">Cancel Match</button>
         </div>
 
-        <div id="game-view" class="hidden fade-in pb-10">
-        </div>
+        <!-- Game View -->
+        <div id="game-view" class="hidden fade-in pb-10 max-w-2xl mx-auto"></div>
 
     </main>
 
@@ -181,36 +230,20 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, onSnapshot, collection, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, getDoc, onSnapshot, collection, deleteDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyAiX6ipa161rB1o715EfmtzfrHiz9zgChQ",
-            authDomain: "dottech-scorat.firebaseapp.com",
-            projectId: "dottech-scorat",
-            storageBucket: "dottech-scorat.firebasestorage.app",
-            messagingSenderId: "324240314924",
-            appId: "1:324240314924:web:12866f2c25908f82fb7789"
-        };
+        const firebaseConfig = { apiKey: "AIzaSyAiX6ipa161rB1o715EfmtzfrHiz9zgChQ", authDomain: "dottech-scorat.firebaseapp.com", projectId: "dottech-scorat", storageBucket: "dottech-scorat.firebasestorage.app", messagingSenderId: "324240314924", appId: "1:324240314924:web:12866f2c25908f82fb7789" };
+        const scAppId = 'scorat-app';
+        let db, auth; let myUid = localStorage.getItem('scorat_uid');
+        let currentRoomId = null; let selectedGameType = null; let unsubscribeRoom = null; let isHost = false;
+        window.players = []; let gameState = {}; let soloState = {};
 
-        const appId = 'scorat-app';
-        let db, auth;
-        let myUid = localStorage.getItem('scorat_uid');
-        
-        let currentRoomId = null;
-        let selectedGameType = null;
-        let unsubscribeRoom = null;
-        let isHost = false;
-        
-        window.players = [];
-        let gameState = {};
-
-        // Hoist all global functions immediately to prevent "is not a function" errors
+        // Utilities
         window.showToast = function(msg, type = 'info') {
             const container = document.getElementById('toast-container'); const toast = document.createElement('div');
             const bg = type === 'success' ? 'bg-emerald-500' : (type === 'error' ? 'bg-rose-500' : 'bg-zinc-900');
             toast.className = `${bg} text-white px-5 py-4 rounded-2xl shadow-lg flex items-center gap-3 transform transition-all duration-300 -translate-y-10 opacity-0`;
-            toast.innerHTML = `<span class="font-bold text-sm">${msg}</span>`;
-            container.appendChild(toast);
+            toast.innerHTML = `<span class="font-bold text-sm">${msg}</span>`; container.appendChild(toast);
             requestAnimationFrame(() => toast.classList.remove('-translate-y-10', 'opacity-0'));
             setTimeout(() => { toast.classList.add('-translate-y-10', 'opacity-0'); setTimeout(() => toast.remove(), 300); }, 3000);
         };
@@ -218,112 +251,88 @@
         window.showHub = function() {
             ['game-view', 'lobby-view', 'waiting-view'].forEach(id => document.getElementById(id).classList.add('hidden'));
             document.getElementById('hub-view').classList.remove('hidden');
+            document.getElementById('user-profile-widget').classList.remove('hidden');
             document.getElementById('btn-back').classList.add('hidden');
         };
 
         window.openLobby = function(gameType) {
             selectedGameType = gameType;
-            const names = { 'dots': 'Dots & Boxes', 'connect4': 'Connect 4', 'uttt': 'Ultimate Tic-Tac-Toe' };
+            const names = { 'dots': 'Dots & Boxes', 'connect4': 'Connect 4', 'uttt': 'Ultimate X-O', 'reversi': 'Reversi', 'memory': 'Memory Duel', 'battleship': 'Fleet Strike' };
             document.getElementById('lobby-title').innerText = names[gameType];
-            document.getElementById('hub-view').classList.add('hidden');
-            document.getElementById('lobby-view').classList.remove('hidden');
-            document.getElementById('btn-back').classList.remove('hidden');
+            document.getElementById('hub-view').classList.add('hidden'); document.getElementById('lobby-view').classList.remove('hidden');
+            document.getElementById('btn-back').classList.remove('hidden'); document.getElementById('user-profile-widget').classList.add('hidden');
         };
 
-        function generateCode() {
-            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-            let res = ''; for(let i=0; i<5; i++) res += chars.charAt(Math.floor(Math.random() * chars.length));
-            return res;
+        window.copyRoomCode = function() { navigator.clipboard.writeText(currentRoomId); window.showToast("Code Copied!", "success"); };
+
+        window.getPlayerInfo = function(uid) {
+            if(!uid) return { name: 'Waiting...', avatar: 'https://api.dicebear.com/7.x/initials/svg?seed=wait', gamePoints: 0 };
+            const p = window.players?.find(x => x.id === uid);
+            return p || { name: 'Player', avatar: 'https://api.dicebear.com/7.x/initials/svg?seed=' + uid, gamePoints: 0 };
+        };
+
+        async function init() {
+            try {
+                const app = initializeApp(firebaseConfig); auth = getAuth(app); db = getFirestore(app);
+                if (!myUid) { const cred = await signInAnonymously(auth); myUid = cred.user.uid; localStorage.setItem('scorat_uid', myUid); }
+                onSnapshot(collection(db, 'artifacts', scAppId, 'public', 'data', 'users'), (snap) => {
+                    window.players = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                    updateHeaderProfile();
+                    if (!document.getElementById('game-view').classList.contains('hidden') && currentRoomId) renderActiveGame();
+                });
+            } catch (error) { window.showToast("Connection failed.", "error"); }
         }
 
-        window.copyRoomCode = function() {
-            navigator.clipboard.writeText(currentRoomId);
-            window.showToast("Code Copied!", "success");
-        };
+        function updateHeaderProfile() {
+            const myInfo = window.getPlayerInfo(myUid);
+            document.getElementById('header-user-name').innerText = myInfo.name !== 'Player' ? myInfo.name : 'Welcome';
+            document.getElementById('header-user-avatar').src = myInfo.avatar;
+            document.getElementById('header-user-points').innerText = `${myInfo.gamePoints || 0} Pts`;
+        }
 
+        // Multiplayer Core
         window.hostMatch = async function() {
-            if(!db || !myUid) return window.showToast("Connecting to server...", "error");
-            currentRoomId = generateCode();
-            isHost = true;
-            
-            gameState = getInitialState(selectedGameType);
-            
-            const roomData = {
-                type: selectedGameType,
-                p1: myUid,
-                p2: null,
-                status: 'waiting',
-                state: JSON.stringify(gameState), // Stringified to prevent nested array Firebase error
-                updatedAt: Date.now()
-            };
-
-            await setDoc(doc(db, 'minigames', currentRoomId), roomData);
-            
-            document.getElementById('lobby-view').classList.add('hidden');
-            document.getElementById('waiting-view').classList.remove('hidden');
-            document.getElementById('display-room-code').innerText = currentRoomId;
-            
-            listenToRoom();
+            if(!db || !myUid) return window.showToast("Connecting...", "error");
+            currentRoomId = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'.split('').sort(()=>0.5-Math.random()).join('').substring(0,5);
+            isHost = true; gameState = getInitialState(selectedGameType);
+            await setDoc(doc(db, 'minigames', currentRoomId), { type: selectedGameType, p1: myUid, p2: null, status: 'waiting', state: JSON.stringify(gameState), updatedAt: Date.now() });
+            document.getElementById('lobby-view').classList.add('hidden'); document.getElementById('waiting-view').classList.remove('hidden');
+            document.getElementById('display-room-code').innerText = currentRoomId; listenToRoom();
         };
 
         window.joinMatch = async function() {
             const code = document.getElementById('join-code').value.trim().toUpperCase();
             if(code.length !== 5) return window.showToast("Invalid Code", "error");
-            
-            const docRef = doc(db, 'minigames', code);
-            const snap = await getDoc(docRef);
-            
+            const docRef = doc(db, 'minigames', code); const snap = await getDoc(docRef);
             if(!snap.exists()) return window.showToast("Room not found", "error");
             const data = snap.data();
-            
-            if(data.status !== 'waiting' && data.p2 !== myUid && data.p1 !== myUid) {
-                return window.showToast("Room is full or playing", "error");
-            }
-
-            currentRoomId = code;
-            isHost = (data.p1 === myUid);
-            selectedGameType = data.type;
-            
-            if (!isHost && data.status === 'waiting') {
-                await setDoc(docRef, { p2: myUid, status: 'playing' }, { merge: true });
-            }
-
-            document.getElementById('lobby-view').classList.add('hidden');
-            listenToRoom();
+            if(data.status !== 'waiting' && data.p2 !== myUid && data.p1 !== myUid) return window.showToast("Room full", "error");
+            currentRoomId = code; isHost = (data.p1 === myUid); selectedGameType = data.type;
+            if (!isHost && data.status === 'waiting') await setDoc(docRef, { p2: myUid, status: 'playing' }, { merge: true });
+            document.getElementById('lobby-view').classList.add('hidden'); listenToRoom();
         };
 
         window.leaveMatch = async function() {
             if (unsubscribeRoom) { unsubscribeRoom(); unsubscribeRoom = null; }
-            if (currentRoomId && isHost) {
-                try { await deleteDoc(doc(db, 'minigames', currentRoomId)); } catch(e){}
-            }
-            currentRoomId = null;
-            window.showHub();
+            if (currentRoomId && isHost) try { await deleteDoc(doc(db, 'minigames', currentRoomId)); } catch(e){}
+            currentRoomId = null; window.showHub(); document.removeEventListener('keydown', soloKeyHandler);
         };
 
         function listenToRoom() {
             if (unsubscribeRoom) unsubscribeRoom();
             unsubscribeRoom = onSnapshot(doc(db, 'minigames', currentRoomId), (docSnap) => {
-                if (!docSnap.exists()) {
-                    window.showToast("The host closed the room.", "error");
-                    window.leaveMatch(); return;
-                }
-                
-                const data = docSnap.data();
-                window.roomData = data; 
-
+                if (!docSnap.exists()) { window.showToast("Room closed.", "error"); window.leaveMatch(); return; }
+                const data = docSnap.data(); window.roomData = data; 
                 if (data.status === 'playing') {
-                    document.getElementById('waiting-view').classList.add('hidden');
-                    document.getElementById('game-view').classList.remove('hidden');
+                    document.getElementById('waiting-view').classList.add('hidden'); document.getElementById('game-view').classList.remove('hidden');
+                    let parsedState = typeof data.state === 'string' ? JSON.parse(data.state) : data.state;
                     
-                    // Parse from JSON string to avoid nested array Firebase errors
-                    let parsedState = data.state;
-                    if (typeof parsedState === 'string') {
-                        parsedState = JSON.parse(parsedState);
+                    // Check if game just ended and I won to award points
+                    if(parsedState.gameOver && !gameState.gameOver && parsedState.winner === (myUid === data.p1 ? 1 : 2)) {
+                        awardPoints(10);
                     }
                     
-                    gameState = parsedState;
-                    gameState.myRole = (myUid === data.p1) ? 1 : 2; 
+                    gameState = parsedState; gameState.myRole = (myUid === data.p1) ? 1 : 2; 
                     renderActiveGame();
                 }
             });
@@ -331,376 +340,428 @@
 
         function syncMove(newState) {
             if (!currentRoomId) return;
-            // Stringify to bypass Firebase's nested array restrictions
             setDoc(doc(db, 'minigames', currentRoomId), { state: JSON.stringify(newState), updatedAt: Date.now() }, { merge: true });
         }
 
+        function awardPoints(pts) {
+            if(myUid) updateDoc(doc(db, 'artifacts', scAppId, 'public', 'data', 'users', myUid), { gamePoints: increment(pts) }).catch(()=>{});
+        }
+
+        window.requestRestart = function() { syncMove(getInitialState(selectedGameType)); };
+
+        // Game Initializers
         function getInitialState(type) {
             if (type === 'dots') return { turn: 1, scores: {1:0, 2:0}, lines: {}, boxes: {}, size: 4, gameOver: false };
             if (type === 'connect4') return { turn: 1, board: Array.from({length: 6}, () => Array(7).fill(0)), gameOver: false, winner: 0 };
             if (type === 'uttt') return { turn: 1, activeMacro: -1, gameOver: false, winner: 0, macro: Array(9).fill(0), micro: Array.from({length: 9}, () => Array(9).fill(0)) };
+            if (type === 'reversi') {
+                let b = Array.from({length: 8}, () => Array(8).fill(0));
+                b[3][3] = 2; b[4][4] = 2; b[3][4] = 1; b[4][3] = 1; // 1=Black, 2=White
+                return { turn: 1, board: b, gameOver: false, winner: 0, scores: {1:2, 2:2} };
+            }
+            if (type === 'memory') {
+                const emojis = ['🍎','🍕','🚀','🎈','🐶','🐱','🎸','⚽'];
+                let deck = [...emojis, ...emojis].sort(()=>Math.random()-0.5);
+                return { turn: 1, deck, flipped: [], matched: [], scores: {1:0, 2:0}, gameOver: false, winner: 0, lock: false };
+            }
+            if (type === 'battleship') {
+                // Simplified auto-placement: each gets 5 random ships (1 cell each for speed)
+                const makeShips = () => { let s=[]; while(s.length<5){ let rnd=Math.floor(Math.random()*64); if(!s.includes(rnd)) s.push(rnd); } return s; };
+                return { turn: 1, s1: makeShips(), s2: makeShips(), hits1: [], hits2: [], misses1: [], misses2: [], gameOver: false, winner: 0 };
+            }
         }
 
-        window.requestRestart = function() {
-            const newState = getInitialState(selectedGameType);
-            syncMove(newState);
-        };
-window.getPlayerInfo = function(uid) {
-            if(!uid) return { name: 'Waiting...', avatar: 'https://api.dicebear.com/7.x/initials/svg?seed=wait' };
-            const p = window.players?.find(x => x.id === uid);
-            return p || { name: 'Player', avatar: 'https://api.dicebear.com/7.x/initials/svg?seed=' + uid };
-        };
-
-        async function init() {
-            try {
-                const app = initializeApp(firebaseConfig);
-                auth = getAuth(app); db = getFirestore(app);
-                if (!myUid) {
-                    const cred = await signInAnonymously(auth);
-                    myUid = cred.user.uid;
-                    localStorage.setItem('scorat_uid', myUid);
-                }
-
-                // Fetch Global Players List for Avatars & Names
-                onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'users'), (snap) => {
-                    window.players = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-                    if (!document.getElementById('game-view').classList.contains('hidden') && currentRoomId) {
-                        renderActiveGame();
-                    }
-                });
-
-            } catch (error) { window.showToast("Connection failed.", "error"); }
-        }
-
-        /* --- Rendering Engines --- */
         function renderActiveGame() {
             if (selectedGameType === 'dots') renderDots();
             else if (selectedGameType === 'connect4') renderConnect4();
             else if (selectedGameType === 'uttt') renderUTTT();
+            else if (selectedGameType === 'reversi') renderReversi();
+            else if (selectedGameType === 'memory') renderMemory();
+            else if (selectedGameType === 'battleship') renderBattleship();
         }
 
         function renderPlayerHeader() {
-            const p1Info = window.getPlayerInfo(window.roomData.p1);
-            const p2Info = window.getPlayerInfo(window.roomData.p2);
-            
-            const myRole = gameState.myRole;
-            const myInfo = myRole === 1 ? p1Info : p2Info;
-            const oppInfo = myRole === 1 ? p2Info : p1Info;
-            const myColor = myRole === 1 ? 'border-primary' : 'border-rose-500';
-            const oppColor = myRole === 1 ? 'border-rose-500' : 'border-primary';
-
+            const myR = gameState.myRole; const p1I = window.getPlayerInfo(window.roomData.p1); const p2I = window.getPlayerInfo(window.roomData.p2);
+            const myI = myR === 1 ? p1I : p2I; const oppI = myR === 1 ? p2I : p1I;
             return `
-                <div class="flex justify-between items-center bg-surface p-4 rounded-3xl shadow-soft mb-6">
+                <div class="flex justify-between items-center bg-surface p-3 rounded-3xl shadow-soft mb-6">
                     <div class="flex flex-col items-center flex-1 overflow-hidden">
-                        <img src="${myInfo.avatar}" class="w-12 h-12 rounded-full mb-2 object-cover shadow-sm border-[3px] ${myColor}">
-                        <span class="text-xs font-bold truncate w-full text-center text-zinc-800">${myInfo.name} <span class="opacity-50">(You)</span></span>
+                        <img src="${myI.avatar}" class="w-10 h-10 rounded-full mb-1 object-cover shadow-sm border-2 ${myR===1?'border-primary':'border-rose-500'}">
+                        <span class="text-[10px] font-bold truncate w-full text-center">${myI.name} (You)</span>
                     </div>
-                    <div class="text-xl font-black text-zinc-200 px-4">VS</div>
+                    <div class="text-lg font-black text-zinc-200 px-2">VS</div>
                     <div class="flex flex-col items-center flex-1 overflow-hidden">
-                        <img src="${oppInfo.avatar}" class="w-12 h-12 rounded-full mb-2 object-cover shadow-sm border-[3px] ${oppColor}">
-                        <span class="text-xs font-bold truncate w-full text-center text-zinc-800">${oppInfo.name}</span>
+                        <img src="${oppI.avatar}" class="w-10 h-10 rounded-full mb-1 object-cover shadow-sm border-2 ${myR===1?'border-rose-500':'border-primary'}">
+                        <span class="text-[10px] font-bold truncate w-full text-center">${oppI.name}</span>
                     </div>
-                </div>
-            `;
+                </div>`;
         }
 
-        function renderRestartButton() {
+        function renderRestart() {
             if (!gameState.gameOver) return '';
-            return `
-                <div class="mt-8 flex justify-center fade-in">
-                    <button onclick="window.requestRestart()" class="bg-zinc-900 text-white px-8 py-3.5 rounded-2xl font-bold shadow-md hover:scale-105 active:scale-95 transition-all">Play Again</button>
-                </div>
-            `;
+            return `<div class="mt-6 flex justify-center fade-in"><button onclick="window.requestRestart()" class="bg-zinc-900 text-white px-6 py-3 rounded-2xl font-bold hover:scale-105 active:scale-95">Play Again</button></div>`;
         }
 
-        /* ================= 1. Dots & Boxes Logic ================= */
+        function renderStatus(isMyTurn) {
+            const st = gameState;
+            let msg = st.gameOver ? (st.winner === st.myRole ? 'YOU WON! 🎉' : (st.winner===0?'DRAW':'YOU LOST 💀')) : (isMyTurn ? 'YOUR TURN' : "Opponent's Turn");
+            const col = st.turn === st.myRole ? (st.myRole===1?'text-primary':'text-rose-500') : (st.turn===1?'text-primary':'text-rose-500');
+            return `<div class="text-center font-black ${col} mb-4 tracking-widest uppercase text-lg">${msg}</div>`;
+        }
+
+        // Multiplayer Games Implementations
         function renderDots() {
-            const st = gameState;
-            const isMyTurn = st.turn === st.myRole && !st.gameOver;
-            
-            let gridHtml = '<div class="dots-grid bg-white p-4 rounded-3xl shadow-soft border border-zinc-100">';
-            for (let r = 0; r <= st.size * 2; r++) {
-                for (let c = 0; c <= st.size * 2; c++) {
-                    const isDot = r % 2 === 0 && c % 2 === 0;
-                    const isHLine = r % 2 === 0 && c % 2 !== 0;
-                    const isVLine = r % 2 !== 0 && c % 2 === 0;
-                    const isBox = r % 2 !== 0 && c % 2 !== 0;
-
-                    if (isDot) gridHtml += `<div class="dot w-3 h-3"></div>`;
-                    else if (isHLine) {
-                        const key = `h-${r/2}-${Math.floor(c/2)}`;
-                        const owner = st.lines[key];
-                        const bg = owner === 1 ? '#2563eb' : (owner === 2 ? '#f43f5e' : '');
-                        const classes = owner ? 'claimed' : '';
-                        gridHtml += `<div class="line-h bg-zinc-100 rounded-full my-auto ${classes}" style="background-color: ${bg}" onclick="window.dbPlayLine('h', ${r/2}, ${Math.floor(c/2)})"></div>`;
-                    }
-                    else if (isVLine) {
-                        const key = `v-${Math.floor(r/2)}-${c/2}`;
-                        const owner = st.lines[key];
-                        const bg = owner === 1 ? '#2563eb' : (owner === 2 ? '#f43f5e' : '');
-                        const classes = owner ? 'claimed' : '';
-                        gridHtml += `<div class="line-v bg-zinc-100 rounded-full mx-auto ${classes}" style="background-color: ${bg}" onclick="window.dbPlayLine('v', ${Math.floor(r/2)}, ${c/2})"></div>`;
-                    }
-                    else if (isBox) {
-                        const owner = st.boxes[`${Math.floor(r/2)}-${Math.floor(c/2)}`];
-                        const bg = owner === 1 ? 'rgba(37, 99, 235, 0.2)' : (owner === 2 ? 'rgba(244, 63, 94, 0.2)' : '');
-                        gridHtml += `<div class="box-cell rounded-lg" style="background-color: ${bg}"></div>`;
-                    }
+            const st = gameState; const isMyTurn = st.turn === st.myRole && !st.gameOver;
+            let html = '<div class="dots-grid bg-white p-4 rounded-3xl shadow-soft border border-zinc-100">';
+            for (let r=0; r<=st.size*2; r++) {
+                for (let c=0; c<=st.size*2; c++) {
+                    if (r%2===0 && c%2===0) html += `<div class="dot w-3 h-3"></div>`;
+                    else if (r%2===0 && c%2!==0) { const k=`h-${r/2}-${Math.floor(c/2)}`; const bg=st.lines[k]===1?'#2563eb':(st.lines[k]===2?'#f43f5e':''); html += `<div class="line-h bg-zinc-100 rounded-full my-auto ${st.lines[k]?'claimed':''}" style="background-color:${bg}" onclick="window.dbPlay('h',${r/2},${Math.floor(c/2)})"></div>`; }
+                    else if (r%2!==0 && c%2===0) { const k=`v-${Math.floor(r/2)}-${c/2}`; const bg=st.lines[k]===1?'#2563eb':(st.lines[k]===2?'#f43f5e':''); html += `<div class="line-v bg-zinc-100 rounded-full mx-auto ${st.lines[k]?'claimed':''}" style="background-color:${bg}" onclick="window.dbPlay('v',${Math.floor(r/2)},${c/2})"></div>`; }
+                    else { const o=st.boxes[`${Math.floor(r/2)}-${Math.floor(c/2)}`]; const bg=o===1?'rgba(37,99,235,0.2)':(o===2?'rgba(244,63,94,0.2)':''); html += `<div class="box-cell rounded-lg" style="background-color:${bg}"></div>`; }
                 }
-            }
-            gridHtml += '</div>';
-
-            const turnColor = st.turn === st.myRole ? (st.myRole===1?'text-primary':'text-rose-500') : (st.turn===1?'text-primary':'text-rose-500');
-            let statusText = '';
-            if(st.gameOver) statusText = (st.scores[st.myRole] > st.scores[st.myRole===1?2:1]) ? 'YOU WON! 🎉' : (st.scores[st.myRole] === st.scores[st.myRole===1?2:1] ? 'DRAW' : 'YOU LOST 💀');
-            else statusText = isMyTurn ? 'YOUR TURN' : "Opponent's Turn";
-
-            document.getElementById('game-view').innerHTML = `
-                ${renderPlayerHeader()}
-                <div class="flex justify-center gap-6 mb-6">
-                    <div class="text-center w-24">
-                        <span class="text-[10px] font-bold text-zinc-400 uppercase">Your Score</span>
-                        <div class="text-3xl font-black ${st.myRole===1?'text-primary':'text-rose-500'}">${st.scores[st.myRole]}</div>
-                    </div>
-                    <div class="text-center w-24">
-                        <span class="text-[10px] font-bold text-zinc-400 uppercase">Opp Score</span>
-                        <div class="text-3xl font-black ${st.myRole===1?'text-rose-500':'text-primary'}">${st.scores[st.myRole === 1 ? 2 : 1]}</div>
-                    </div>
-                </div>
-                <div class="text-center font-black ${turnColor} mb-4 tracking-widest uppercase text-xl">${statusText}</div>
-                <div class="flex justify-center w-full pb-4 pointer-events-${isMyTurn ? 'auto' : 'none'}">${gridHtml}</div>
-                ${renderRestartButton()}
-            `;
-        }
-
-        window.dbPlayLine = function(type, r, c) {
-            if(gameState.turn !== gameState.myRole || gameState.gameOver) return;
-            const key = `${type}-${r}-${c}`;
-            if (gameState.lines[key]) return; 
-
-            let st = JSON.parse(JSON.stringify(gameState));
-            st.lines[key] = st.turn;
-
-            let boxFormed = false;
-            const checkAndClaimBox = (br, bc) => {
-                if (br < 0 || br >= st.size || bc < 0 || bc >= st.size) return false;
-                if (st.boxes[`${br}-${bc}`]) return false;
-                if (st.lines[`h-${br}-${bc}`] && st.lines[`h-${br+1}-${bc}`] && st.lines[`v-${br}-${bc}`] && st.lines[`v-${br}-${bc+1}`]) {
-                    st.boxes[`${br}-${bc}`] = st.turn;
-                    st.scores[st.turn]++;
-                    return true;
-                }
-                return false;
-            };
-
-            if (type === 'h') { boxFormed |= checkAndClaimBox(r-1, c); boxFormed |= checkAndClaimBox(r, c); }
-            else { boxFormed |= checkAndClaimBox(r, c-1); boxFormed |= checkAndClaimBox(r, c); }
-
-            if (Object.keys(st.boxes).length === st.size * st.size) {
-                st.gameOver = true;
-            } else if (!boxFormed) {
-                st.turn = st.turn === 1 ? 2 : 1;
-            }
-            
-            syncMove(st);
-        }
-
-        /* ================= 2. Connect 4 Logic ================= */
-        function renderConnect4() {
-            const st = gameState;
-            const isMyTurn = st.turn === st.myRole && !st.gameOver;
-            
-            let gridHtml = '<div class="c4-grid shadow-lg">';
-            for(let r=0; r<6; r++) {
-                for(let c=0; c<7; c++) {
-                    const owner = st.board[r][c];
-                    const bg = owner === 1 ? '#2563eb' : (owner === 2 ? '#f43f5e' : 'transparent');
-                    const classes = owner ? 'dropped' : '';
-                    gridHtml += `<div class="c4-cell" onclick="window.c4Play(${c})"><div class="c4-piece ${classes}" style="background-color: ${bg}"></div></div>`;
-                }
-            }
-            gridHtml += '</div>';
-
-            let status = '';
-            if(st.gameOver) status = st.winner === st.myRole ? 'YOU WON! 🎉' : (st.winner === 0 ? 'DRAW' : 'YOU LOST 💀');
-            else status = isMyTurn ? 'YOUR TURN' : "Opponent's Turn";
-
-            const turnColor = st.turn === st.myRole ? (st.myRole===1?'text-primary':'text-rose-500') : (st.turn===1?'text-primary':'text-rose-500');
-
-            document.getElementById('game-view').innerHTML = `
-                ${renderPlayerHeader()}
-                <div class="text-center font-black ${turnColor} mb-6 tracking-widest uppercase text-xl">${status}</div>
-                <div class="flex justify-center w-full pb-4 pointer-events-${isMyTurn ? 'auto' : 'none'}">${gridHtml}</div>
-                ${renderRestartButton()}
-            `;
-        }
-
-        window.c4Play = function(c) {
-            if(gameState.turn !== gameState.myRole || gameState.gameOver) return;
-            let st = JSON.parse(JSON.stringify(gameState));
-            
-            let dropR = -1;
-            for(let r=5; r>=0; r--) { if(st.board[r][c] === 0) { dropR = r; break; } }
-            if(dropR === -1) return;
-
-            st.board[dropR][c] = st.turn;
-
-            const dirs = [[0,1], [1,0], [1,1], [1,-1]];
-            let won = false;
-            for (let [dr, dc] of dirs) {
-                let count = 1;
-                for (let i = 1; i <= 3; i++) { if (dropR+dr*i < 6 && dropR+dr*i >= 0 && c+dc*i < 7 && c+dc*i >= 0 && st.board[dropR+dr*i][c+dc*i] === st.turn) count++; else break; }
-                for (let i = 1; i <= 3; i++) { if (dropR-dr*i < 6 && dropR-dr*i >= 0 && c-dc*i < 7 && c-dc*i >= 0 && st.board[dropR-dr*i][c-dc*i] === st.turn) count++; else break; }
-                if (count >= 4) won = true;
-            }
-
-            if(won) { st.gameOver = true; st.winner = st.turn; }
-            else { st.turn = st.turn === 1 ? 2 : 1; }
-            
-            syncMove(st);
-        }
-
-        /* ================= 3. UTTT Logic ================= */
-        function renderUTTT() {
-            const st = gameState;
-            const isMyTurn = st.turn === st.myRole && !st.gameOver;
-            const symbols = {0: '', 1: 'X', 2: 'O', 3: '-'};
-            const colors = {1: '#2563eb', 2: '#f43f5e', 3: '#71717a'};
-
-            let html = '<div class="uttt-macro shadow-xl">';
-            for(let i=0; i<9; i++) {
-                const macOwner = st.macro[i];
-                const isActive = (!st.gameOver && macOwner === 0 && (st.activeMacro === -1 || st.activeMacro === i)) ? 'active' : '';
-                const isWon = macOwner !== 0 ? 'won' : '';
-                
-                html += `<div class="uttt-board ${isActive} ${isWon}" data-winner="${symbols[macOwner]}" style="color: ${colors[macOwner]}">`;
-                for(let j=0; j<9; j++) {
-                    const micOwner = st.micro[i][j];
-                    html += `<div class="uttt-cell" style="color: ${colors[micOwner]}" onclick="window.utttPlay(${i}, ${j})">${symbols[micOwner]}</div>`;
-                }
-                html += `</div>`;
             }
             html += '</div>';
-
-            let status = '';
-            if(st.gameOver) status = st.winner === st.myRole ? 'YOU WON! 🎉' : (st.winner === 3 ? 'DRAW' : 'YOU LOST 💀');
-            else status = isMyTurn ? 'YOUR TURN' : "Opponent's Turn";
-
-            const turnColor = st.turn === st.myRole ? (st.myRole===1?'text-primary':'text-rose-500') : (st.turn===1?'text-primary':'text-rose-500');
-
-            document.getElementById('game-view').innerHTML = `
-                ${renderPlayerHeader()}
-                <div class="text-center font-black ${turnColor} mb-6 tracking-widest uppercase text-xl">${status}</div>
-                <div class="flex justify-center w-full pb-4 pointer-events-${isMyTurn ? 'auto' : 'none'}">${html}</div>
-                ${renderRestartButton()}
-            `;
+            document.getElementById('game-view').innerHTML = renderPlayerHeader() + `
+                <div class="flex justify-center gap-6 mb-4">
+                    <div class="text-center"><span class="text-[10px] font-bold text-zinc-400">P1 SCORE</span><div class="text-3xl font-black text-primary">${st.scores[1]}</div></div>
+                    <div class="text-center"><span class="text-[10px] font-bold text-zinc-400">P2 SCORE</span><div class="text-3xl font-black text-rose-500">${st.scores[2]}</div></div>
+                </div>` + renderStatus(isMyTurn) + `<div class="flex justify-center pointer-events-${isMyTurn?'auto':'none'}">${html}</div>` + renderRestart();
         }
-
-        window.utttPlay = function(macIdx, micIdx) {
-            if(gameState.turn !== gameState.myRole || gameState.gameOver) return;
-            if(gameState.macro[macIdx] !== 0) return;
-            if(gameState.micro[macIdx][micIdx] !== 0) return;
-            if(gameState.activeMacro !== -1 && gameState.activeMacro !== macIdx) return;
-
-            let st = JSON.parse(JSON.stringify(gameState));
-            st.micro[macIdx][micIdx] = st.turn;
-
-            const checkWin = (arr, p) => [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]].some(l => arr[l[0]]===p && arr[l[1]]===p && arr[l[2]]===p);
-
-            // Check Micro win
-            if(checkWin(st.micro[macIdx], st.turn)) {
-                st.macro[macIdx] = st.turn;
-            } else if (!st.micro[macIdx].includes(0)) {
-                st.macro[macIdx] = 3; // Draw
-            }
-
-            // Check Macro win
-            if(checkWin(st.macro, st.turn)) {
-                st.gameOver = true; st.winner = st.turn;
-            } else if (!st.macro.includes(0)) {
-                st.gameOver = true; st.winner = 3; // Overall Draw
-            } else {
-                st.activeMacro = st.macro[micIdx] === 0 ? micIdx : -1;
-                st.turn = st.turn === 1 ? 2 : 1;
-            }
-
+        window.dbPlay = function(t,r,c) {
+            if(gameState.turn!==gameState.myRole || gameState.gameOver || gameState.lines[`${t}-${r}-${c}`]) return;
+            let st = JSON.parse(JSON.stringify(gameState)); st.lines[`${t}-${r}-${c}`] = st.turn;
+            let formed = false;
+            const chk = (br, bc) => {
+                if(br<0||br>=st.size||bc<0||bc>=st.size||st.boxes[`${br}-${bc}`]) return false;
+                if(st.lines[`h-${br}-${bc}`]&&st.lines[`h-${br+1}-${bc}`]&&st.lines[`v-${br}-${bc}`]&&st.lines[`v-${br}-${bc+1}`]){ st.boxes[`${br}-${bc}`]=st.turn; st.scores[st.turn]++; return true; } return false;
+            };
+            if(t==='h'){ formed|=chk(r-1,c); formed|=chk(r,c); } else { formed|=chk(r,c-1); formed|=chk(r,c); }
+            if(Object.keys(st.boxes).length === st.size*st.size){ st.gameOver=true; st.winner = st.scores[1]>st.scores[2]?1:(st.scores[2]>st.scores[1]?2:0); }
+            else if(!formed) st.turn = st.turn===1?2:1;
             syncMove(st);
+        };
+
+        function renderConnect4() {
+            const st = gameState; const isMyTurn = st.turn === st.myRole && !st.gameOver;
+            let html = '<div class="c4-grid shadow-lg">';
+            for(let r=0;r<6;r++) for(let c=0;c<7;c++) { const bg=st.board[r][c]===1?'#2563eb':(st.board[r][c]===2?'#f43f5e':'transparent'); html += `<div class="c4-cell" onclick="window.c4Play(${c})"><div class="c4-piece ${st.board[r][c]?'dropped':''}" style="background-color:${bg}"></div></div>`; }
+            document.getElementById('game-view').innerHTML = renderPlayerHeader() + renderStatus(isMyTurn) + `<div class="flex justify-center pointer-events-${isMyTurn?'auto':'none'}">${html}</div>` + renderRestart();
         }
+        window.c4Play = function(c) {
+            if(gameState.turn!==gameState.myRole || gameState.gameOver) return;
+            let st = JSON.parse(JSON.stringify(gameState)); let dR=-1;
+            for(let r=5;r>=0;r--) if(st.board[r][c]===0){ dR=r; break; } if(dR===-1) return;
+            st.board[dR][c] = st.turn;
+            let won = false; const dirs=[[0,1],[1,0],[1,1],[1,-1]];
+            for(let [dr,dc] of dirs){ let cnt=1; for(let i=1;i<=3;i++){if(dR+dr*i<6&&dR+dr*i>=0&&c+dc*i<7&&c+dc*i>=0&&st.board[dR+dr*i][c+dc*i]===st.turn)cnt++;else break;} for(let i=1;i<=3;i++){if(dR-dr*i<6&&dR-dr*i>=0&&c-dc*i<7&&c-dc*i>=0&&st.board[dR-dr*i][c-dc*i]===st.turn)cnt++;else break;} if(cnt>=4) won=true; }
+            if(won){ st.gameOver=true; st.winner=st.turn; } else if(!st.board[0].includes(0)){ st.gameOver=true; st.winner=0; } else st.turn=st.turn===1?2:1;
+            syncMove(st);
+        };
 
-        /* ================= 4. Mastermind (Solo Mode) ================= */
-        let mmState = {};
-        window.initMastermindSolo = function() {
-            document.getElementById('hub-view').classList.add('hidden');
-            document.getElementById('btn-back').classList.remove('hidden');
-            
-            let digits = [1,2,3,4,5,6,7,8,9];
-            mmState = { secret: [], attempts: [] };
-            for(let i=0; i<4; i++) {
-                const idx = Math.floor(Math.random() * digits.length);
-                mmState.secret.push(digits[idx]); digits.splice(idx, 1);
+        function renderUTTT() {
+            const st = gameState; const isMyTurn = st.turn === st.myRole && !st.gameOver;
+            const sym={0:'',1:'X',2:'O',3:'-'}; const col={1:'#2563eb',2:'#f43f5e',3:'#71717a'};
+            let html = '<div class="uttt-macro shadow-xl">';
+            for(let i=0;i<9;i++){
+                html += `<div class="uttt-board ${(!st.gameOver&&st.macro[i]===0&&(st.activeMacro===-1||st.activeMacro===i))?'active':''} ${st.macro[i]!==0?'won':''}" data-winner="${sym[st.macro[i]]}" style="color:${col[st.macro[i]]}">`;
+                for(let j=0;j<9;j++) html += `<div class="uttt-cell" style="color:${col[st.micro[i][j]]}" onclick="window.utttPlay(${i},${j})">${sym[st.micro[i][j]]}</div>`;
+                html += `</div>`;
             }
+            document.getElementById('game-view').innerHTML = renderPlayerHeader() + renderStatus(isMyTurn) + `<div class="flex justify-center pointer-events-${isMyTurn?'auto':'none'}">${html}</div>` + renderRestart();
+        }
+        window.utttPlay = function(ma, mi) {
+            if(gameState.turn!==gameState.myRole||gameState.gameOver||gameState.macro[ma]!==0||gameState.micro[ma][mi]!==0||(gameState.activeMacro!==-1&&gameState.activeMacro!==ma)) return;
+            let st = JSON.parse(JSON.stringify(gameState)); st.micro[ma][mi] = st.turn;
+            const chk = (a,p) => [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]].some(l=>a[l[0]]===p&&a[l[1]]===p&&a[l[2]]===p);
+            if(chk(st.micro[ma],st.turn)) st.macro[ma]=st.turn; else if(!st.micro[ma].includes(0)) st.macro[ma]=3;
+            if(chk(st.macro,st.turn)){ st.gameOver=true; st.winner=st.turn; } else if(!st.macro.includes(0)){ st.gameOver=true; st.winner=3; }
+            else { st.activeMacro = st.macro[mi]===0?mi:-1; st.turn = st.turn===1?2:1; }
+            syncMove(st);
+        };
 
+        function renderReversi() {
+            const st = gameState; const isMyTurn = st.turn === st.myRole && !st.gameOver;
+            let html = '<div class="reversi-grid shadow-lg">';
+            for(let r=0;r<8;r++) for(let c=0;c<8;c++) {
+                const p = st.board[r][c];
+                html += `<div class="reversi-cell" onclick="window.revPlay(${r},${c})">${p!==0?`<div class="reversi-piece ${p===1?'p1':'p2'}"></div>`:''}</div>`;
+            }
+            html += '</div>';
+            document.getElementById('game-view').innerHTML = renderPlayerHeader() + `
+                <div class="flex justify-center gap-6 mb-4">
+                    <div class="text-center"><span class="text-[10px] font-bold text-zinc-400">P1 (Black)</span><div class="text-2xl font-black text-zinc-800">${st.scores[1]}</div></div>
+                    <div class="text-center"><span class="text-[10px] font-bold text-zinc-400">P2 (White)</span><div class="text-2xl font-black text-zinc-300">${st.scores[2]}</div></div>
+                </div>` + renderStatus(isMyTurn) + `<div class="flex justify-center pointer-events-${isMyTurn?'auto':'none'}">${html}</div>` + renderRestart();
+        }
+        window.revPlay = function(r, c) {
+            if(gameState.turn!==gameState.myRole||gameState.gameOver||gameState.board[r][c]!==0) return;
+            let st = JSON.parse(JSON.stringify(gameState)); let flips = []; const opp = st.turn===1?2:1;
+            const dirs = [[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]];
+            for(let [dr,dc] of dirs) {
+                let r2=r+dr, c2=c+dc, temp=[];
+                while(r2>=0&&r2<8&&c2>=0&&c2<8&&st.board[r2][c2]===opp) { temp.push([r2,c2]); r2+=dr; c2+=dc; }
+                if(r2>=0&&r2<8&&c2>=0&&c2<8&&st.board[r2][c2]===st.turn) flips.push(...temp);
+            }
+            if(flips.length===0) return; // Invalid move
+            st.board[r][c] = st.turn; flips.forEach(([fr,fc]) => st.board[fr][fc] = st.turn);
+            
+            // Recalc scores
+            st.scores = {1:0, 2:0}; st.board.forEach(row=>row.forEach(cell=>{if(cell) st.scores[cell]++;}));
+            
+            // Swap turn, check if next player has moves. If not, swap back. If neither, game over.
+            const hasMoves = (player) => {
+                const op = player===1?2:1;
+                for(let i=0;i<8;i++) for(let j=0;j<8;j++) {
+                    if(st.board[i][j]!==0) continue;
+                    for(let [dr,dc] of dirs) {
+                        let r2=i+dr, c2=j+dc, count=0;
+                        while(r2>=0&&r2<8&&c2>=0&&c2<8&&st.board[r2][c2]===op) { count++; r2+=dr; c2+=dc; }
+                        if(count>0&&r2>=0&&r2<8&&c2>=0&&c2<8&&st.board[r2][c2]===player) return true;
+                    }
+                } return false;
+            };
+            
+            if(hasMoves(opp)) st.turn = opp;
+            else if(!hasMoves(st.turn)) { st.gameOver=true; st.winner = st.scores[1]>st.scores[2]?1:(st.scores[2]>st.scores[1]?2:0); }
+            
+            syncMove(st);
+        };
+
+        function renderMemory() {
+            const st = gameState; const isMyTurn = st.turn === st.myRole && !st.gameOver && !st.lock;
+            let html = '<div class="memory-grid">';
+            st.deck.forEach((card, i) => {
+                const isFlipped = st.flipped.includes(i); const isMatched = st.matched.includes(i);
+                html += `<div class="memory-card ${isFlipped?'flipped':''} ${isMatched?'matched':''}" onclick="window.memPlay(${i})"><div class="memory-content">${card}</div></div>`;
+            });
+            html += '</div>';
+            document.getElementById('game-view').innerHTML = renderPlayerHeader() + `
+                <div class="flex justify-center gap-6 mb-4">
+                    <div class="text-center"><span class="text-[10px] font-bold text-zinc-400">P1 Pairs</span><div class="text-2xl font-black text-primary">${st.scores[1]}</div></div>
+                    <div class="text-center"><span class="text-[10px] font-bold text-zinc-400">P2 Pairs</span><div class="text-2xl font-black text-rose-500">${st.scores[2]}</div></div>
+                </div>` + renderStatus(isMyTurn) + `<div class="flex justify-center pointer-events-${isMyTurn?'auto':'none'}">${html}</div>` + renderRestart();
+        }
+        window.memPlay = function(i) {
+            if(gameState.turn!==gameState.myRole||gameState.gameOver||gameState.lock||gameState.flipped.includes(i)||gameState.matched.includes(i)) return;
+            let st = JSON.parse(JSON.stringify(gameState));
+            st.flipped.push(i);
+            if(st.flipped.length === 2) {
+                st.lock = true; syncMove(st); // Send intermediate state
+                setTimeout(() => {
+                    let newSt = JSON.parse(JSON.stringify(gameState));
+                    if(newSt.deck[newSt.flipped[0]] === newSt.deck[newSt.flipped[1]]) {
+                        newSt.matched.push(...newSt.flipped); newSt.scores[newSt.turn]++;
+                        if(newSt.matched.length === 16) { newSt.gameOver=true; newSt.winner = newSt.scores[1]>newSt.scores[2]?1:(newSt.scores[2]>newSt.scores[1]?2:0); }
+                    } else newSt.turn = newSt.turn===1?2:1;
+                    newSt.flipped = []; newSt.lock = false; syncMove(newSt);
+                }, 1000);
+            } else syncMove(st);
+        };
+
+        function renderBattleship() {
+            const st = gameState; const isMyTurn = st.turn === st.myRole && !st.gameOver;
+            const myHits = st.myRole===1?st.hits1:st.hits2; const myMisses = st.myRole===1?st.misses1:st.misses2;
+            let html = '<div class="battleship-grid shadow-lg">';
+            for(let i=0; i<64; i++) {
+                const stateCls = myHits.includes(i) ? 'bs-hit' : (myMisses.includes(i) ? 'bs-miss' : '');
+                html += `<div class="bs-cell ${stateCls}" onclick="window.bsPlay(${i})"></div>`;
+            }
+            html += '</div>';
+            document.getElementById('game-view').innerHTML = renderPlayerHeader() + renderStatus(isMyTurn) + `
+                <p class="text-xs text-center text-zinc-500 mb-4">Click to bombard. Sink 5 ships to win!</p>
+                <div class="flex justify-center pointer-events-${isMyTurn?'auto':'none'}">${html}</div>` + renderRestart();
+        }
+        window.bsPlay = function(i) {
+            if(gameState.turn!==gameState.myRole||gameState.gameOver) return;
+            let st = JSON.parse(JSON.stringify(gameState));
+            const oppShips = st.myRole===1?st.s2:st.s1;
+            const myHits = st.myRole===1?st.hits1:st.hits2; const myMisses = st.myRole===1?st.misses1:st.misses2;
+            if(myHits.includes(i) || myMisses.includes(i)) return; // Already shot here
+
+            if(oppShips.includes(i)) {
+                myHits.push(i);
+                if(myHits.length === 5) { st.gameOver=true; st.winner=st.myRole; }
+            } else {
+                myMisses.push(i);
+                st.turn = st.turn===1?2:1;
+            }
+            syncMove(st);
+        };
+
+        // Solo Games Setup
+        window.initSoloGame = function(type) {
+            document.getElementById('hub-view').classList.add('hidden'); document.getElementById('user-profile-widget').classList.add('hidden');
+            document.getElementById('btn-back').classList.remove('hidden'); document.getElementById('game-view').classList.remove('hidden');
+            document.getElementById('game-view').innerHTML = ''; // clear previous
+            
+            if(type === 'mastermind') window.initMastermindSolo();
+            else if(type === '2048') init2048();
+            else if(type === 'wordle') initWordle();
+            else if(type === 'minesweeper') initMinesweeper();
+        };
+
+        /* ================= 2048 ================= */
+        function init2048() {
+            soloState = { grid: Array(16).fill(0), score: 0, gameOver: false };
+            add2048Tile(); add2048Tile(); render2048();
+            document.addEventListener('keydown', soloKeyHandler);
+        }
+        function add2048Tile() {
+            let empty = []; soloState.grid.forEach((v,i) => { if(v===0) empty.push(i); });
+            if(empty.length>0) soloState.grid[empty[Math.floor(Math.random()*empty.length)]] = Math.random()>0.1?2:4;
+        }
+        function render2048() {
+            let html = '<div class="grid-2048 shadow-xl mt-4">';
+            soloState.grid.forEach(v => { html += `<div class="cell-2048 ${v>0?'val-'+v:''}">${v>0?v:''}</div>`; });
+            html += '</div>';
             document.getElementById('game-view').innerHTML = `
-                            <div class="max-w-xs mx-auto mt-4">
-                                                <div class="bg-emerald-50 text-emerald-700 text-[10px] font-bold text-center p-3 rounded-xl mb-6 border border-emerald-100 uppercase tracking-wide leading-relaxed">
-                                                                        <span class="text-sm">🔥</span> = Correct Number & Position<br>
-                                                                                                <span class="text-sm">🟢</span> = Correct Number, Wrong Position
-                                                                                                                    </div>
-                                                                                                                                        <div class="flex gap-2 mb-4">
-                                                                                                                                                                <input type="number" id="mm-input" placeholder="4 Digits (1-9)..." class="flex-1 bg-surface shadow-sm rounded-xl px-4 py-3.5 text-center font-black text-xl outline-none focus:ring-2 focus:ring-primary tracking-[0.3em]">
-                        <button onclick="window.mmGuess()" class="bg-zinc-900 text-white px-5 rounded-xl font-bold shadow-md hover:bg-zinc-800 active:scale-95 transition-all">GUESS</button>
-                    </div>
-                    <div class="bg-surface rounded-3xl shadow-soft p-2 min-h-[200px] max-h-[300px] overflow-y-auto" id="mm-history">
-                        <div class="text-center text-sm text-zinc-400 mt-10 font-medium">History will appear here...</div>
-                    </div>
-                </div>
-            `;
-            document.getElementById('game-view').classList.remove('hidden');
+                <div class="max-w-xs mx-auto">
+                    <div class="flex justify-between items-end mb-4"><h2 class="text-3xl font-black">2048</h2><div class="bg-zinc-800 text-white px-4 py-2 rounded-xl text-center"><div class="text-[10px] text-zinc-400 font-bold uppercase tracking-widest">Score</div><div class="text-xl font-bold">${soloState.score}</div></div></div>
+                    ${html}
+                    ${soloState.gameOver ? `<div class="mt-6 text-center font-black text-rose-500 text-2xl fade-in">GAME OVER</div>` : `<p class="text-xs text-center text-zinc-400 mt-6">Use Arrow Keys to move tiles.</p>`}
+                    <div class="mt-6 flex justify-center"><button onclick="window.initSoloGame('2048')" class="bg-zinc-200 text-zinc-700 px-6 py-2 rounded-xl font-bold hover:bg-zinc-300">Restart</button></div>
+                </div>`;
         }
-
-        window.mmGuess = function() {
-            const inputEl = document.getElementById('mm-input');
-            const val = inputEl.value;
-            if(val.length !== 4) return window.showToast("Must be exactly 4 digits!", "error");
-            
-            const guess = val.split('').map(Number);
-            if(guess.some(n => isNaN(n) || n<1 || n>9)) return window.showToast("Use numbers 1-9 only", "error");
-
-            let bulls = 0, cows = 0;
-            let secretCopy = [...mmState.secret]; let guessCopy = [...guess];
-
-            for(let i=0; i<4; i++) {
-                if(guessCopy[i] === secretCopy[i]) { bulls++; secretCopy[i] = -1; guessCopy[i] = -2; }
-            }
-            for(let i=0; i<4; i++) {
-                if(guessCopy[i] > 0) {
-                    const idx = secretCopy.indexOf(guessCopy[i]);
-                    if(idx !== -1) { cows++; secretCopy[idx] = -1; }
+        function soloKeyHandler(e) {
+            if(!['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key) || soloState.gameOver || document.getElementById('game-view').classList.contains('hidden')) return;
+            e.preventDefault();
+            let moved = false; let g = [...soloState.grid];
+            const slide = (arr) => {
+                let filtered = arr.filter(v=>v);
+                for(let i=0;i<filtered.length-1;i++){ if(filtered[i]===filtered[i+1]){ filtered[i]*=2; soloState.score+=filtered[i]; filtered.splice(i+1,1); } }
+                while(filtered.length<4) filtered.push(0); return filtered;
+            };
+            if(e.key==='ArrowLeft'||e.key==='ArrowRight') {
+                for(let i=0;i<4;i++) {
+                    let row = [g[i*4], g[i*4+1], g[i*4+2], g[i*4+3]];
+                    if(e.key==='ArrowRight') row.reverse();
+                    let newRow = slide(row);
+                    if(e.key==='ArrowRight') newRow.reverse();
+                    for(let j=0;j<4;j++) { if(g[i*4+j]!==newRow[j]) moved=true; g[i*4+j] = newRow[j]; }
+                }
+            } else {
+                for(let c=0;c<4;c++) {
+                    let col = [g[c], g[c+4], g[c+8], g[c+12]];
+                    if(e.key==='ArrowDown') col.reverse();
+                    let newCol = slide(col);
+                    if(e.key==='ArrowDown') newCol.reverse();
+                    for(let r=0;r<4;r++) { if(g[r*4+c]!==newCol[r]) moved=true; g[r*4+c] = newCol[r]; }
                 }
             }
-
-            mmState.attempts.unshift({ guess: val, b: bulls, c: cows });
-            inputEl.value = '';
-
-            document.getElementById('mm-history').innerHTML = mmState.attempts.map(atm => `
-                <div class="flex justify-between items-center p-4 border-b border-zinc-100 last:border-0 fade-in">
-                    <span class="font-black tracking-[0.4em] text-xl text-zinc-800">${atm.guess}</span>
-                    <div class="flex gap-2 text-sm font-bold">
-                        <span class="text-rose-500 bg-rose-50 px-2.5 py-1 rounded-lg">${atm.b} 🔥</span>
-                        <span class="text-emerald-500 bg-emerald-50 px-2.5 py-1 rounded-lg">${atm.c} 🟢</span>
-                    </div>
-                </div>
-            `).join('');
-
-            if(bulls === 4) {
-                window.showToast(`Code Cracked in ${mmState.attempts.length} attempts! 🏆`, 'success');
-                inputEl.disabled = true;
+            if(moved) { soloState.grid = g; add2048Tile(); render2048(); }
+            if(!soloState.grid.includes(0)) { // Check lose condition
+                let canMove = false;
+                for(let i=0;i<16;i++){ if((i%4<3 && g[i]===g[i+1]) || (i<12 && g[i]===g[i+4])) canMove=true; }
+                if(!canMove) { soloState.gameOver=true; render2048(); }
             }
         }
 
-        // Initialize Firebase on load
-        window.addEventListener('DOMContentLoaded', init);
+        /* ================= Wordle ================= */
+        const words = ["GAMES", "SCORE", "SMART", "BOARD", "POINT", "MATCH", "BRICK", "FLASH", "POWER", "LEVEL"];
+        function initWordle() {
+            soloState = { word: words[Math.floor(Math.random()*words.length)], guesses: [], current: '', gameOver: false };
+            renderWordle();
+            document.removeEventListener('keydown', soloKeyHandler); document.addEventListener('keydown', wordleKeyHandler);
+        }
+        function renderWordle() {
+            let html = '<div class="wordle-grid mt-6">';
+            for(let r=0; r<6; r++) {
+                html += '<div class="wordle-row">';
+                let guess = r < soloState.guesses.length ? soloState.guesses[r] : (r === soloState.guesses.length ? soloState.current : '');
+                for(let c=0; c<5; c++) {
+                    let char = guess[c] || ''; let cls = '';
+                    if(r < soloState.guesses.length) {
+                        if(char === soloState.word[c]) cls = 'correct';
+                        else if(soloState.word.includes(char)) cls = 'present';
+                        else cls = 'absent';
+                    }
+                    html += `<div class="wordle-cell ${cls} rounded-xl shadow-sm bg-white">${char}</div>`;
+                }
+                html += '</div>';
+            }
+            html += '</div>';
+            document.getElementById('game-view').innerHTML = `
+                <div class="max-w-xs mx-auto">
+                    <h2 class="text-3xl font-black text-center mb-2 tracking-widest uppercase">Wordle</h2>
+                    <p class="text-[10px] text-center text-zinc-500 font-bold uppercase tracking-widest">Guess the 5-letter word</p>
+                    ${html}
+                    ${soloState.gameOver ? `<div class="mt-6 text-center font-black text-xl fade-in">${soloState.guesses[soloState.guesses.length-1]===soloState.word?'SPLENDID! 🎉':`GAME OVER! Word was ${soloState.word}`}</div>` : `<p class="text-xs text-center text-zinc-400 mt-6">Type on keyboard to guess.</p>`}
+                    <div class="mt-6 flex justify-center"><button onclick="window.initSoloGame('wordle')" class="bg-zinc-200 text-zinc-700 px-6 py-2 rounded-xl font-bold hover:bg-zinc-300">Restart</button></div>
+                </div>`;
+        }
+        function wordleKeyHandler(e) {
+            if(soloState.gameOver || document.getElementById('game-view').classList.contains('hidden') || selectedGameType) return;
+            if(e.key === 'Enter' && soloState.current.length === 5) {
+                soloState.guesses.push(soloState.current);
+                if(soloState.current === soloState.word || soloState.guesses.length === 6) { soloState.gameOver=true; if(soloState.current === soloState.word) awardPoints(5); }
+                soloState.current = ''; renderWordle();
+            } else if (e.key === 'Backspace') {
+                soloState.current = soloState.current.slice(0, -1); renderWordle();
+            } else if (/^[a-zA-Z]$/.test(e.key) && soloState.current.length < 5) {
+                soloState.current += e.key.toUpperCase(); renderWordle();
+            }
+        }
+
+        /* ================= Minesweeper ================= */
+        function initMinesweeper() {
+            let b = Array.from({length: 81}, ()=>({m:false, r:false, f:false, n:0}));
+            let mCount = 0; while(mCount<10){ let i=Math.floor(Math.random()*81); if(!b[i].m){ b[i].m=true; mCount++; } }
+            for(let i=0;i<81;i++){ if(!b[i].m){ let n=0; const r=Math.floor(i/9), c=i%9; 
+                for(let dr=-1;dr<=1;dr++) for(let dc=-1;dc<=1;dc++) {
+                    const nr=r+dr, nc=c+dc; if(nr>=0&&nr<9&&nc>=0&&nc<9&&b[nr*9+nc].m) n++;
+                } b[i].n=n; } }
+            soloState = { b, gameOver: false, won: false, firstClick: true }; renderMinesweeper();
+        }
+        function renderMinesweeper() {
+            const cols = ['','text-blue-500','text-green-500','text-red-500','text-purple-500','text-orange-500','text-cyan-500','text-black','text-gray-500'];
+            let html = '<div class="mine-grid shadow-lg mt-4" style="grid-template-columns: repeat(9, 1fr);">';
+            soloState.b.forEach((c,i) => {
+                let cnt = ''; let cls = c.r ? 'revealed' : '';
+                if(c.r){ if(c.m) cnt='💣'; else if(c.n>0){ cnt=c.n; cls+=' '+cols[c.n]; } }
+                else if(c.f) cnt='🚩';
+                html += `<div class="mine-cell ${cls}" oncontextmenu="event.preventDefault(); window.msFlag(${i})" onclick="window.msClick(${i})">${cnt}</div>`;
+            });
+            html += '</div>';
+            document.getElementById('game-view').innerHTML = `
+                <div class="max-w-xs mx-auto">
+                    <h2 class="text-2xl font-black text-center mb-1">Minesweeper</h2>
+                    <p class="text-xs text-center text-zinc-500">Find 10 Mines. Right-click/Long-press to Flag.</p>
+                    ${html}
+                    ${soloState.gameOver ? `<div class="mt-6 text-center font-black ${soloState.won?'text-primary':'text-rose-500'} text-xl fade-in">${soloState.won?'YOU WON! +10 Pts':'BOOM! 💥'}</div>` : ''}
+                    <div class="mt-6 flex justify-center"><button onclick="window.initSoloGame('minesweeper')" class="bg-zinc-200 text-zinc-700 px-6 py-2 rounded-xl font-bold hover:bg-zinc-300">Restart</button></div>
+                </div>`;
+        }
+        window.msClick = function(i) {
+            if(soloState.gameOver || soloState.b[i].f || soloState.b[i].r) return;
+            if(soloState.firstClick && soloState.b[i].m) { initMinesweeper(); window.msClick(i); return; } // Ensure first click is safe
+            soloState.firstClick = false;
+            
+            if(soloState.b[i].m) {
+                soloState.b.forEach(c => { if(c.m) c.r=true; }); soloState.gameOver = true;
+            } else {
+                const flood = (idx) => {
+                    if(idx<0||idx>=81||soloState.b[idx].r) return;
+                    soloState.b[idx].r = true;
+                    if(soloState.b[idx].n===0) {
+                        const r=Math.floor(idx/9), c=idx%9;
+                        for(let dr=-1;dr<=1;dr++) for(let dc=-1;dc<=1;dc++) {
+                            const nr=r+dr, nc=c+dc; if(nr>=0&&nr<9&&nc>=0&&nc<9) flood(nr*9+nc);
+                        }
+                    }
+                }; flood(i);
+                
+                // Check Win
+                let unrevealedSafe = soloState.b.filter(c => !c.m && !c.r).length;
+                if(unrevealedSafe === 0) { soloState.gameOver=true; soloState.won=true; awardPoints(10); }
+            }
+            renderMinesweeper();
+        };
+        window.msFlag = function(i) {
+            if(soloState.gameOver || soloState.b[i].r) return;
+            soloState.b[i].f = !soloState.b[i].f; renderMinesweeper();
+        };
+
     </script>
 </body>
 </html>
-        
