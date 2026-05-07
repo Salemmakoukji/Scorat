@@ -15,15 +15,38 @@
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
 
     <script>
+        const savedTheme = localStorage.getItem('scorat_theme');
+        const isDark = savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        if (isDark) document.documentElement.classList.add('dark');
+        
+        const savedColor = localStorage.getItem('scorat_color') || 'blue';
+        const colors = {
+            blue: { primary: '#2563eb', light: '#eff6ff', dark: '#3b82f6' },
+            emerald: { primary: '#10b981', light: '#ecfdf5', dark: '#34d399' },
+            purple: { primary: '#8b5cf6', light: '#f5f3ff', dark: '#a78bfa' },
+            rose: { primary: '#f43f5e', light: '#fff1f2', dark: '#fb7185' }
+        };
+        const c = colors[savedColor] || colors.blue;
+        document.documentElement.style.setProperty('--color-primary', c.primary);
+        document.documentElement.style.setProperty('--color-primary-light', c.light);
+        document.documentElement.style.setProperty('--color-primary-dark', c.dark);
+
         tailwind.config = {
+            darkMode: 'class',
             theme: {
                 extend: {
                     fontFamily: { sans: ['Inter', 'sans-serif'] },
                     colors: {
-                        primary: '#2563eb', secondary: '#f43f5e',
-                        surface: '#ffffff', background: '#f4f4f5'
+                        primary: 'var(--color-primary)',
+                        'primary-light': 'var(--color-primary-light)',
+                        'primary-dark': 'var(--color-primary-dark)',
+                        surface: { light: '#ffffff', dark: '#18181b' },
+                        background: { light: '#f4f4f5', dark: '#09090b' }
                     },
-                    boxShadow: { 'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.05)' }
+                    boxShadow: {
+                        'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.05)',
+                        'float': '0 10px 40px -10px rgba(0, 0, 0, 0.1)',
+                    }
                 }
             }
         }
@@ -32,29 +55,29 @@
     <style>
         body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
         ::-webkit-scrollbar { display: none; } * { scrollbar-width: none; }
-        .fade-in { animation: fadeIn 0.4s ease-out forwards; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .fade-in { animation: fadeIn 0.4s cubic-bezier(0.2, 1, 0.3, 1) forwards; }
+        @keyframes fadeIn { 0% { opacity: 0; transform: translateY(15px); } 100% { opacity: 1; transform: translateY(0); } }
 
-        /* Game Specific Grids */
+        .glass-header { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+        .dark .glass-header { background: rgba(24, 24, 27, 0.85); }
+
+        /* Grids */
         .dots-grid { display: grid; grid-template-columns: 12px 50px 12px 50px 12px 50px 12px 50px 12px; gap: 0; margin: 0 auto; width: max-content; }
         .dot { background-color: #3f3f46; border-radius: 50%; }
         .line-h { height: 12px; cursor: pointer; transition: background 0.2s; }
-        .line-h:hover:not(.claimed) { background-color: #e4e4e7; }
         .line-v { width: 12px; cursor: pointer; transition: background 0.2s; }
-        .line-v:hover:not(.claimed) { background-color: #e4e4e7; }
-        .box-cell { transition: background 0.3s; }
-
-        .c4-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; background: #3b82f6; padding: 8px; border-radius: 16px; width: max-content; margin: 0 auto; }
-        .c4-cell { width: 35px; height: 35px; background: #f4f4f5; border-radius: 50%; cursor: pointer; position: relative; overflow: hidden; }
+        .c4-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; background: var(--color-primary); padding: 8px; border-radius: 16px; width: max-content; margin: 0 auto; }
+        .c4-cell { width: 35px; height: 35px; background: rgba(255,255,255,0.2); border-radius: 50%; cursor: pointer; position: relative; overflow: hidden; }
         .c4-piece { width: 100%; height: 100%; border-radius: 50%; transform: translateY(-100%); transition: transform 0.4s; }
         .c4-piece.dropped { transform: translateY(0); }
-
         .uttt-macro { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; background: #27272a; padding: 6px; border-radius: 12px; width: max-content; margin: 0 auto; }
         .uttt-board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; background: #e4e4e7; padding: 2px; border-radius: 8px; position: relative; }
+        .dark .uttt-board { background: #3f3f46; }
         .uttt-cell { width: 30px; height: 30px; background: white; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 900; cursor: pointer; }
-        .uttt-board.active { background: #3b82f6; }
-        .uttt-board.won::after { content: attr(data-winner); position: absolute; inset: 0; background: rgba(255,255,255,0.9); display: flex; align-items: center; justify-content: center; font-size: 60px; font-weight: 900; z-index: 10; color: #27272a; }
-
+        .dark .uttt-cell { background: #18181b; color: white; }
+        .uttt-board.active { background: var(--color-primary); box-shadow: 0 0 10px rgba(59, 130, 246, 0.5); }
+        .uttt-board.won::after { content: attr(data-winner); position: absolute; inset: 0; background: rgba(255,255,255,0.9); display: flex; align-items: center; justify-content: center; font-size: 50px; font-weight: 900; z-index: 10; color: #18181b; }
+        
         .reversi-grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 2px; background: #166534; padding: 4px; border-radius: 8px; width: max-content; margin: 0 auto; }
         .reversi-cell { width: 35px; height: 35px; background: #22c55e; display: flex; align-items: center; justify-content: center; cursor: pointer; border-radius: 2px; }
         .reversi-piece { width: 85%; height: 85%; border-radius: 50%; transition: all 0.3s; }
@@ -62,7 +85,7 @@
         .reversi-piece.p2 { background: #f4f4f5; box-shadow: inset -2px -2px 4px rgba(0,0,0,0.2); }
 
         .memory-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; width: max-content; margin: 0 auto; }
-        .memory-card { width: 60px; height: 60px; background: #3b82f6; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 30px; cursor: pointer; transition: transform 0.3s; transform-style: preserve-3d; }
+        .memory-card { width: 60px; height: 60px; background: var(--color-primary); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 30px; cursor: pointer; transition: transform 0.3s; transform-style: preserve-3d; }
         .memory-card.flipped { background: white; transform: rotateY(180deg); border: 2px solid #e4e4e7; }
         .memory-card.matched { visibility: hidden; }
         .memory-content { transform: rotateY(180deg); display: none; }
@@ -70,7 +93,8 @@
 
         .wordle-grid { display: grid; grid-template-rows: repeat(6, 1fr); gap: 6px; width: max-content; margin: 0 auto; }
         .wordle-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
-        .wordle-cell { width: 50px; height: 50px; border: 2px solid #d4d4d8; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 900; text-transform: uppercase; }
+        .wordle-cell { width: 50px; height: 50px; border: 2px solid #d4d4d8; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 900; text-transform: uppercase; background: white; color: #18181b; }
+        .dark .wordle-cell { border-color: #3f3f46; background: #18181b; color: white; }
         .wordle-cell.correct { background: #22c55e; border-color: #22c55e; color: white; }
         .wordle-cell.present { background: #eab308; border-color: #eab308; color: white; }
         .wordle-cell.absent { background: #71717a; border-color: #71717a; color: white; }
@@ -93,96 +117,154 @@
         .bs-miss { background: #e0f2fe; } .bs-miss::after { content: '💧'; font-size: 14px; opacity: 0.5; }
     </style>
 </head>
-<body class="bg-background text-zinc-800 min-h-screen flex flex-col">
+<body class="bg-background-light dark:bg-background-dark text-zinc-800 dark:text-zinc-200 min-h-screen flex flex-col transition-colors duration-300">
 
-    <header class="bg-surface shadow-sm px-6 py-4 flex items-center justify-between sticky top-0 z-50">
+    <!-- Header -->
+    <header class="glass-header shadow-sm px-4 sm:px-6 py-4 flex items-center justify-between sticky top-0 z-50 border-b border-zinc-200/50 dark:border-zinc-800/50">
         <div class="flex items-center gap-3">
             <div class="w-10 h-10 rounded-xl bg-primary text-white flex items-center justify-center shadow-md">
                 <span class="material-symbols-outlined">stadia_controller</span>
             </div>
             <div>
-                <h1 class="text-xl font-black text-zinc-900 leading-tight">Scorat Games</h1>
-                <p class="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">Mini-Games Hub</p>
+                <h1 class="text-xl font-black text-zinc-900 dark:text-white leading-tight">Scorat Games</h1>
+                <p class="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">Multiplayer Hub</p>
             </div>
         </div>
         
-        <div id="user-profile-widget" class="flex items-center gap-3 fade-in">
-            <div class="text-right hidden sm:block">
-                <div class="text-xs font-bold text-zinc-800" id="header-user-name">Loading...</div>
-                <div class="text-[10px] text-primary font-bold flex items-center justify-end gap-1"><span class="material-symbols-outlined text-[12px]">stars</span> <span id="header-user-points">0 Pts</span></div>
+        <div class="flex items-center gap-2">
+            <!-- Go Back to Main Scorat App -->
+            <a href="index.html" class="hidden sm:flex items-center gap-1.5 px-3 py-2 rounded-xl bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors text-xs font-bold text-zinc-600 dark:text-zinc-300">
+                <span class="material-symbols-outlined text-[16px]">arrow_back</span> Main App
+            </a>
+            <a href="index.html" class="sm:hidden flex items-center justify-center w-10 h-10 rounded-xl bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors text-zinc-600 dark:text-zinc-300">
+                <span class="material-symbols-outlined text-[18px]">home</span>
+            </a>
+
+            <div id="user-profile-widget" class="flex items-center gap-3 ml-2 fade-in">
+                <div class="text-right hidden sm:block">
+                    <div class="text-xs font-bold text-zinc-800 dark:text-zinc-200" id="header-user-name">Loading...</div>
+                    <div class="text-[10px] text-primary font-bold flex items-center justify-end gap-1"><span class="material-symbols-outlined text-[12px]">stars</span> <span id="header-user-points">0 Pts</span></div>
+                </div>
+                <img id="header-user-avatar" src="https://api.dicebear.com/7.x/initials/svg?seed=U" class="w-10 h-10 rounded-full border-2 border-primary object-cover shadow-sm bg-zinc-100">
             </div>
-            <img id="header-user-avatar" src="https://api.dicebear.com/7.x/initials/svg?seed=U" class="w-10 h-10 rounded-full border-2 border-primary object-cover shadow-sm">
-            <button id="btn-back" onclick="window.leaveMatch()" class="hidden w-10 h-10 rounded-full bg-red-50 flex items-center justify-center text-red-500 hover:bg-red-100 transition-colors ml-2">
-                <span class="material-symbols-outlined">logout</span>
+            
+            <button id="btn-back-hub" onclick="window.goBackToHub()" class="hidden w-10 h-10 rounded-xl bg-rose-50 dark:bg-rose-900/20 flex items-center justify-center text-rose-500 hover:bg-rose-100 dark:hover:bg-rose-900/40 transition-colors ml-2 shadow-sm">
+                <span class="material-symbols-outlined">close</span>
             </button>
         </div>
     </header>
 
     <main class="flex-1 p-4 md:p-6 overflow-y-auto relative">
         
-        <div id="hub-view" class="fade-in max-w-4xl mx-auto pb-10">
+        <!-- Onboarding Container -->
+        <div id="onboarding-container" class="fixed inset-0 z-[100] hidden bg-background-light dark:bg-background-dark flex flex-col items-center justify-center p-6">
+            <div class="w-full max-w-sm bg-surface-light dark:bg-surface-dark p-8 rounded-[32px] shadow-soft border border-zinc-100 dark:border-zinc-800 fade-in">
+                
+                <!-- View: Create Profile -->
+                <div id="view-create-profile" class="flex flex-col gap-4 items-center">
+                    <div class="w-16 h-16 rounded-2xl bg-primary-light text-primary flex items-center justify-center mb-2">
+                        <span class="material-symbols-outlined text-4xl">sports_esports</span>
+                    </div>
+                    <h2 class="text-2xl font-bold text-zinc-900 dark:text-white text-center">Join Scorat Games</h2>
+                    <p class="text-zinc-500 text-sm text-center mb-2">Create your profile to play online and save your stats.</p>
+                    
+                    <div class="relative mb-2">
+                        <div id="ob-avatar-preview" class="w-24 h-24 rounded-full bg-zinc-100 dark:bg-zinc-800 border-2 border-dashed border-zinc-300 dark:border-zinc-600 flex items-center justify-center overflow-hidden">
+                            <span class="material-symbols-outlined text-3xl text-zinc-400">add_a_photo</span>
+                        </div>
+                        <label class="absolute bottom-0 right-0 bg-primary text-white p-2 rounded-full cursor-pointer shadow-md hover:scale-105 transition-transform">
+                            <span class="material-symbols-outlined text-[16px]">edit</span>
+                            <input type="file" accept="image/*" class="hidden" onchange="window.previewOnboardingAvatar(event)">
+                        </label>
+                    </div>
+                    
+                    <input type="text" id="ob-player-name" placeholder="Enter Nickname" class="w-full bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 px-4 py-3.5 rounded-2xl font-medium focus:border-primary focus:ring-1 focus:ring-primary outline-none text-center select-text transition-colors text-zinc-900 dark:text-white">
+                    
+                    <button onclick="window.saveUserProfile()" class="w-full mt-2 bg-primary text-white py-3.5 rounded-2xl font-semibold shadow-md shadow-primary/20 hover:bg-blue-600 active:scale-95 transition-all">Start Playing</button>
+                    <button onclick="window.toggleRestoreView(true)" class="mt-3 text-sm text-zinc-500 font-medium hover:text-primary transition-colors">Already have an account? Restore ID</button>
+                </div>
+
+                <!-- View: Restore Profile -->
+                <div id="view-restore-profile" class="hidden flex-col gap-4 items-center">
+                    <div class="w-16 h-16 rounded-2xl bg-zinc-100 dark:bg-zinc-800 text-zinc-500 flex items-center justify-center mb-2">
+                        <span class="material-symbols-outlined text-4xl">manage_search</span>
+                    </div>
+                    <h2 class="text-2xl font-bold text-zinc-900 dark:text-white text-center">Restore Account</h2>
+                    <p class="text-zinc-500 text-sm text-center mb-4">Enter your unique ID to restore your stats.</p>
+                    
+                    <input type="text" id="restore-id-input" placeholder="Paste ID here..." class="w-full bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 px-4 py-4 rounded-2xl font-mono text-sm focus:border-primary outline-none text-center select-text transition-colors text-zinc-900 dark:text-white">
+                    
+                    <button onclick="window.restoreAccount()" class="w-full mt-2 bg-zinc-900 dark:bg-white dark:text-zinc-900 text-white py-3.5 rounded-2xl font-semibold shadow-md active:scale-95 transition-all">Confirm & Restore</button>
+                    <button onclick="window.toggleRestoreView(false)" class="mt-3 text-sm text-zinc-500 font-medium hover:text-primary transition-colors">Back to Create Account</button>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- HUB View -->
+        <div id="hub-view" class="fade-in max-w-4xl mx-auto pb-10 hidden">
             
-            <h2 class="text-lg font-black text-zinc-800 mb-4 flex items-center gap-2"><span class="material-symbols-outlined text-primary">swords</span> Multiplayer Matches (1v1)</h2>
+            <h2 class="text-lg font-black text-zinc-800 dark:text-zinc-100 mb-4 flex items-center gap-2"><span class="material-symbols-outlined text-primary">swords</span> Multiplayer Matches (1v1)</h2>
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-8">
                 
-                <div onclick="window.openLobby('reversi')" class="bg-surface p-5 rounded-3xl shadow-soft border border-zinc-100 cursor-pointer hover:-translate-y-1 hover:shadow-md transition-all group">
-                    <div class="w-12 h-12 rounded-2xl bg-zinc-800 text-white flex items-center justify-center mb-3 group-hover:scale-110 transition-transform"><span class="material-symbols-outlined">tonality</span></div>
+                <div onclick="window.openLobby('reversi')" class="bg-surface-light dark:bg-surface-dark p-5 rounded-[32px] shadow-soft border border-zinc-100 dark:border-zinc-800/50 cursor-pointer hover:-translate-y-1 hover:shadow-md transition-all group">
+                    <div class="w-14 h-14 rounded-2xl bg-zinc-800 dark:bg-zinc-100 text-white dark:text-zinc-900 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform"><span class="material-symbols-outlined">tonality</span></div>
                     <h3 class="text-lg font-bold mb-1">Reversi / Othello</h3>
                     <p class="text-xs text-zinc-500 font-medium">Trap opponent pieces to flip them to your color.</p>
                 </div>
 
-                <div onclick="window.openLobby('memory')" class="bg-surface p-5 rounded-3xl shadow-soft border border-zinc-100 cursor-pointer hover:-translate-y-1 hover:shadow-md transition-all group">
-                    <div class="w-12 h-12 rounded-2xl bg-purple-50 text-purple-500 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform"><span class="material-symbols-outlined">style</span></div>
+                <div onclick="window.openLobby('memory')" class="bg-surface-light dark:bg-surface-dark p-5 rounded-[32px] shadow-soft border border-zinc-100 dark:border-zinc-800/50 cursor-pointer hover:-translate-y-1 hover:shadow-md transition-all group">
+                    <div class="w-14 h-14 rounded-2xl bg-purple-50 dark:bg-purple-900/20 text-purple-500 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform"><span class="material-symbols-outlined">style</span></div>
                     <h3 class="text-lg font-bold mb-1">Memory Duel</h3>
                     <p class="text-xs text-zinc-500 font-medium">Flip cards to find pairs. Highest matched pairs wins.</p>
                 </div>
 
-                <div onclick="window.openLobby('battleship')" class="bg-surface p-5 rounded-3xl shadow-soft border border-zinc-100 cursor-pointer hover:-translate-y-1 hover:shadow-md transition-all group">
-                    <div class="w-12 h-12 rounded-2xl bg-cyan-50 text-cyan-500 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform"><span class="material-symbols-outlined">sailing</span></div>
+                <div onclick="window.openLobby('battleship')" class="bg-surface-light dark:bg-surface-dark p-5 rounded-[32px] shadow-soft border border-zinc-100 dark:border-zinc-800/50 cursor-pointer hover:-translate-y-1 hover:shadow-md transition-all group">
+                    <div class="w-14 h-14 rounded-2xl bg-cyan-50 dark:bg-cyan-900/20 text-cyan-500 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform"><span class="material-symbols-outlined">sailing</span></div>
                     <h3 class="text-lg font-bold mb-1">Fleet Strike</h3>
                     <p class="text-xs text-zinc-500 font-medium">Bombard the grid to find all 5 hidden enemy ships first!</p>
                 </div>
 
-                <div onclick="window.openLobby('connect4')" class="bg-surface p-5 rounded-3xl shadow-soft border border-zinc-100 cursor-pointer hover:-translate-y-1 hover:shadow-md transition-all group">
-                    <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-500 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform"><span class="material-symbols-outlined">blur_on</span></div>
+                <div onclick="window.openLobby('connect4')" class="bg-surface-light dark:bg-surface-dark p-5 rounded-[32px] shadow-soft border border-zinc-100 dark:border-zinc-800/50 cursor-pointer hover:-translate-y-1 hover:shadow-md transition-all group">
+                    <div class="w-14 h-14 rounded-2xl bg-blue-50 dark:bg-blue-900/20 text-blue-500 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform"><span class="material-symbols-outlined">blur_on</span></div>
                     <h3 class="text-lg font-bold mb-1">Connect 4</h3>
                     <p class="text-xs text-zinc-500 font-medium">Drop discs to form a line of 4 before your opponent.</p>
                 </div>
 
-                <div onclick="window.openLobby('uttt')" class="bg-surface p-5 rounded-3xl shadow-soft border border-zinc-100 cursor-pointer hover:-translate-y-1 hover:shadow-md transition-all group">
-                    <div class="w-12 h-12 rounded-2xl bg-rose-50 text-rose-500 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform"><span class="material-symbols-outlined">close</span></div>
+                <div onclick="window.openLobby('uttt')" class="bg-surface-light dark:bg-surface-dark p-5 rounded-[32px] shadow-soft border border-zinc-100 dark:border-zinc-800/50 cursor-pointer hover:-translate-y-1 hover:shadow-md transition-all group">
+                    <div class="w-14 h-14 rounded-2xl bg-rose-50 dark:bg-rose-900/20 text-rose-500 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform"><span class="material-symbols-outlined">close</span></div>
                     <h3 class="text-lg font-bold mb-1">Ultimate X-O</h3>
                     <p class="text-xs text-zinc-500 font-medium">A massive grid where your move dictates the next board.</p>
                 </div>
 
-                <div onclick="window.openLobby('dots')" class="bg-surface p-5 rounded-3xl shadow-soft border border-zinc-100 cursor-pointer hover:-translate-y-1 hover:shadow-md transition-all group">
-                    <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-500 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform"><span class="material-symbols-outlined">grid_on</span></div>
+                <div onclick="window.openLobby('dots')" class="bg-surface-light dark:bg-surface-dark p-5 rounded-[32px] shadow-soft border border-zinc-100 dark:border-zinc-800/50 cursor-pointer hover:-translate-y-1 hover:shadow-md transition-all group">
+                    <div class="w-14 h-14 rounded-2xl bg-indigo-50 dark:bg-indigo-900/20 text-indigo-500 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform"><span class="material-symbols-outlined">grid_on</span></div>
                     <h3 class="text-lg font-bold mb-1">Dots & Boxes</h3>
                     <p class="text-xs text-zinc-500 font-medium">Connect dots to claim boxes and score points.</p>
                 </div>
             </div>
 
-            <h2 class="text-lg font-black text-zinc-800 mb-4 flex items-center gap-2 mt-8"><span class="material-symbols-outlined text-emerald-500">extension</span> Solo Puzzles</h2>
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+            <h2 class="text-lg font-black text-zinc-800 dark:text-zinc-100 mb-4 flex items-center gap-2 mt-8"><span class="material-symbols-outlined text-emerald-500">extension</span> Solo Puzzles</h2>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
                 
-                <div onclick="window.initSoloGame('2048')" class="bg-surface p-4 rounded-3xl shadow-soft border border-zinc-100 cursor-pointer hover:-translate-y-1 hover:shadow-md transition-all group text-center">
-                    <div class="w-12 h-12 mx-auto rounded-2xl bg-orange-50 text-orange-500 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform"><span class="material-symbols-outlined">apps</span></div>
-                    <h3 class="font-bold">2048</h3>
+                <div onclick="window.initSoloGame('2048')" class="bg-surface-light dark:bg-surface-dark p-4 rounded-[32px] shadow-soft border border-zinc-100 dark:border-zinc-800/50 cursor-pointer hover:-translate-y-1 hover:shadow-md transition-all group text-center">
+                    <div class="w-12 h-12 mx-auto rounded-2xl bg-orange-50 dark:bg-orange-900/20 text-orange-500 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform"><span class="material-symbols-outlined">apps</span></div>
+                    <h3 class="font-bold text-sm">2048</h3>
                 </div>
 
-                <div onclick="window.initSoloGame('wordle')" class="bg-surface p-4 rounded-3xl shadow-soft border border-zinc-100 cursor-pointer hover:-translate-y-1 hover:shadow-md transition-all group text-center">
-                    <div class="w-12 h-12 mx-auto rounded-2xl bg-green-50 text-green-600 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform"><span class="material-symbols-outlined">font_download</span></div>
-                    <h3 class="font-bold">Wordle</h3>
+                <div onclick="window.initSoloGame('wordle')" class="bg-surface-light dark:bg-surface-dark p-4 rounded-[32px] shadow-soft border border-zinc-100 dark:border-zinc-800/50 cursor-pointer hover:-translate-y-1 hover:shadow-md transition-all group text-center">
+                    <div class="w-12 h-12 mx-auto rounded-2xl bg-green-50 dark:bg-green-900/20 text-green-600 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform"><span class="material-symbols-outlined">font_download</span></div>
+                    <h3 class="font-bold text-sm">Wordle</h3>
                 </div>
 
-                <div onclick="window.initSoloGame('minesweeper')" class="bg-surface p-4 rounded-3xl shadow-soft border border-zinc-100 cursor-pointer hover:-translate-y-1 hover:shadow-md transition-all group text-center">
-                    <div class="w-12 h-12 mx-auto rounded-2xl bg-red-50 text-red-500 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform"><span class="material-symbols-outlined">brightness_high</span></div>
-                    <h3 class="font-bold">Minesweeper</h3>
+                <div onclick="window.initSoloGame('minesweeper')" class="bg-surface-light dark:bg-surface-dark p-4 rounded-[32px] shadow-soft border border-zinc-100 dark:border-zinc-800/50 cursor-pointer hover:-translate-y-1 hover:shadow-md transition-all group text-center">
+                    <div class="w-12 h-12 mx-auto rounded-2xl bg-red-50 dark:bg-red-900/20 text-red-500 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform"><span class="material-symbols-outlined">brightness_high</span></div>
+                    <h3 class="font-bold text-sm">Minesweeper</h3>
                 </div>
 
-                <div onclick="window.initSoloGame('mastermind')" class="bg-surface p-4 rounded-3xl shadow-soft border border-zinc-100 cursor-pointer hover:-translate-y-1 hover:shadow-md transition-all group text-center">
-                    <div class="w-12 h-12 mx-auto rounded-2xl bg-emerald-50 text-emerald-500 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform"><span class="material-symbols-outlined">lock_open</span></div>
-                    <h3 class="font-bold">Code Breaker</h3>
+                <div onclick="window.initSoloGame('mastermind')" class="bg-surface-light dark:bg-surface-dark p-4 rounded-[32px] shadow-soft border border-zinc-100 dark:border-zinc-800/50 cursor-pointer hover:-translate-y-1 hover:shadow-md transition-all group text-center">
+                    <div class="w-12 h-12 mx-auto rounded-2xl bg-emerald-50 dark:bg-emerald-900/20 text-emerald-500 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform"><span class="material-symbols-outlined">lock_open</span></div>
+                    <h3 class="font-bold text-sm">Code Breaker</h3>
                 </div>
 
             </div>
@@ -190,34 +272,34 @@
 
         <!-- Lobby View -->
         <div id="lobby-view" class="hidden fade-in max-w-sm mx-auto mt-10">
-            <h2 id="lobby-title" class="text-2xl font-black text-center mb-8"></h2>
-            <div class="bg-surface p-6 rounded-3xl shadow-soft border border-zinc-100 mb-4 text-center">
-                <span class="material-symbols-outlined text-4xl text-primary mb-2">cell_tower</span>
-                <h3 class="font-bold mb-4">Host a Match</h3>
-                <button onclick="window.hostMatch()" class="w-full bg-primary text-white py-3 rounded-2xl font-bold shadow-md hover:bg-blue-600 active:scale-95 transition-all">Create Room</button>
+            <h2 id="lobby-title" class="text-3xl font-black text-center mb-8 tracking-tight"></h2>
+            <div class="bg-surface-light dark:bg-surface-dark p-8 rounded-[32px] shadow-soft border border-zinc-100 dark:border-zinc-800/50 mb-6 text-center">
+                <span class="material-symbols-outlined text-5xl text-primary mb-3">cell_tower</span>
+                <h3 class="font-bold text-lg mb-6">Host a Match</h3>
+                <button onclick="window.hostMatch()" class="w-full bg-primary text-white py-3.5 rounded-2xl font-bold shadow-md hover:bg-blue-600 active:scale-95 transition-all text-sm">Create Room</button>
             </div>
-            <div class="flex items-center gap-4 my-6"><div class="flex-1 h-px bg-zinc-200"></div><span class="text-xs font-bold text-zinc-400 uppercase">OR</span><div class="flex-1 h-px bg-zinc-200"></div></div>
-            <div class="bg-surface p-6 rounded-3xl shadow-soft border border-zinc-100 text-center">
-                <span class="material-symbols-outlined text-4xl text-emerald-500 mb-2">login</span>
-                <h3 class="font-bold mb-4">Join a Friend</h3>
-                <input type="text" id="join-code" placeholder="Enter 5-Letter Code" class="w-full bg-background border border-zinc-200 text-center px-4 py-3 rounded-2xl font-mono font-bold tracking-widest uppercase focus:border-primary outline-none mb-3">
-                <button onclick="window.joinMatch()" class="w-full bg-zinc-900 text-white py-3 rounded-2xl font-bold shadow-md hover:bg-zinc-800 active:scale-95 transition-all">Join Room</button>
+            
+            <div class="flex items-center gap-4 my-6"><div class="flex-1 h-px bg-zinc-200 dark:bg-zinc-800"></div><span class="text-xs font-bold text-zinc-400 uppercase">OR</span><div class="flex-1 h-px bg-zinc-200 dark:bg-zinc-800"></div></div>
+            
+            <div class="bg-surface-light dark:bg-surface-dark p-8 rounded-[32px] shadow-soft border border-zinc-100 dark:border-zinc-800/50 text-center">
+                <span class="material-symbols-outlined text-5xl text-emerald-500 mb-3">login</span>
+                <h3 class="font-bold text-lg mb-6">Join a Friend</h3>
+                <input type="text" id="join-code" placeholder="Enter 5-Letter Code" class="w-full bg-background-light dark:bg-background-dark border-none text-center px-4 py-4 rounded-2xl font-mono font-black tracking-widest uppercase focus:ring-2 focus:ring-primary outline-none mb-4 text-zinc-900 dark:text-white">
+                <button onclick="window.joinMatch()" class="w-full bg-zinc-900 dark:bg-white dark:text-zinc-900 text-white py-3.5 rounded-2xl font-bold shadow-md active:scale-95 transition-all text-sm">Join Room</button>
             </div>
-            <button onclick="window.showHub()" class="mt-6 w-full text-center text-sm font-bold text-zinc-500 hover:text-zinc-800">Cancel & Go Back</button>
         </div>
 
         <!-- Waiting View -->
         <div id="waiting-view" class="hidden fade-in max-w-sm mx-auto mt-10 text-center">
-            <div class="bg-surface p-8 rounded-3xl shadow-soft border border-zinc-100">
-                <div class="w-16 h-16 rounded-full bg-primary/10 text-primary flex items-center justify-center mx-auto mb-4 animate-pulse"><span class="material-symbols-outlined text-3xl">hourglass_empty</span></div>
+            <div class="bg-surface-light dark:bg-surface-dark p-8 rounded-[32px] shadow-soft border border-zinc-100 dark:border-zinc-800/50">
+                <div class="w-20 h-20 rounded-full bg-primary-light dark:bg-primary/20 text-primary flex items-center justify-center mx-auto mb-6 animate-pulse"><span class="material-symbols-outlined text-4xl">hourglass_empty</span></div>
                 <h2 class="text-xl font-bold mb-2">Waiting for opponent...</h2>
                 <p class="text-sm text-zinc-500 mb-6">Share this code with your friend:</p>
-                <div class="bg-background py-4 rounded-2xl border border-zinc-200 mb-4 cursor-pointer hover:bg-zinc-200 transition-colors" onclick="window.copyRoomCode()">
-                    <span id="display-room-code" class="text-4xl font-black font-mono tracking-widest text-primary"></span>
-                    <p class="text-[10px] text-zinc-400 mt-2 font-bold uppercase">Tap to Copy</p>
+                <div class="bg-background-light dark:bg-background-dark py-6 rounded-2xl border border-zinc-200 dark:border-zinc-700 mb-4 cursor-pointer hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors" onclick="window.copyRoomCode()">
+                    <span id="display-room-code" class="text-5xl font-black font-mono tracking-widest text-primary"></span>
+                    <p class="text-[10px] text-zinc-400 mt-3 font-bold uppercase tracking-widest">Tap to Copy</p>
                 </div>
             </div>
-            <button onclick="window.leaveMatch()" class="mt-6 text-sm font-bold text-red-500 hover:underline">Cancel Match</button>
         </div>
 
         <!-- Game View -->
@@ -236,23 +318,27 @@
         const scAppId = 'scorat-app';
         let db, auth; let myUid = localStorage.getItem('scorat_uid');
         let currentRoomId = null; let selectedGameType = null; let unsubscribeRoom = null; let isHost = false;
-        window.players = []; let gameState = {}; let soloState = {};
+        window.players = []; let gameState = {}; let soloState = {}; let onboardingAvatarBase64 = null;
 
-        // Utilities
+        // Global functions attachment
         window.showToast = function(msg, type = 'info') {
             const container = document.getElementById('toast-container'); const toast = document.createElement('div');
-            const bg = type === 'success' ? 'bg-emerald-500' : (type === 'error' ? 'bg-rose-500' : 'bg-zinc-900');
-            toast.className = `${bg} text-white px-5 py-4 rounded-2xl shadow-lg flex items-center gap-3 transform transition-all duration-300 -translate-y-10 opacity-0`;
+            const bg = type === 'success' ? 'bg-emerald-500' : (type === 'error' ? 'bg-rose-500' : 'bg-zinc-900 dark:bg-white dark:text-zinc-900 text-white');
+            toast.className = `${bg} px-5 py-4 rounded-2xl shadow-float flex items-center gap-3 transform transition-all duration-300 -translate-y-10 opacity-0 text-white`;
+            if(type === 'info') toast.className = `bg-zinc-900 text-white dark:bg-white dark:text-zinc-900 px-5 py-4 rounded-2xl shadow-float flex items-center gap-3 transform transition-all duration-300 -translate-y-10 opacity-0`;
             toast.innerHTML = `<span class="font-bold text-sm">${msg}</span>`; container.appendChild(toast);
             requestAnimationFrame(() => toast.classList.remove('-translate-y-10', 'opacity-0'));
             setTimeout(() => { toast.classList.add('-translate-y-10', 'opacity-0'); setTimeout(() => toast.remove(), 300); }, 3000);
         };
 
-        window.showHub = function() {
-            ['game-view', 'lobby-view', 'waiting-view'].forEach(id => document.getElementById(id).classList.add('hidden'));
+        window.goBackToHub = function() {
+            window.leaveMatch();
             document.getElementById('hub-view').classList.remove('hidden');
             document.getElementById('user-profile-widget').classList.remove('hidden');
-            document.getElementById('btn-back').classList.add('hidden');
+            document.getElementById('btn-back-hub').classList.add('hidden');
+            document.getElementById('game-view').innerHTML = ''; // clear
+            document.removeEventListener('keydown', solo2048KeyHandler);
+            document.removeEventListener('keydown', wordleKeyHandler);
         };
 
         window.openLobby = function(gameType) {
@@ -260,7 +346,7 @@
             const names = { 'dots': 'Dots & Boxes', 'connect4': 'Connect 4', 'uttt': 'Ultimate X-O', 'reversi': 'Reversi', 'memory': 'Memory Duel', 'battleship': 'Fleet Strike' };
             document.getElementById('lobby-title').innerText = names[gameType];
             document.getElementById('hub-view').classList.add('hidden'); document.getElementById('lobby-view').classList.remove('hidden');
-            document.getElementById('btn-back').classList.remove('hidden'); document.getElementById('user-profile-widget').classList.add('hidden');
+            document.getElementById('btn-back-hub').classList.remove('hidden'); document.getElementById('user-profile-widget').classList.add('hidden');
         };
 
         window.copyRoomCode = function() { navigator.clipboard.writeText(currentRoomId); window.showToast("Code Copied!", "success"); };
@@ -271,26 +357,75 @@
             return p || { name: 'Player', avatar: 'https://api.dicebear.com/7.x/initials/svg?seed=' + uid, gamePoints: 0 };
         };
 
+        // --- Onboarding Logic ---
+        window.toggleRestoreView = function(showRestore) {
+            const vCreate = document.getElementById('view-create-profile'); const vRestore = document.getElementById('view-restore-profile');
+            if (showRestore) { vCreate.classList.add('hidden'); vRestore.classList.remove('hidden'); vRestore.style.display = 'flex'; } 
+            else { vRestore.classList.add('hidden'); vRestore.style.display = ''; vCreate.classList.remove('hidden'); }
+        };
+
+        window.previewOnboardingAvatar = function(e) {
+            const file = e.target.files[0]; if (!file) return; const reader = new FileReader();
+            reader.onload = (event) => {
+                const img = new Image(); img.onload = () => {
+                    const canvas = document.createElement('canvas'); const MAX_SIZE = 150; let w = img.width; let h = img.height;
+                    if (w > h) { if (w > MAX_SIZE) { h *= MAX_SIZE / w; w = MAX_SIZE; } } else { if (h > MAX_SIZE) { w *= MAX_SIZE / h; h = MAX_SIZE; } }
+                    canvas.width = w; canvas.height = h; const ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0, w, h);
+                    onboardingAvatarBase64 = canvas.toDataURL('image/jpeg', 0.7);
+                    document.getElementById('ob-avatar-preview').innerHTML = `<img src="${onboardingAvatarBase64}" class="w-full h-full object-cover">`;
+                }; img.src = event.target.result;
+            }; reader.readAsDataURL(file);
+        };
+
+        window.saveUserProfile = async function() {
+            const name = document.getElementById('ob-player-name').value.trim(); if (!name) return window.showToast("Nickname required!", "error");
+            try {
+                if(!myUid) { const cred = await signInAnonymously(auth); myUid = cred.user.uid; }
+                await setDoc(doc(db, 'artifacts', scAppId, 'public', 'data', 'users', myUid), { name, avatar: onboardingAvatarBase64, joinedAt: Date.now(), wins: 0, losses: 0, gamePoints: 0 });
+                localStorage.setItem('scorat_uid', myUid); document.getElementById('onboarding-container').classList.add('hidden'); window.showToast("Profile created!"); loadMainHub();
+            } catch (e) { window.showToast("Error creating profile.", "error"); }
+        };
+
+        window.restoreAccount = async function() {
+            const id = document.getElementById('restore-id-input').value.trim(); if (!id) return window.showToast("Please enter your ID", "error");
+            try {
+                const userDoc = await getDoc(doc(db, 'artifacts', scAppId, 'public', 'data', 'users', id));
+                if (userDoc.exists()) { localStorage.setItem('scorat_uid', id); myUid = id; window.showToast("Account restored!"); document.getElementById('onboarding-container').classList.add('hidden'); loadMainHub(); } 
+                else { window.showToast("No account found matching this ID", "error"); }
+            } catch (e) { window.showToast("Connection error", "error"); }
+        };
+
         async function init() {
             try {
                 const app = initializeApp(firebaseConfig); auth = getAuth(app); db = getFirestore(app);
-                if (!myUid) { const cred = await signInAnonymously(auth); myUid = cred.user.uid; localStorage.setItem('scorat_uid', myUid); }
-                onSnapshot(collection(db, 'artifacts', scAppId, 'public', 'data', 'users'), (snap) => {
-                    window.players = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-                    updateHeaderProfile();
-                    if (!document.getElementById('game-view').classList.contains('hidden') && currentRoomId) renderActiveGame();
-                });
+                
+                if (!myUid) {
+                    document.getElementById('onboarding-container').classList.remove('hidden');
+                } else {
+                    const userDoc = await getDoc(doc(db, 'artifacts', scAppId, 'public', 'data', 'users', myUid));
+                    if (!userDoc.exists()) document.getElementById('onboarding-container').classList.remove('hidden');
+                    else loadMainHub();
+                }
             } catch (error) { window.showToast("Connection failed.", "error"); }
+        }
+
+        function loadMainHub() {
+            document.getElementById('hub-view').classList.remove('hidden');
+            onSnapshot(collection(db, 'artifacts', scAppId, 'public', 'data', 'users'), (snap) => {
+                window.players = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                updateHeaderProfile();
+                if (!document.getElementById('game-view').classList.contains('hidden') && currentRoomId) renderActiveGame();
+            });
         }
 
         function updateHeaderProfile() {
             const myInfo = window.getPlayerInfo(myUid);
             document.getElementById('header-user-name').innerText = myInfo.name !== 'Player' ? myInfo.name : 'Welcome';
-            document.getElementById('header-user-avatar').src = myInfo.avatar;
+            if(myInfo.avatar) document.getElementById('header-user-avatar').src = myInfo.avatar;
             document.getElementById('header-user-points').innerText = `${myInfo.gamePoints || 0} Pts`;
         }
 
-        // Multiplayer Core
+        // --- Multiplayer Core ---
         window.hostMatch = async function() {
             if(!db || !myUid) return window.showToast("Connecting...", "error");
             currentRoomId = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'.split('').sort(()=>0.5-Math.random()).join('').substring(0,5);
@@ -315,19 +450,22 @@
         window.leaveMatch = async function() {
             if (unsubscribeRoom) { unsubscribeRoom(); unsubscribeRoom = null; }
             if (currentRoomId && isHost) try { await deleteDoc(doc(db, 'minigames', currentRoomId)); } catch(e){}
-            currentRoomId = null; window.showHub(); document.removeEventListener('keydown', soloKeyHandler);
+            currentRoomId = null;
+            document.getElementById('waiting-view').classList.add('hidden');
+            document.getElementById('lobby-view').classList.add('hidden');
+            document.getElementById('game-view').classList.add('hidden');
         };
 
         function listenToRoom() {
             if (unsubscribeRoom) unsubscribeRoom();
             unsubscribeRoom = onSnapshot(doc(db, 'minigames', currentRoomId), (docSnap) => {
-                if (!docSnap.exists()) { window.showToast("Room closed.", "error"); window.leaveMatch(); return; }
+                if (!docSnap.exists()) { window.showToast("Room closed.", "error"); window.goBackToHub(); return; }
                 const data = docSnap.data(); window.roomData = data; 
                 if (data.status === 'playing') {
-                    document.getElementById('waiting-view').classList.add('hidden'); document.getElementById('game-view').classList.remove('hidden');
-                    let parsedState = typeof data.state === 'string' ? JSON.parse(data.state) : data.state;
+                    document.getElementById('waiting-view').classList.add('hidden'); 
+                    document.getElementById('game-view').classList.remove('hidden');
                     
-                    // Check if game just ended and I won to award points
+                    let parsedState = typeof data.state === 'string' ? JSON.parse(data.state) : data.state;
                     if(parsedState.gameOver && !gameState.gameOver && parsedState.winner === (myUid === data.p1 ? 1 : 2)) {
                         awardPoints(10);
                     }
@@ -349,26 +487,28 @@
 
         window.requestRestart = function() { syncMove(getInitialState(selectedGameType)); };
 
-        // Game Initializers
+        // Ensure state is pure JSON object without functions for Firebase compatibility
         function getInitialState(type) {
             if (type === 'dots') return { turn: 1, scores: {1:0, 2:0}, lines: {}, boxes: {}, size: 4, gameOver: false };
             if (type === 'connect4') return { turn: 1, board: Array.from({length: 6}, () => Array(7).fill(0)), gameOver: false, winner: 0 };
             if (type === 'uttt') return { turn: 1, activeMacro: -1, gameOver: false, winner: 0, macro: Array(9).fill(0), micro: Array.from({length: 9}, () => Array(9).fill(0)) };
             if (type === 'reversi') {
                 let b = Array.from({length: 8}, () => Array(8).fill(0));
-                b[3][3] = 2; b[4][4] = 2; b[3][4] = 1; b[4][3] = 1; // 1=Black, 2=White
+                b[3][3] = 2; b[4][4] = 2; b[3][4] = 1; b[4][3] = 1;
                 return { turn: 1, board: b, gameOver: false, winner: 0, scores: {1:2, 2:2} };
             }
             if (type === 'memory') {
                 const emojis = ['🍎','🍕','🚀','🎈','🐶','🐱','🎸','⚽'];
                 let deck = [...emojis, ...emojis].sort(()=>Math.random()-0.5);
-                return { turn: 1, deck, flipped: [], matched: [], scores: {1:0, 2:0}, gameOver: false, winner: 0, lock: false };
+                return { turn: 1, deck: deck, flipped: [], matched: [], scores: {1:0, 2:0}, gameOver: false, winner: 0, lock: false };
             }
             if (type === 'battleship') {
-                // Simplified auto-placement: each gets 5 random ships (1 cell each for speed)
-                const makeShips = () => { let s=[]; while(s.length<5){ let rnd=Math.floor(Math.random()*64); if(!s.includes(rnd)) s.push(rnd); } return s; };
-                return { turn: 1, s1: makeShips(), s2: makeShips(), hits1: [], hits2: [], misses1: [], misses2: [], gameOver: false, winner: 0 };
+                let s1=[], s2=[];
+                while(s1.length<5){ let rnd=Math.floor(Math.random()*64); if(!s1.includes(rnd)) s1.push(rnd); }
+                while(s2.length<5){ let rnd=Math.floor(Math.random()*64); if(!s2.includes(rnd)) s2.push(rnd); }
+                return { turn: 1, s1: s1, s2: s2, hits1: [], hits2: [], misses1: [], misses2: [], gameOver: false, winner: 0 };
             }
+            return {};
         }
 
         function renderActiveGame() {
@@ -384,48 +524,48 @@
             const myR = gameState.myRole; const p1I = window.getPlayerInfo(window.roomData.p1); const p2I = window.getPlayerInfo(window.roomData.p2);
             const myI = myR === 1 ? p1I : p2I; const oppI = myR === 1 ? p2I : p1I;
             return `
-                <div class="flex justify-between items-center bg-surface p-3 rounded-3xl shadow-soft mb-6">
+                <div class="flex justify-between items-center bg-surface-light dark:bg-surface-dark p-4 rounded-[32px] shadow-soft border border-zinc-100 dark:border-zinc-800/50 mb-6">
                     <div class="flex flex-col items-center flex-1 overflow-hidden">
-                        <img src="${myI.avatar}" class="w-10 h-10 rounded-full mb-1 object-cover shadow-sm border-2 ${myR===1?'border-primary':'border-rose-500'}">
-                        <span class="text-[10px] font-bold truncate w-full text-center">${myI.name} (You)</span>
+                        <img src="${myI.avatar}" class="w-12 h-12 rounded-2xl mb-2 object-cover shadow-sm border-[3px] ${myR===1?'border-primary':'border-rose-500'}">
+                        <span class="text-[10px] font-bold truncate w-full text-center text-zinc-800 dark:text-zinc-200">${myI.name} <span class="opacity-50">(You)</span></span>
                     </div>
-                    <div class="text-lg font-black text-zinc-200 px-2">VS</div>
+                    <div class="text-xl font-black text-zinc-300 dark:text-zinc-700 px-4">VS</div>
                     <div class="flex flex-col items-center flex-1 overflow-hidden">
-                        <img src="${oppI.avatar}" class="w-10 h-10 rounded-full mb-1 object-cover shadow-sm border-2 ${myR===1?'border-rose-500':'border-primary'}">
-                        <span class="text-[10px] font-bold truncate w-full text-center">${oppI.name}</span>
+                        <img src="${oppI.avatar}" class="w-12 h-12 rounded-2xl mb-2 object-cover shadow-sm border-[3px] ${myR===1?'border-rose-500':'border-primary'}">
+                        <span class="text-[10px] font-bold truncate w-full text-center text-zinc-800 dark:text-zinc-200">${oppI.name}</span>
                     </div>
                 </div>`;
         }
 
         function renderRestart() {
             if (!gameState.gameOver) return '';
-            return `<div class="mt-6 flex justify-center fade-in"><button onclick="window.requestRestart()" class="bg-zinc-900 text-white px-6 py-3 rounded-2xl font-bold hover:scale-105 active:scale-95">Play Again</button></div>`;
+            return `<div class="mt-8 flex justify-center fade-in"><button onclick="window.requestRestart()" class="bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 px-8 py-3.5 rounded-2xl font-bold hover:scale-105 active:scale-95 transition-all shadow-md">Play Again</button></div>`;
         }
 
         function renderStatus(isMyTurn) {
             const st = gameState;
             let msg = st.gameOver ? (st.winner === st.myRole ? 'YOU WON! 🎉' : (st.winner===0?'DRAW':'YOU LOST 💀')) : (isMyTurn ? 'YOUR TURN' : "Opponent's Turn");
             const col = st.turn === st.myRole ? (st.myRole===1?'text-primary':'text-rose-500') : (st.turn===1?'text-primary':'text-rose-500');
-            return `<div class="text-center font-black ${col} mb-4 tracking-widest uppercase text-lg">${msg}</div>`;
+            return `<div class="text-center font-black ${col} mb-6 tracking-widest uppercase text-lg">${msg}</div>`;
         }
 
-        // Multiplayer Games Implementations
+        // --- Dots & Boxes ---
         function renderDots() {
             const st = gameState; const isMyTurn = st.turn === st.myRole && !st.gameOver;
-            let html = '<div class="dots-grid bg-white p-4 rounded-3xl shadow-soft border border-zinc-100">';
+            let html = '<div class="dots-grid bg-surface-light dark:bg-surface-dark p-6 rounded-[32px] shadow-soft border border-zinc-100 dark:border-zinc-800/50">';
             for (let r=0; r<=st.size*2; r++) {
                 for (let c=0; c<=st.size*2; c++) {
                     if (r%2===0 && c%2===0) html += `<div class="dot w-3 h-3"></div>`;
-                    else if (r%2===0 && c%2!==0) { const k=`h-${r/2}-${Math.floor(c/2)}`; const bg=st.lines[k]===1?'#2563eb':(st.lines[k]===2?'#f43f5e':''); html += `<div class="line-h bg-zinc-100 rounded-full my-auto ${st.lines[k]?'claimed':''}" style="background-color:${bg}" onclick="window.dbPlay('h',${r/2},${Math.floor(c/2)})"></div>`; }
-                    else if (r%2!==0 && c%2===0) { const k=`v-${Math.floor(r/2)}-${c/2}`; const bg=st.lines[k]===1?'#2563eb':(st.lines[k]===2?'#f43f5e':''); html += `<div class="line-v bg-zinc-100 rounded-full mx-auto ${st.lines[k]?'claimed':''}" style="background-color:${bg}" onclick="window.dbPlay('v',${Math.floor(r/2)},${c/2})"></div>`; }
+                    else if (r%2===0 && c%2!==0) { const k=`h-${r/2}-${Math.floor(c/2)}`; const bg=st.lines[k]===1?'#2563eb':(st.lines[k]===2?'#f43f5e':''); html += `<div class="line-h bg-zinc-200 dark:bg-zinc-700 rounded-full my-auto ${st.lines[k]?'claimed':''}" style="background-color:${bg}" onclick="window.dbPlay('h',${r/2},${Math.floor(c/2)})"></div>`; }
+                    else if (r%2!==0 && c%2===0) { const k=`v-${Math.floor(r/2)}-${c/2}`; const bg=st.lines[k]===1?'#2563eb':(st.lines[k]===2?'#f43f5e':''); html += `<div class="line-v bg-zinc-200 dark:bg-zinc-700 rounded-full mx-auto ${st.lines[k]?'claimed':''}" style="background-color:${bg}" onclick="window.dbPlay('v',${Math.floor(r/2)},${c/2})"></div>`; }
                     else { const o=st.boxes[`${Math.floor(r/2)}-${Math.floor(c/2)}`]; const bg=o===1?'rgba(37,99,235,0.2)':(o===2?'rgba(244,63,94,0.2)':''); html += `<div class="box-cell rounded-lg" style="background-color:${bg}"></div>`; }
                 }
             }
             html += '</div>';
             document.getElementById('game-view').innerHTML = renderPlayerHeader() + `
                 <div class="flex justify-center gap-6 mb-4">
-                    <div class="text-center"><span class="text-[10px] font-bold text-zinc-400">P1 SCORE</span><div class="text-3xl font-black text-primary">${st.scores[1]}</div></div>
-                    <div class="text-center"><span class="text-[10px] font-bold text-zinc-400">P2 SCORE</span><div class="text-3xl font-black text-rose-500">${st.scores[2]}</div></div>
+                    <div class="text-center w-24"><span class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">P1 Score</span><div class="text-4xl font-black text-primary">${st.scores[1]}</div></div>
+                    <div class="text-center w-24"><span class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">P2 Score</span><div class="text-4xl font-black text-rose-500">${st.scores[2]}</div></div>
                 </div>` + renderStatus(isMyTurn) + `<div class="flex justify-center pointer-events-${isMyTurn?'auto':'none'}">${html}</div>` + renderRestart();
         }
         window.dbPlay = function(t,r,c) {
@@ -442,9 +582,10 @@
             syncMove(st);
         };
 
+        // --- Connect 4 ---
         function renderConnect4() {
             const st = gameState; const isMyTurn = st.turn === st.myRole && !st.gameOver;
-            let html = '<div class="c4-grid shadow-lg">';
+            let html = '<div class="c4-grid shadow-float">';
             for(let r=0;r<6;r++) for(let c=0;c<7;c++) { const bg=st.board[r][c]===1?'#2563eb':(st.board[r][c]===2?'#f43f5e':'transparent'); html += `<div class="c4-cell" onclick="window.c4Play(${c})"><div class="c4-piece ${st.board[r][c]?'dropped':''}" style="background-color:${bg}"></div></div>`; }
             document.getElementById('game-view').innerHTML = renderPlayerHeader() + renderStatus(isMyTurn) + `<div class="flex justify-center pointer-events-${isMyTurn?'auto':'none'}">${html}</div>` + renderRestart();
         }
@@ -459,10 +600,11 @@
             syncMove(st);
         };
 
+        // --- Ultimate TTT ---
         function renderUTTT() {
             const st = gameState; const isMyTurn = st.turn === st.myRole && !st.gameOver;
             const sym={0:'',1:'X',2:'O',3:'-'}; const col={1:'#2563eb',2:'#f43f5e',3:'#71717a'};
-            let html = '<div class="uttt-macro shadow-xl">';
+            let html = '<div class="uttt-macro shadow-float">';
             for(let i=0;i<9;i++){
                 html += `<div class="uttt-board ${(!st.gameOver&&st.macro[i]===0&&(st.activeMacro===-1||st.activeMacro===i))?'active':''} ${st.macro[i]!==0?'won':''}" data-winner="${sym[st.macro[i]]}" style="color:${col[st.macro[i]]}">`;
                 for(let j=0;j<9;j++) html += `<div class="uttt-cell" style="color:${col[st.micro[i][j]]}" onclick="window.utttPlay(${i},${j})">${sym[st.micro[i][j]]}</div>`;
@@ -480,9 +622,10 @@
             syncMove(st);
         };
 
+        // --- Reversi ---
         function renderReversi() {
             const st = gameState; const isMyTurn = st.turn === st.myRole && !st.gameOver;
-            let html = '<div class="reversi-grid shadow-lg">';
+            let html = '<div class="reversi-grid shadow-float">';
             for(let r=0;r<8;r++) for(let c=0;c<8;c++) {
                 const p = st.board[r][c];
                 html += `<div class="reversi-cell" onclick="window.revPlay(${r},${c})">${p!==0?`<div class="reversi-piece ${p===1?'p1':'p2'}"></div>`:''}</div>`;
@@ -490,8 +633,8 @@
             html += '</div>';
             document.getElementById('game-view').innerHTML = renderPlayerHeader() + `
                 <div class="flex justify-center gap-6 mb-4">
-                    <div class="text-center"><span class="text-[10px] font-bold text-zinc-400">P1 (Black)</span><div class="text-2xl font-black text-zinc-800">${st.scores[1]}</div></div>
-                    <div class="text-center"><span class="text-[10px] font-bold text-zinc-400">P2 (White)</span><div class="text-2xl font-black text-zinc-300">${st.scores[2]}</div></div>
+                    <div class="text-center w-24"><span class="text-[10px] font-bold text-zinc-400 uppercase">P1 (Black)</span><div class="text-4xl font-black text-zinc-800 dark:text-zinc-200">${st.scores[1]}</div></div>
+                    <div class="text-center w-24"><span class="text-[10px] font-bold text-zinc-400 uppercase">P2 (White)</span><div class="text-4xl font-black text-zinc-400">${st.scores[2]}</div></div>
                 </div>` + renderStatus(isMyTurn) + `<div class="flex justify-center pointer-events-${isMyTurn?'auto':'none'}">${html}</div>` + renderRestart();
         }
         window.revPlay = function(r, c) {
@@ -503,13 +646,10 @@
                 while(r2>=0&&r2<8&&c2>=0&&c2<8&&st.board[r2][c2]===opp) { temp.push([r2,c2]); r2+=dr; c2+=dc; }
                 if(r2>=0&&r2<8&&c2>=0&&c2<8&&st.board[r2][c2]===st.turn) flips.push(...temp);
             }
-            if(flips.length===0) return; // Invalid move
+            if(flips.length===0) return; 
             st.board[r][c] = st.turn; flips.forEach(([fr,fc]) => st.board[fr][fc] = st.turn);
-            
-            // Recalc scores
             st.scores = {1:0, 2:0}; st.board.forEach(row=>row.forEach(cell=>{if(cell) st.scores[cell]++;}));
             
-            // Swap turn, check if next player has moves. If not, swap back. If neither, game over.
             const hasMoves = (player) => {
                 const op = player===1?2:1;
                 for(let i=0;i<8;i++) for(let j=0;j<8;j++) {
@@ -521,33 +661,31 @@
                     }
                 } return false;
             };
-            
             if(hasMoves(opp)) st.turn = opp;
             else if(!hasMoves(st.turn)) { st.gameOver=true; st.winner = st.scores[1]>st.scores[2]?1:(st.scores[2]>st.scores[1]?2:0); }
-            
             syncMove(st);
         };
 
+        // --- Memory Duel ---
         function renderMemory() {
             const st = gameState; const isMyTurn = st.turn === st.myRole && !st.gameOver && !st.lock;
             let html = '<div class="memory-grid">';
             st.deck.forEach((card, i) => {
                 const isFlipped = st.flipped.includes(i); const isMatched = st.matched.includes(i);
-                html += `<div class="memory-card ${isFlipped?'flipped':''} ${isMatched?'matched':''}" onclick="window.memPlay(${i})"><div class="memory-content">${card}</div></div>`;
+                html += `<div class="memory-card shadow-sm ${isFlipped?'flipped':''} ${isMatched?'matched':''}" onclick="window.memPlay(${i})"><div class="memory-content">${card}</div></div>`;
             });
             html += '</div>';
             document.getElementById('game-view').innerHTML = renderPlayerHeader() + `
                 <div class="flex justify-center gap-6 mb-4">
-                    <div class="text-center"><span class="text-[10px] font-bold text-zinc-400">P1 Pairs</span><div class="text-2xl font-black text-primary">${st.scores[1]}</div></div>
-                    <div class="text-center"><span class="text-[10px] font-bold text-zinc-400">P2 Pairs</span><div class="text-2xl font-black text-rose-500">${st.scores[2]}</div></div>
+                    <div class="text-center w-24"><span class="text-[10px] font-bold text-zinc-400 uppercase">P1 Pairs</span><div class="text-4xl font-black text-primary">${st.scores[1]}</div></div>
+                    <div class="text-center w-24"><span class="text-[10px] font-bold text-zinc-400 uppercase">P2 Pairs</span><div class="text-4xl font-black text-rose-500">${st.scores[2]}</div></div>
                 </div>` + renderStatus(isMyTurn) + `<div class="flex justify-center pointer-events-${isMyTurn?'auto':'none'}">${html}</div>` + renderRestart();
         }
         window.memPlay = function(i) {
             if(gameState.turn!==gameState.myRole||gameState.gameOver||gameState.lock||gameState.flipped.includes(i)||gameState.matched.includes(i)) return;
-            let st = JSON.parse(JSON.stringify(gameState));
-            st.flipped.push(i);
+            let st = JSON.parse(JSON.stringify(gameState)); st.flipped.push(i);
             if(st.flipped.length === 2) {
-                st.lock = true; syncMove(st); // Send intermediate state
+                st.lock = true; syncMove(st); 
                 setTimeout(() => {
                     let newSt = JSON.parse(JSON.stringify(gameState));
                     if(newSt.deck[newSt.flipped[0]] === newSt.deck[newSt.flipped[1]]) {
@@ -559,41 +697,36 @@
             } else syncMove(st);
         };
 
+        // --- Battleship ---
         function renderBattleship() {
             const st = gameState; const isMyTurn = st.turn === st.myRole && !st.gameOver;
             const myHits = st.myRole===1?st.hits1:st.hits2; const myMisses = st.myRole===1?st.misses1:st.misses2;
-            let html = '<div class="battleship-grid shadow-lg">';
+            let html = '<div class="battleship-grid shadow-float">';
             for(let i=0; i<64; i++) {
                 const stateCls = myHits.includes(i) ? 'bs-hit' : (myMisses.includes(i) ? 'bs-miss' : '');
-                html += `<div class="bs-cell ${stateCls}" onclick="window.bsPlay(${i})"></div>`;
+                html += `<div class="bs-cell rounded-sm ${stateCls}" onclick="window.bsPlay(${i})"></div>`;
             }
             html += '</div>';
             document.getElementById('game-view').innerHTML = renderPlayerHeader() + renderStatus(isMyTurn) + `
-                <p class="text-xs text-center text-zinc-500 mb-4">Click to bombard. Sink 5 ships to win!</p>
+                <p class="text-xs text-center text-zinc-500 mb-6 uppercase tracking-widest font-bold">Sink 5 Enemy Ships to Win!</p>
                 <div class="flex justify-center pointer-events-${isMyTurn?'auto':'none'}">${html}</div>` + renderRestart();
         }
         window.bsPlay = function(i) {
             if(gameState.turn!==gameState.myRole||gameState.gameOver) return;
             let st = JSON.parse(JSON.stringify(gameState));
-            const oppShips = st.myRole===1?st.s2:st.s1;
-            const myHits = st.myRole===1?st.hits1:st.hits2; const myMisses = st.myRole===1?st.misses1:st.misses2;
-            if(myHits.includes(i) || myMisses.includes(i)) return; // Already shot here
-
+            const oppShips = st.myRole===1?st.s2:st.s1; const myHits = st.myRole===1?st.hits1:st.hits2; const myMisses = st.myRole===1?st.misses1:st.misses2;
+            if(myHits.includes(i) || myMisses.includes(i)) return; 
             if(oppShips.includes(i)) {
-                myHits.push(i);
-                if(myHits.length === 5) { st.gameOver=true; st.winner=st.myRole; }
-            } else {
-                myMisses.push(i);
-                st.turn = st.turn===1?2:1;
-            }
+                myHits.push(i); if(myHits.length === 5) { st.gameOver=true; st.winner=st.myRole; }
+            } else { myMisses.push(i); st.turn = st.turn===1?2:1; }
             syncMove(st);
         };
 
-        // Solo Games Setup
+        // --- Solo Games Setup ---
         window.initSoloGame = function(type) {
             document.getElementById('hub-view').classList.add('hidden'); document.getElementById('user-profile-widget').classList.add('hidden');
-            document.getElementById('btn-back').classList.remove('hidden'); document.getElementById('game-view').classList.remove('hidden');
-            document.getElementById('game-view').innerHTML = ''; // clear previous
+            document.getElementById('btn-back-hub').classList.remove('hidden'); document.getElementById('game-view').classList.remove('hidden');
+            document.getElementById('game-view').innerHTML = ''; 
             
             if(type === 'mastermind') window.initMastermindSolo();
             else if(type === '2048') init2048();
@@ -605,28 +738,27 @@
         function init2048() {
             soloState = { grid: Array(16).fill(0), score: 0, gameOver: false };
             add2048Tile(); add2048Tile(); render2048();
-            document.addEventListener('keydown', soloKeyHandler);
+            document.addEventListener('keydown', window.solo2048KeyHandler);
         }
         function add2048Tile() {
             let empty = []; soloState.grid.forEach((v,i) => { if(v===0) empty.push(i); });
             if(empty.length>0) soloState.grid[empty[Math.floor(Math.random()*empty.length)]] = Math.random()>0.1?2:4;
         }
         function render2048() {
-            let html = '<div class="grid-2048 shadow-xl mt-4">';
+            let html = '<div class="grid-2048 shadow-float mt-4">';
             soloState.grid.forEach(v => { html += `<div class="cell-2048 ${v>0?'val-'+v:''}">${v>0?v:''}</div>`; });
             html += '</div>';
             document.getElementById('game-view').innerHTML = `
                 <div class="max-w-xs mx-auto">
-                    <div class="flex justify-between items-end mb-4"><h2 class="text-3xl font-black">2048</h2><div class="bg-zinc-800 text-white px-4 py-2 rounded-xl text-center"><div class="text-[10px] text-zinc-400 font-bold uppercase tracking-widest">Score</div><div class="text-xl font-bold">${soloState.score}</div></div></div>
+                    <div class="flex justify-between items-end mb-6"><h2 class="text-4xl font-black text-zinc-800 dark:text-zinc-100">2048</h2><div class="bg-zinc-800 dark:bg-white text-white dark:text-zinc-900 px-5 py-2 rounded-2xl text-center"><div class="text-[10px] text-zinc-400 font-bold uppercase tracking-widest">Score</div><div class="text-2xl font-black">${soloState.score}</div></div></div>
                     ${html}
-                    ${soloState.gameOver ? `<div class="mt-6 text-center font-black text-rose-500 text-2xl fade-in">GAME OVER</div>` : `<p class="text-xs text-center text-zinc-400 mt-6">Use Arrow Keys to move tiles.</p>`}
-                    <div class="mt-6 flex justify-center"><button onclick="window.initSoloGame('2048')" class="bg-zinc-200 text-zinc-700 px-6 py-2 rounded-xl font-bold hover:bg-zinc-300">Restart</button></div>
+                    ${soloState.gameOver ? `<div class="mt-8 text-center font-black text-rose-500 text-3xl fade-in">GAME OVER</div>` : `<p class="text-xs text-center text-zinc-400 mt-6 font-semibold uppercase tracking-widest">Use Arrow Keys</p>`}
+                    <div class="mt-8 flex justify-center"><button onclick="window.initSoloGame('2048')" class="bg-zinc-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 px-8 py-3.5 rounded-2xl font-bold hover:scale-105 active:scale-95 transition-all">Restart</button></div>
                 </div>`;
         }
-        function soloKeyHandler(e) {
+        window.solo2048KeyHandler = function(e) {
             if(!['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key) || soloState.gameOver || document.getElementById('game-view').classList.contains('hidden')) return;
-            e.preventDefault();
-            let moved = false; let g = [...soloState.grid];
+            e.preventDefault(); let moved = false; let g = [...soloState.grid];
             const slide = (arr) => {
                 let filtered = arr.filter(v=>v);
                 for(let i=0;i<filtered.length-1;i++){ if(filtered[i]===filtered[i+1]){ filtered[i]*=2; soloState.score+=filtered[i]; filtered.splice(i+1,1); } }
@@ -650,19 +782,18 @@
                 }
             }
             if(moved) { soloState.grid = g; add2048Tile(); render2048(); }
-            if(!soloState.grid.includes(0)) { // Check lose condition
+            if(!soloState.grid.includes(0)) {
                 let canMove = false;
                 for(let i=0;i<16;i++){ if((i%4<3 && g[i]===g[i+1]) || (i<12 && g[i]===g[i+4])) canMove=true; }
                 if(!canMove) { soloState.gameOver=true; render2048(); }
             }
-        }
+        };
 
         /* ================= Wordle ================= */
         const words = ["GAMES", "SCORE", "SMART", "BOARD", "POINT", "MATCH", "BRICK", "FLASH", "POWER", "LEVEL"];
         function initWordle() {
             soloState = { word: words[Math.floor(Math.random()*words.length)], guesses: [], current: '', gameOver: false };
-            renderWordle();
-            document.removeEventListener('keydown', soloKeyHandler); document.addEventListener('keydown', wordleKeyHandler);
+            renderWordle(); document.removeEventListener('keydown', window.wordleKeyHandler); document.addEventListener('keydown', window.wordleKeyHandler);
         }
         function renderWordle() {
             let html = '<div class="wordle-grid mt-6">';
@@ -676,21 +807,21 @@
                         else if(soloState.word.includes(char)) cls = 'present';
                         else cls = 'absent';
                     }
-                    html += `<div class="wordle-cell ${cls} rounded-xl shadow-sm bg-white">${char}</div>`;
+                    html += `<div class="wordle-cell ${cls} rounded-2xl shadow-sm">${char}</div>`;
                 }
                 html += '</div>';
             }
             html += '</div>';
             document.getElementById('game-view').innerHTML = `
                 <div class="max-w-xs mx-auto">
-                    <h2 class="text-3xl font-black text-center mb-2 tracking-widest uppercase">Wordle</h2>
-                    <p class="text-[10px] text-center text-zinc-500 font-bold uppercase tracking-widest">Guess the 5-letter word</p>
+                    <h2 class="text-4xl font-black text-center mb-2 tracking-widest uppercase">Wordle</h2>
+                    <p class="text-[10px] text-center text-zinc-400 font-bold uppercase tracking-widest">Guess the 5-letter word</p>
                     ${html}
-                    ${soloState.gameOver ? `<div class="mt-6 text-center font-black text-xl fade-in">${soloState.guesses[soloState.guesses.length-1]===soloState.word?'SPLENDID! 🎉':`GAME OVER! Word was ${soloState.word}`}</div>` : `<p class="text-xs text-center text-zinc-400 mt-6">Type on keyboard to guess.</p>`}
-                    <div class="mt-6 flex justify-center"><button onclick="window.initSoloGame('wordle')" class="bg-zinc-200 text-zinc-700 px-6 py-2 rounded-xl font-bold hover:bg-zinc-300">Restart</button></div>
+                    ${soloState.gameOver ? `<div class="mt-8 text-center font-black text-2xl fade-in">${soloState.guesses[soloState.guesses.length-1]===soloState.word?'SPLENDID! 🎉':`GAME OVER! <br><span class="text-sm mt-2 block opacity-70">Word was ${soloState.word}</span>`}</div>` : `<p class="text-xs text-center text-zinc-400 mt-6 uppercase tracking-widest font-semibold">Type on keyboard</p>`}
+                    <div class="mt-8 flex justify-center"><button onclick="window.initSoloGame('wordle')" class="bg-zinc-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 px-8 py-3.5 rounded-2xl font-bold hover:scale-105 active:scale-95 transition-all">Restart</button></div>
                 </div>`;
         }
-        function wordleKeyHandler(e) {
+        window.wordleKeyHandler = function(e) {
             if(soloState.gameOver || document.getElementById('game-view').classList.contains('hidden') || selectedGameType) return;
             if(e.key === 'Enter' && soloState.current.length === 5) {
                 soloState.guesses.push(soloState.current);
@@ -701,67 +832,96 @@
             } else if (/^[a-zA-Z]$/.test(e.key) && soloState.current.length < 5) {
                 soloState.current += e.key.toUpperCase(); renderWordle();
             }
-        }
+        };
+
+        /* ================= Mastermind ================= */
+        window.initMastermindSolo = function() {
+            let digits = [1,2,3,4,5,6,7,8,9]; soloState = { secret: [], attempts: [] };
+            for(let i=0; i<4; i++) { const idx = Math.floor(Math.random() * digits.length); soloState.secret.push(digits[idx]); digits.splice(idx, 1); }
+            document.getElementById('game-view').innerHTML = `
+                <div class="max-w-xs mx-auto mt-4 fade-in">
+                    <h2 class="text-4xl font-black text-center mb-6 tracking-tight">Code Breaker</h2>
+                    <div class="bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-500 text-[10px] font-bold text-center p-4 rounded-3xl mb-6 uppercase tracking-wide leading-relaxed shadow-sm">
+                        <span class="text-sm">🔥</span> = Correct Number & Position<br>
+                        <span class="text-sm">🟢</span> = Correct Number, Wrong Position
+                    </div>
+                    <div class="flex gap-2 mb-6">
+                        <input type="text" pattern="\\d*" maxlength="4" id="mm-input" placeholder="4 Digits (1-9)..." class="flex-1 bg-surface-light dark:bg-surface-dark shadow-sm rounded-2xl px-4 py-4 text-center font-black text-xl outline-none focus:ring-2 focus:ring-primary tracking-[0.3em] text-zinc-900 dark:text-white">
+                        <button onclick="window.mmGuess()" class="bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 px-6 rounded-2xl font-bold shadow-md hover:scale-105 active:scale-95 transition-all">GUESS</button>
+                    </div>
+                    <div class="bg-surface-light dark:bg-surface-dark rounded-3xl shadow-soft p-2 min-h-[200px] max-h-[300px] overflow-y-auto" id="mm-history">
+                        <div class="text-center text-sm text-zinc-400 mt-10 font-medium">History will appear here...</div>
+                    </div>
+                </div>`;
+            document.getElementById('game-view').classList.remove('hidden');
+        };
+        window.mmGuess = function() {
+            const inputEl = document.getElementById('mm-input'); const val = inputEl.value;
+            if(val.length !== 4) return window.showToast("Must be exactly 4 digits!", "error");
+            const guess = val.split('').map(Number);
+            if(guess.some(n => isNaN(n) || n<1 || n>9)) return window.showToast("Use numbers 1-9 only", "error");
+
+            let bulls = 0, cows = 0; let secretCopy = [...soloState.secret]; let guessCopy = [...guess];
+            for(let i=0; i<4; i++) { if(guessCopy[i] === secretCopy[i]) { bulls++; secretCopy[i] = -1; guessCopy[i] = -2; } }
+            for(let i=0; i<4; i++) { if(guessCopy[i] > 0) { const idx = secretCopy.indexOf(guessCopy[i]); if(idx !== -1) { cows++; secretCopy[idx] = -1; } } }
+
+            soloState.attempts.unshift({ guess: val, b: bulls, c: cows }); inputEl.value = '';
+            document.getElementById('mm-history').innerHTML = soloState.attempts.map(atm => `
+                <div class="flex justify-between items-center p-4 border-b border-zinc-100 dark:border-zinc-800 last:border-0 fade-in">
+                    <span class="font-black tracking-[0.4em] text-xl text-zinc-800 dark:text-zinc-200">${atm.guess}</span>
+                    <div class="flex gap-2 text-sm font-bold">
+                        <span class="text-rose-500 bg-rose-50 dark:bg-rose-900/20 px-3 py-1.5 rounded-xl">${atm.b} 🔥</span>
+                        <span class="text-emerald-500 bg-emerald-50 dark:bg-emerald-900/20 px-3 py-1.5 rounded-xl">${atm.c} 🟢</span>
+                    </div>
+                </div>`).join('');
+            if(bulls === 4) { window.showToast(`Code Cracked in ${soloState.attempts.length} attempts! 🏆`, 'success'); inputEl.disabled = true; awardPoints(10); }
+        };
 
         /* ================= Minesweeper ================= */
         function initMinesweeper() {
             let b = Array.from({length: 81}, ()=>({m:false, r:false, f:false, n:0}));
             let mCount = 0; while(mCount<10){ let i=Math.floor(Math.random()*81); if(!b[i].m){ b[i].m=true; mCount++; } }
             for(let i=0;i<81;i++){ if(!b[i].m){ let n=0; const r=Math.floor(i/9), c=i%9; 
-                for(let dr=-1;dr<=1;dr++) for(let dc=-1;dc<=1;dc++) {
-                    const nr=r+dr, nc=c+dc; if(nr>=0&&nr<9&&nc>=0&&nc<9&&b[nr*9+nc].m) n++;
-                } b[i].n=n; } }
+                for(let dr=-1;dr<=1;dr++) for(let dc=-1;dc<=1;dc++) { const nr=r+dr, nc=c+dc; if(nr>=0&&nr<9&&nc>=0&&nc<9&&b[nr*9+nc].m) n++; } b[i].n=n; } }
             soloState = { b, gameOver: false, won: false, firstClick: true }; renderMinesweeper();
         }
         function renderMinesweeper() {
             const cols = ['','text-blue-500','text-green-500','text-red-500','text-purple-500','text-orange-500','text-cyan-500','text-black','text-gray-500'];
-            let html = '<div class="mine-grid shadow-lg mt-4" style="grid-template-columns: repeat(9, 1fr);">';
+            let html = '<div class="mine-grid shadow-float mt-6" style="grid-template-columns: repeat(9, 1fr);">';
             soloState.b.forEach((c,i) => {
                 let cnt = ''; let cls = c.r ? 'revealed' : '';
-                if(c.r){ if(c.m) cnt='💣'; else if(c.n>0){ cnt=c.n; cls+=' '+cols[c.n]; } }
-                else if(c.f) cnt='🚩';
-                html += `<div class="mine-cell ${cls}" oncontextmenu="event.preventDefault(); window.msFlag(${i})" onclick="window.msClick(${i})">${cnt}</div>`;
+                if(c.r){ if(c.m) cnt='💣'; else if(c.n>0){ cnt=c.n; cls+=' '+cols[c.n]; } } else if(c.f) cnt='🚩';
+                html += `<div class="mine-cell rounded-sm ${cls}" oncontextmenu="event.preventDefault(); window.msFlag(${i})" onclick="window.msClick(${i})">${cnt}</div>`;
             });
             html += '</div>';
             document.getElementById('game-view').innerHTML = `
                 <div class="max-w-xs mx-auto">
-                    <h2 class="text-2xl font-black text-center mb-1">Minesweeper</h2>
-                    <p class="text-xs text-center text-zinc-500">Find 10 Mines. Right-click/Long-press to Flag.</p>
+                    <h2 class="text-4xl font-black text-center mb-2 tracking-tight">Minesweeper</h2>
+                    <p class="text-[10px] text-center text-zinc-400 uppercase tracking-widest font-bold">Find 10 Mines. Right-click to Flag.</p>
                     ${html}
-                    ${soloState.gameOver ? `<div class="mt-6 text-center font-black ${soloState.won?'text-primary':'text-rose-500'} text-xl fade-in">${soloState.won?'YOU WON! +10 Pts':'BOOM! 💥'}</div>` : ''}
-                    <div class="mt-6 flex justify-center"><button onclick="window.initSoloGame('minesweeper')" class="bg-zinc-200 text-zinc-700 px-6 py-2 rounded-xl font-bold hover:bg-zinc-300">Restart</button></div>
+                    ${soloState.gameOver ? `<div class="mt-8 text-center font-black ${soloState.won?'text-primary':'text-rose-500'} text-3xl fade-in tracking-tight">${soloState.won?'YOU WON!':'BOOM! 💥'}</div>` : ''}
+                    <div class="mt-8 flex justify-center"><button onclick="window.initSoloGame('minesweeper')" class="bg-zinc-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 px-8 py-3.5 rounded-2xl font-bold hover:scale-105 active:scale-95 transition-all">Restart</button></div>
                 </div>`;
         }
         window.msClick = function(i) {
             if(soloState.gameOver || soloState.b[i].f || soloState.b[i].r) return;
-            if(soloState.firstClick && soloState.b[i].m) { initMinesweeper(); window.msClick(i); return; } // Ensure first click is safe
+            if(soloState.firstClick && soloState.b[i].m) { initMinesweeper(); window.msClick(i); return; } 
             soloState.firstClick = false;
-            
-            if(soloState.b[i].m) {
-                soloState.b.forEach(c => { if(c.m) c.r=true; }); soloState.gameOver = true;
-            } else {
+            if(soloState.b[i].m) { soloState.b.forEach(c => { if(c.m) c.r=true; }); soloState.gameOver = true; } 
+            else {
                 const flood = (idx) => {
-                    if(idx<0||idx>=81||soloState.b[idx].r) return;
-                    soloState.b[idx].r = true;
+                    if(idx<0||idx>=81||soloState.b[idx].r) return; soloState.b[idx].r = true;
                     if(soloState.b[idx].n===0) {
                         const r=Math.floor(idx/9), c=idx%9;
-                        for(let dr=-1;dr<=1;dr++) for(let dc=-1;dc<=1;dc++) {
-                            const nr=r+dr, nc=c+dc; if(nr>=0&&nr<9&&nc>=0&&nc<9) flood(nr*9+nc);
-                        }
+                        for(let dr=-1;dr<=1;dr++) for(let dc=-1;dc<=1;dc++) { const nr=r+dr, nc=c+dc; if(nr>=0&&nr<9&&nc>=0&&nc<9) flood(nr*9+nc); }
                     }
                 }; flood(i);
-                
-                // Check Win
-                let unrevealedSafe = soloState.b.filter(c => !c.m && !c.r).length;
-                if(unrevealedSafe === 0) { soloState.gameOver=true; soloState.won=true; awardPoints(10); }
-            }
-            renderMinesweeper();
+                if(soloState.b.filter(c => !c.m && !c.r).length === 0) { soloState.gameOver=true; soloState.won=true; awardPoints(10); }
+            } renderMinesweeper();
         };
-        window.msFlag = function(i) {
-            if(soloState.gameOver || soloState.b[i].r) return;
-            soloState.b[i].f = !soloState.b[i].f; renderMinesweeper();
-        };
+        window.msFlag = function(i) { if(soloState.gameOver || soloState.b[i].r) return; soloState.b[i].f = !soloState.b[i].f; renderMinesweeper(); };
 
+        window.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
 </html>
