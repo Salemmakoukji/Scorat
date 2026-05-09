@@ -13,7 +13,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800;900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
-    <link rel="icon" href="./logo.png" type="image/x-icon">
 
     <script>
         const savedTheme = localStorage.getItem('scorat_theme');
@@ -161,6 +160,21 @@
                 </div>
             </div>
 
+            <!-- Online Card Games -->
+            <div>
+                <h2 class="text-xs font-bold text-zinc-500 dark:text-zinc-400 mb-3 uppercase tracking-widest flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">playing_cards</span> Card Games (Online)</h2>
+                <div class="flex flex-col gap-3">
+                    <button onclick="openRoomModal('blackjack')" class="bg-surface-light dark:bg-surface-dark p-4 rounded-3xl shadow-soft border border-zinc-200 dark:border-zinc-800 flex items-center gap-4 hover:-translate-y-1 transition-all text-left group">
+                        <div class="w-12 h-12 rounded-2xl bg-zinc-800 text-white flex items-center justify-center group-hover:scale-110 transition-transform"><span class="material-symbols-outlined text-2xl">style</span></div>
+                        <div class="flex-1"><h3 class="font-black text-md">Blackjack 21</h3><p class="text-[10px] text-zinc-500 mt-1">Get closest to 21 without busting</p></div>
+                    </button>
+                    <button onclick="openRoomModal('cardwar')" class="bg-surface-light dark:bg-surface-dark p-4 rounded-3xl shadow-soft border border-zinc-200 dark:border-zinc-800 flex items-center gap-4 hover:-translate-y-1 transition-all text-left group">
+                        <div class="w-12 h-12 rounded-2xl bg-red-100 text-red-600 flex items-center justify-center group-hover:scale-110 transition-transform"><span class="material-symbols-outlined text-2xl">swords</span></div>
+                        <div class="flex-1"><h3 class="font-black text-md">Card War</h3><p class="text-[10px] text-zinc-500 mt-1">Highest card wins the round</p></div>
+                    </button>
+                </div>
+            </div>
+
             <!-- Online Word Games -->
             <div>
                 <h2 class="text-xs font-bold text-zinc-500 dark:text-zinc-400 mb-3 uppercase tracking-widest flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">menu_book</span> Word Games (Online)</h2>
@@ -181,7 +195,7 @@
                 <h2 class="text-xs font-bold text-zinc-500 dark:text-zinc-400 mb-3 uppercase tracking-widest flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">wifi</span> Classic & Board (Online)</h2>
                 <div class="flex flex-col gap-3">
                     <button onclick="openRoomModal('connect4')" class="bg-surface-light dark:bg-surface-dark p-4 rounded-3xl shadow-soft border border-zinc-200 dark:border-zinc-800 flex items-center gap-4 hover:-translate-y-1 transition-all text-left group">
-                        <div class="w-12 h-12 rounded-2xl bg-yellow-100 text-yellow-600 flex items-center justify-center group-hover:scale-110 transition-transform"><span class="material-symbols-outlined text-2xl">blur_on</span></div>
+                        <div class="w-12 h-12 rounded-2xl bg-cyan-100 text-cyan-600 flex items-center justify-center group-hover:scale-110 transition-transform"><span class="material-symbols-outlined text-2xl">blur_on</span></div>
                         <div class="flex-1"><h3 class="font-black text-md">Connect 4</h3><p class="text-[10px] text-zinc-500 mt-1">Connect 4 tokens to win</p></div>
                     </button>
                     <button onclick="openRoomModal('dotsboxes')" class="bg-surface-light dark:bg-surface-dark p-4 rounded-3xl shadow-soft border border-zinc-200 dark:border-zinc-800 flex items-center gap-4 hover:-translate-y-1 transition-all text-left group">
@@ -255,6 +269,57 @@
         <!-- Game Areas -->
         <div id="game-area" class="flex-1 relative flex flex-col overflow-hidden">
             
+            <!-- Blackjack 21 (Online) -->
+            <div id="area-blackjack" class="hidden flex-1 flex-col items-center justify-between py-6 px-4 w-full">
+                <!-- Opponent Area -->
+                <div class="text-center w-full">
+                    <h2 class="text-zinc-500 font-bold mb-2 uppercase text-xs tracking-widest">Opponent (<span id="bj-opp-score" class="text-primary">0</span>)</h2>
+                    <div id="bj-opp-cards" class="flex justify-center pl-8 h-24 relative z-10"></div>
+                </div>
+
+                <!-- Status -->
+                <div id="bj-status" class="bg-primary/10 text-primary border border-primary/20 font-black px-6 py-2 rounded-full text-xl shadow-sm z-20">Waiting...</div>
+
+                <!-- Player Area -->
+                <div class="text-center w-full">
+                    <div id="bj-my-cards" class="flex justify-center pl-8 h-24 mb-6 relative z-10"></div>
+                    <h2 class="text-zinc-500 font-bold mb-4 uppercase text-xs tracking-widest">You (<span id="bj-my-score" class="text-primary">0</span>)</h2>
+                    
+                    <div class="flex justify-center gap-4">
+                        <button id="bj-btn-hit" onclick="bjHit()" class="bg-primary text-white px-8 py-3 rounded-2xl font-black shadow-md active:scale-95 disabled:opacity-50">HIT</button>
+                        <button id="bj-btn-stand" onclick="bjStand()" class="bg-zinc-800 dark:bg-zinc-200 text-white dark:text-zinc-900 px-8 py-3 rounded-2xl font-black shadow-md active:scale-95 disabled:opacity-50">STAND</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card War (Online) -->
+            <div id="area-cardwar" class="hidden flex-1 flex-col items-center justify-between py-6 px-4 w-full max-w-md mx-auto">
+                <div class="w-full flex justify-between items-center bg-surface-light dark:bg-surface-dark p-4 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-14 bg-rose-600 rounded border-2 border-white/40 shadow-sm" style="background-image: repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(0,0,0,.1) 5px, rgba(0,0,0,.1) 10px);"></div>
+                        <div class="text-xs font-bold text-zinc-500">Cards<br><span id="cw-opp-count" class="text-lg text-zinc-900 dark:text-white">26</span></div>
+                    </div>
+                    <div class="text-center"><span class="text-[10px] uppercase font-bold text-zinc-500">Score</span><div id="cw-opp-score" class="text-2xl font-black text-rose-500">0</div></div>
+                </div>
+
+                <div class="flex justify-center items-center gap-6 w-full my-8">
+                    <div id="cw-opp-play" class="w-16 h-24 border-2 border-dashed border-zinc-300 dark:border-zinc-700 rounded-lg flex items-center justify-center relative"></div>
+                    <div class="text-xl font-black text-zinc-300 dark:text-zinc-700">VS</div>
+                    <div id="cw-my-play" class="w-16 h-24 border-2 border-dashed border-zinc-300 dark:border-zinc-700 rounded-lg flex items-center justify-center relative"></div>
+                </div>
+                
+                <div id="cw-status" class="text-sm font-bold text-primary mb-4 text-center h-4">Round 1</div>
+
+                <div class="w-full flex justify-between items-center bg-surface-light dark:bg-surface-dark p-4 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm mb-6">
+                    <div class="text-center"><span class="text-[10px] uppercase font-bold text-zinc-500">Score</span><div id="cw-my-score" class="text-2xl font-black text-blue-500">0</div></div>
+                    <div class="flex items-center gap-3 text-right">
+                        <div class="text-xs font-bold text-zinc-500">Cards<br><span id="cw-my-count" class="text-lg text-zinc-900 dark:text-white">26</span></div>
+                        <div class="w-10 h-14 bg-blue-600 rounded border-2 border-white/40 shadow-sm" style="background-image: repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(255,255,255,.1) 5px, rgba(255,255,255,.1) 10px);"></div>
+                    </div>
+                </div>
+                <button id="cw-btn-draw" onclick="cwDraw()" class="w-full bg-primary text-white py-4 rounded-2xl font-black text-xl shadow-md active:scale-95 disabled:opacity-50 transition-all">DRAW CARD</button>
+            </div>
+
             <!-- 2048 -->
             <div id="area-2048" class="hidden flex-1 flex-col items-center justify-center px-4 py-6 w-full">
                 <div class="w-full max-w-sm mb-6 flex justify-between items-center bg-surface-light dark:bg-surface-dark p-4 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm">
@@ -471,13 +536,48 @@
         }
         init();
 
-        /* ==================== 2. Dictionary API Helper ==================== */
-        async function validateWordAPI(word) {
-            try { const res = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`); if (!res.ok) return null; const data = await res.json(); return data[0]; } catch (e) { return null; }
+        /* ==================== 2. Card Deck Helpers ==================== */
+        function getDeck() {
+            const suits = ['h','d','c','s'];
+            const vals = ['2','3','4','5','6','7','8','9','10','j','q','k','a'];
+            let deck = [];
+            suits.forEach(s => vals.forEach(v => deck.push(v+s)));
+            // Fisher-Yates shuffle
+            for(let i = deck.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [deck[i], deck[j]] = [deck[j], deck[i]];
+            }
+            return deck;
+        }
+
+        function getCardValue(c, game) {
+            if(!c || c === 'hidden') return 0;
+            let val = c.substring(0, c.length-1);
+            if(game === 'bj') {
+                if(['j','q','k'].includes(val)) return 10;
+                if(val === 'a') return 11;
+                return parseInt(val);
+            } else if (game === 'war') {
+                if(val === 'j') return 11;
+                if(val === 'q') return 12;
+                if(val === 'k') return 13;
+                if(val === 'a') return 14;
+                return parseInt(val);
+            }
+            return 0;
+        }
+
+        function renderCard(code, overlap = true) {
+            if(!code) return '';
+            const margin = overlap ? "margin-left: -2rem;" : "";
+            // Using onerror to provide a clean fallback if standard images aren't found
+            return `<img src="./Playing Cards/${code}.png" onerror="this.outerHTML='<div class=\\'w-14 h-20 md:w-16 md:h-24 rounded shadow-md bg-white border border-zinc-300 flex items-center justify-center font-black text-xl text-zinc-800\\' style=\\'${margin}\\'>${code.toUpperCase()}</div>'" class="w-14 h-20 md:w-16 md:h-24 rounded shadow-md bg-white object-cover border border-zinc-200 dark:border-zinc-700" style="${margin}">`;
         }
 
         /* ==================== 3. Unified Game Manager ==================== */
         const GAME_INFO = {
+            'blackjack': { title: 'Blackjack 21', icon: 'style' },
+            'cardwar': { title: 'Card War', icon: 'swords' },
             'minesweeper': { title: 'Minesweeper', icon: 'bomb' },
             'memory': { title: 'Memory Match', icon: 'dashboard' },
             'wordle': { title: 'Wordle', icon: 'spellcheck' },
@@ -511,12 +611,20 @@
             vibe();
             if (isMultiplayer) {
                 if(!currentRoomId) return; const resetData = { resetAt: Date.now() };
-                if(currentActiveGame === 'tapwar') { resetData.p1Taps = 0; resetData.p2Taps = 0; }
+                
+                if(currentActiveGame === 'blackjack') {
+                    let d = getDeck(); resetData.bjDeck = d; resetData.bjP1 = [d.pop(), d.pop()]; resetData.bjP2 = [d.pop(), d.pop()];
+                    resetData.bjTurn = '1'; resetData.bjP1State = 'playing'; resetData.bjP2State = 'playing'; resetData.bjWinner = null;
+                } else if(currentActiveGame === 'cardwar') {
+                    let d = getDeck(); resetData.warP1Deck = d.slice(0, 26); resetData.warP2Deck = d.slice(26, 52);
+                    resetData.warP1Card = null; resetData.warP2Card = null; resetData.warP1Score = 0; resetData.warP2Score = 0; resetData.warRound = 1; resetData.warWinner = null; resetData.warEvaluating = false;
+                } else if(currentActiveGame === 'tapwar') { resetData.p1Taps = 0; resetData.p2Taps = 0; }
                 else if(currentActiveGame === 'tictactoe') { resetData.tttBoard = Array(9).fill(null); resetData.tttTurn = '1'; resetData.tttWinner = null; }
                 else if(currentActiveGame === 'wordchain') { resetData.wcWords = []; resetData.wcTurn = '1'; resetData.wcWinner = null; }
                 else if(currentActiveGame === 'hangman') { resetData.hmSecret = null; resetData.hmHint = null; resetData.hmGuesses = []; resetData.hmWinner = null; }
                 else if(currentActiveGame === 'connect4') { resetData.c4Board = Array(42).fill(null); resetData.c4Turn = '1'; resetData.c4Winner = null; }
                 else if(currentActiveGame === 'dotsboxes') { resetData.dbH = Array(12).fill(false); resetData.dbV = Array(12).fill(false); resetData.dbB = Array(9).fill(null); resetData.dbTurn = '1'; resetData.dbS1 = 0; resetData.dbS2 = 0; resetData.dbWinner = null; }
+                
                 updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'minigame_rooms', currentRoomId), resetData);
             } else {
                 document.getElementById('game-overlay').classList.add('hidden'); document.getElementById('game-overlay').classList.remove('flex');
@@ -536,13 +644,213 @@
         /* ==================== 4. Multiplayer Rooms ==================== */
         window.openRoomModal = function(gameType) { vibe(); if (!currentUser) return alert("Connecting to server..."); currentActiveGame = gameType; isMultiplayer = true; document.getElementById('room-modal-title').innerText = GAME_INFO[gameType].title; document.getElementById('room-status').classList.add('hidden'); document.getElementById('room-code-input').value = ''; const modal = document.getElementById('room-modal'); const content = document.getElementById('room-modal-content'); modal.classList.remove('hidden'); setTimeout(() => { content.classList.remove('scale-95', 'opacity-0'); }, 10); }
         window.closeRoomModal = function() { const modal = document.getElementById('room-modal'); const content = document.getElementById('room-modal-content'); content.classList.add('scale-95', 'opacity-0'); setTimeout(() => { modal.classList.add('hidden'); }, 200); }
-        window.createRoom = async function() { vibe(); const code = Math.floor(1000 + Math.random() * 9000).toString(); currentRoomId = code; myRole = '1'; const initialData = { hostId: currentUser.uid, guestId: null, game: currentActiveGame, status: 'waiting', resetAt: Date.now() }; if (currentActiveGame === 'tapwar') { initialData.p1Taps = 0; initialData.p2Taps = 0; } else if (currentActiveGame === 'tictactoe') { initialData.tttBoard = Array(9).fill(null); initialData.tttTurn = '1'; initialData.tttWinner = null; } else if (currentActiveGame === 'wordchain') { initialData.wcWords = []; initialData.wcTurn = '1'; initialData.wcWinner = null; } else if (currentActiveGame === 'hangman') { initialData.hmSecret = null; initialData.hmHint = null; initialData.hmGuesses = []; initialData.hmWinner = null; } else if (currentActiveGame === 'connect4') { initialData.c4Board = Array(42).fill(null); initialData.c4Turn = '1'; initialData.c4Winner = null; } else if (currentActiveGame === 'dotsboxes') { initialData.dbH = Array(12).fill(false); initialData.dbV = Array(12).fill(false); initialData.dbB = Array(9).fill(null); initialData.dbTurn = '1'; initialData.dbS1 = 0; initialData.dbS2 = 0; initialData.dbWinner = null; } try { await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'minigame_rooms', code), initialData); closeRoomModal(); showWaitingRoom(code); listenToRoom(); } catch (e) { alert("Failed to create room"); } }
+        
+        window.createRoom = async function() { 
+            vibe(); const code = Math.floor(1000 + Math.random() * 9000).toString(); currentRoomId = code; myRole = '1'; 
+            const initialData = { hostId: currentUser.uid, guestId: null, game: currentActiveGame, status: 'waiting', resetAt: Date.now() }; 
+            
+            if (currentActiveGame === 'blackjack') { let d = getDeck(); initialData.bjDeck = d; initialData.bjP1 = [d.pop(), d.pop()]; initialData.bjP2 = [d.pop(), d.pop()]; initialData.bjTurn = '1'; initialData.bjP1State = 'playing'; initialData.bjP2State = 'playing'; initialData.bjWinner = null; }
+            else if (currentActiveGame === 'cardwar') { let d = getDeck(); initialData.warP1Deck = d.slice(0, 26); initialData.warP2Deck = d.slice(26, 52); initialData.warP1Card = null; initialData.warP2Card = null; initialData.warP1Score = 0; initialData.warP2Score = 0; initialData.warRound = 1; initialData.warWinner = null; initialData.warEvaluating = false; }
+            else if (currentActiveGame === 'tapwar') { initialData.p1Taps = 0; initialData.p2Taps = 0; } 
+            else if (currentActiveGame === 'tictactoe') { initialData.tttBoard = Array(9).fill(null); initialData.tttTurn = '1'; initialData.tttWinner = null; } 
+            else if (currentActiveGame === 'wordchain') { initialData.wcWords = []; initialData.wcTurn = '1'; initialData.wcWinner = null; } 
+            else if (currentActiveGame === 'hangman') { initialData.hmSecret = null; initialData.hmHint = null; initialData.hmGuesses = []; initialData.hmWinner = null; } 
+            else if (currentActiveGame === 'connect4') { initialData.c4Board = Array(42).fill(null); initialData.c4Turn = '1'; initialData.c4Winner = null; } 
+            else if (currentActiveGame === 'dotsboxes') { initialData.dbH = Array(12).fill(false); initialData.dbV = Array(12).fill(false); initialData.dbB = Array(9).fill(null); initialData.dbTurn = '1'; initialData.dbS1 = 0; initialData.dbS2 = 0; initialData.dbWinner = null; } 
+            
+            try { await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'minigame_rooms', code), initialData); closeRoomModal(); showWaitingRoom(code); listenToRoom(); } catch (e) { alert("Failed to create room"); } 
+        }
+
         window.joinRoom = async function() { vibe(); const code = document.getElementById('room-code-input').value.trim(); if(code.length !== 4) return alert("PIN must be 4 digits"); document.getElementById('room-status').innerText = 'Searching...'; document.getElementById('room-status').classList.remove('hidden'); try { const roomRef = doc(db, 'artifacts', appId, 'public', 'data', 'minigame_rooms', code); const snap = await getDoc(roomRef); if (!snap.exists()) return document.getElementById('room-status').innerText = 'Room not found!'; const data = snap.data(); if (data.status !== 'waiting') return document.getElementById('room-status').innerText = 'Room is full!'; if (data.game !== currentActiveGame) return document.getElementById('room-status').innerText = 'Room is for another game!'; await updateDoc(roomRef, { guestId: currentUser.uid, status: 'playing' }); currentRoomId = code; myRole = '2'; closeRoomModal(); listenToRoom(); } catch (e) { alert("Connection error"); } }
         function showWaitingRoom(code) { document.getElementById('display-room-code').innerText = code; document.getElementById('lobby-view').classList.add('hidden'); document.getElementById('waiting-room').classList.remove('hidden', 'flex'); document.getElementById('waiting-room').classList.add('flex'); }
-        function listenToRoom() { if (unsubRoom) unsubRoom(); unsubRoom = onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'minigame_rooms', currentRoomId), (snap) => { if (!snap.exists()) { alert("Room closed."); return window.exitMultiplayerGame(false); } const data = snap.data(); if (data.resetAt && data.resetAt !== lastResetTimestamp) { lastResetTimestamp = data.resetAt; document.getElementById('game-overlay').classList.add('hidden'); document.getElementById('game-overlay').classList.remove('flex'); if(data.game === 'tapwar') { myLocalTaps = 0; lastSentTaps = 0; } if(data.game === 'hangman') { document.getElementById('hm-secret-input').value = ''; } } if (data.status === 'playing' || data.status === 'finished') { document.getElementById('waiting-room').classList.add('hidden'); document.getElementById('waiting-room').classList.remove('flex'); showGameArea(data.game); if (data.game === 'tapwar') handleTapWarSync(data); if (data.game === 'tictactoe') handleTicTacToeSync(data); if (data.game === 'wordchain') handleWordChainSync(data); if (data.game === 'hangman') handleHangmanSync(data); if (data.game === 'connect4') handleConnect4Sync(data); if (data.game === 'dotsboxes') handleDotsBoxesSync(data); } }); }
+        
+        function listenToRoom() { 
+            if (unsubRoom) unsubRoom(); 
+            unsubRoom = onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'minigame_rooms', currentRoomId), (snap) => { 
+                if (!snap.exists()) { alert("Room closed."); return window.exitMultiplayerGame(false); } 
+                const data = snap.data(); 
+                if (data.resetAt && data.resetAt !== lastResetTimestamp) { 
+                    lastResetTimestamp = data.resetAt; 
+                    document.getElementById('game-overlay').classList.add('hidden'); document.getElementById('game-overlay').classList.remove('flex'); 
+                    if(data.game === 'tapwar') { myLocalTaps = 0; lastSentTaps = 0; } 
+                    if(data.game === 'hangman') { document.getElementById('hm-secret-input').value = ''; } 
+                } 
+                if (data.status === 'playing' || data.status === 'finished') { 
+                    document.getElementById('waiting-room').classList.add('hidden'); document.getElementById('waiting-room').classList.remove('flex'); showGameArea(data.game); 
+                    
+                    if (data.game === 'blackjack') handleBlackjackSync(data);
+                    if (data.game === 'cardwar') handleCardWarSync(data);
+                    if (data.game === 'tapwar') handleTapWarSync(data); 
+                    if (data.game === 'tictactoe') handleTicTacToeSync(data); 
+                    if (data.game === 'wordchain') handleWordChainSync(data); 
+                    if (data.game === 'hangman') handleHangmanSync(data); 
+                    if (data.game === 'connect4') handleConnect4Sync(data); 
+                    if (data.game === 'dotsboxes') handleDotsBoxesSync(data); 
+                } 
+            }); 
+        }
+        
         window.exitMultiplayerGame = async function(deleteRoom = true) { vibe(); clearTimers(); if (unsubRoom) unsubRoom(); if (deleteRoom && currentRoomId && myRole === '1') deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'minigame_rooms', currentRoomId)).catch(e=>{}); document.getElementById('waiting-room').classList.add('hidden'); document.getElementById('waiting-room').classList.remove('flex'); document.getElementById('game-container').classList.add('hidden'); document.getElementById('lobby-view').classList.remove('hidden'); currentRoomId = null; myRole = null; isMultiplayer = false; currentActiveGame = null; if(twInterval) clearInterval(twInterval); }
         window.addEventListener('beforeunload', () => { if (currentRoomId && myRole === '1') deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'minigame_rooms', currentRoomId)).catch(e=>{}); });
 
+
+        /* ==================== Blackjack 21 (Online) ==================== */
+        function calculateBJScore(hand) {
+            if(!hand) return 0;
+            let score = 0; let aces = 0;
+            for(let c of hand) {
+                let val = c.substring(0, c.length-1);
+                if(['j','q','k'].includes(val)) score += 10;
+                else if(val === 'a') { score += 11; aces += 1; }
+                else score += parseInt(val);
+            }
+            while(score > 21 && aces > 0) { score -= 10; aces -= 1; }
+            return score;
+        }
+
+        function handleBlackjackSync(data) {
+            const myHand = myRole === '1' ? data.bjP1 : data.bjP2;
+            const oppHand = myRole === '1' ? data.bjP2 : data.bjP1;
+            const myScore = calculateBJScore(myHand);
+            const oppScore = calculateBJScore(oppHand);
+            
+            document.getElementById('bj-my-score').innerText = myScore;
+            document.getElementById('bj-opp-score').innerText = oppScore;
+            
+            document.getElementById('bj-my-cards').innerHTML = myHand.map((c, i) => renderCard(c, i > 0)).join('');
+            document.getElementById('bj-opp-cards').innerHTML = oppHand.map((c, i) => renderCard(c, i > 0)).join('');
+            
+            const myState = myRole === '1' ? data.bjP1State : data.bjP2State;
+            const oppState = myRole === '1' ? data.bjP2State : data.bjP1State;
+            
+            const hitBtn = document.getElementById('bj-btn-hit');
+            const standBtn = document.getElementById('bj-btn-stand');
+            const status = document.getElementById('bj-status');
+            
+            if(data.bjWinner) {
+                hitBtn.disabled = true; standBtn.disabled = true;
+                status.innerText = data.bjWinner === 'draw' ? 'Draw!' : (data.bjWinner === myRole ? 'You Won!' : 'Opponent Won!');
+                if(!document.getElementById('game-overlay').classList.contains('flex')) {
+                    showUnifiedOverlay(data.bjWinner === 'draw' ? 'Draw!' : (data.bjWinner === myRole ? 'Victory! 🥇' : 'Defeat! 💔'));
+                }
+            } else {
+                const isMyTurn = data.bjTurn === myRole && myState === 'playing';
+                hitBtn.disabled = !isMyTurn; standBtn.disabled = !isMyTurn;
+                
+                if(myState === 'bust') status.innerText = 'Busted!';
+                else if(myState === 'stood') status.innerText = 'Standing...';
+                else status.innerText = isMyTurn ? 'Your Turn' : 'Opponent Turn...';
+                
+                // Host Auto Evaluate when both done
+                if(myRole === '1' && data.bjP1State !== 'playing' && data.bjP2State !== 'playing' && !data.bjWinner) {
+                    let p1Score = calculateBJScore(data.bjP1);
+                    let p2Score = calculateBJScore(data.bjP2);
+                    let w = 'draw';
+                    if(p1Score > 21 && p2Score <= 21) w = '2';
+                    else if(p2Score > 21 && p1Score <= 21) w = '1';
+                    else if(p1Score <= 21 && p2Score <= 21) {
+                        if(p1Score > p2Score) w = '1';
+                        else if(p2Score > p1Score) w = '2';
+                    }
+                    updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'minigame_rooms', currentRoomId), { bjWinner: w });
+                }
+            }
+        }
+
+        window.bjHit = async function() {
+            if(!currentRoomId) return; vibe(10);
+            const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'minigame_rooms', currentRoomId);
+            const snap = await getDoc(docRef); const data = snap.data();
+            if(data.bjTurn !== myRole || data.bjWinner) return;
+
+            let deck = [...data.bjDeck];
+            let hand = myRole === '1' ? [...data.bjP1] : [...data.bjP2];
+            hand.push(deck.pop());
+            let score = calculateBJScore(hand);
+            let state = score > 21 ? 'bust' : 'playing';
+            
+            let update = { bjDeck: deck };
+            update[myRole === '1' ? 'bjP1' : 'bjP2'] = hand;
+            update[myRole === '1' ? 'bjP1State' : 'bjP2State'] = state;
+            
+            if(state === 'bust' || score === 21) {
+                update.bjTurn = myRole === '1' ? '2' : '1';
+                update[myRole === '1' ? 'bjP1State' : 'bjP2State'] = state === 'bust' ? 'bust' : 'stood';
+            }
+            updateDoc(docRef, update);
+        }
+
+        window.bjStand = async function() {
+            if(!currentRoomId) return; vibe(10);
+            const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'minigame_rooms', currentRoomId);
+            let update = { bjTurn: myRole === '1' ? '2' : '1' };
+            update[myRole === '1' ? 'bjP1State' : 'bjP2State'] = 'stood';
+            updateDoc(docRef, update);
+        }
+
+
+        /* ==================== Card War (Online) ==================== */
+        function handleCardWarSync(data) {
+            document.getElementById('cw-my-count').innerText = myRole === '1' ? data.warP1Deck.length : data.warP2Deck.length;
+            document.getElementById('cw-opp-count').innerText = myRole === '1' ? data.warP2Deck.length : data.warP1Deck.length;
+            document.getElementById('cw-my-score').innerText = myRole === '1' ? data.warP1Score : data.warP2Score;
+            document.getElementById('cw-opp-score').innerText = myRole === '1' ? data.warP2Score : data.warP1Score;
+            
+            const myCard = myRole === '1' ? data.warP1Card : data.warP2Card;
+            const oppCard = myRole === '1' ? data.warP2Card : data.warP1Card;
+            
+            document.getElementById('cw-my-play').innerHTML = myCard ? renderCard(myCard, false) : '';
+            document.getElementById('cw-opp-play').innerHTML = oppCard ? renderCard(oppCard, false) : '';
+            
+            if(data.warWinner) {
+                document.getElementById('cw-btn-draw').disabled = true;
+                if(!document.getElementById('game-overlay').classList.contains('flex')) {
+                    showUnifiedOverlay(data.warWinner === 'draw' ? 'Draw!' : (data.warWinner === myRole ? 'Victory! 🥇' : 'Defeat! 💔'));
+                }
+                return;
+            }
+
+            document.getElementById('cw-btn-draw').disabled = !!myCard;
+            
+            if(data.warP1Card && data.warP2Card) {
+                document.getElementById('cw-status').innerText = 'Evaluating...';
+                if(myRole === '1' && !data.warEvaluating) {
+                    // Host evaluates
+                    updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'minigame_rooms', currentRoomId), { warEvaluating: true });
+                    setTimeout(() => {
+                        let v1 = getCardValue(data.warP1Card, 'war');
+                        let v2 = getCardValue(data.warP2Card, 'war');
+                        let s1 = data.warP1Score; let s2 = data.warP2Score;
+                        if(v1 > v2) s1++;
+                        else if(v2 > v1) s2++;
+                        
+                        let up = { warP1Card: null, warP2Card: null, warP1Score: s1, warP2Score: s2, warRound: data.warRound + 1, warEvaluating: false };
+                        if(data.warP1Deck.length === 0 && data.warP2Deck.length === 0) {
+                            if(s1 > s2) up.warWinner = '1';
+                            else if(s2 > s1) up.warWinner = '2';
+                            else up.warWinner = 'draw';
+                        }
+                        updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'minigame_rooms', currentRoomId), up);
+                    }, 2000);
+                }
+            } else {
+                document.getElementById('cw-status').innerText = `Round ${data.warRound} / 26`;
+            }
+        }
+
+        window.cwDraw = async function() {
+            if(!currentRoomId) return; vibe(15);
+            const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'minigame_rooms', currentRoomId);
+            const snap = await getDoc(docRef); const data = snap.data();
+            let myDeck = myRole === '1' ? [...data.warP1Deck] : [...data.warP2Deck];
+            if(myDeck.length === 0) return;
+            let drawn = myDeck.pop();
+            
+            let update = {};
+            update[myRole === '1' ? 'warP1Deck' : 'warP2Deck'] = myDeck;
+            update[myRole === '1' ? 'warP1Card' : 'warP2Card'] = drawn;
+            updateDoc(docRef, update);
+        }
 
         /* ==================== Connect 4 (Online) ==================== */
         function handleConnect4Sync(data) {
@@ -612,9 +920,6 @@
         }
 
         /* ==================== Dots and Boxes (Online) ==================== */
-        // Grid: 4x4 dots => 3x3 boxes. 
-        // 3 rows of 4 h-lines = 12 h-lines
-        // 4 columns of 3 v-lines = 12 v-lines
         function handleDotsBoxesSync(data) {
             document.getElementById('db-s1').innerText = data.dbS1 || 0;
             document.getElementById('db-s2').innerText = data.dbS2 || 0;
@@ -639,7 +944,6 @@
             let html = '';
             const boxSize = 80; // pixels
             
-            // Render Boxes
             for(let r=0; r<3; r++) {
                 for(let c=0; c<3; c++) {
                     let owner = dbB[r*3+c];
@@ -647,8 +951,6 @@
                     html += `<div class="db-box ${bg} w-[80px] h-[80px]" style="top: ${r*boxSize}px; left: ${c*boxSize}px;"></div>`;
                 }
             }
-
-            // Render H-Lines (4 rows, 3 cols)
             for(let r=0; r<4; r++) {
                 for(let c=0; c<3; c++) {
                     let idx = r*3 + c;
@@ -657,8 +959,6 @@
                     html += `<div onclick="dbLineClick('h', ${idx})" class="db-line-h w-[80px] ${bg}" style="top: ${r*boxSize}px; left: ${c*boxSize}px;"></div>`;
                 }
             }
-
-            // Render V-Lines (3 rows, 4 cols)
             for(let r=0; r<3; r++) {
                 for(let c=0; c<4; c++) {
                     let idx = r*4 + c;
@@ -667,8 +967,6 @@
                     html += `<div onclick="dbLineClick('v', ${idx})" class="db-line-v h-[80px] ${bg}" style="top: ${r*boxSize}px; left: ${c*boxSize}px;"></div>`;
                 }
             }
-
-            // Render Dots
             for(let r=0; r<4; r++) {
                 for(let c=0; c<4; c++) {
                     html += `<div class="db-dot" style="top: ${r*boxSize}px; left: ${c*boxSize}px;"></div>`;
@@ -691,18 +989,12 @@
             
             if(type === 'h') arrH[idx] = true; else arrV[idx] = true;
             
-            // Check completed boxes
-            let scored = false;
-            let s1 = data.dbS1, s2 = data.dbS2;
+            let scored = false; let s1 = data.dbS1, s2 = data.dbS2;
             for(let r=0; r<3; r++) {
                 for(let c=0; c<3; c++) {
                     let bIdx = r*3 + c;
                     if(!arrB[bIdx]) {
-                        // Box requires: top H, bottom H, left V, right V
-                        let topH = r*3 + c;
-                        let botH = (r+1)*3 + c;
-                        let leftV = r*4 + c;
-                        let rightV = r*4 + (c+1);
+                        let topH = r*3 + c; let botH = (r+1)*3 + c; let leftV = r*4 + c; let rightV = r*4 + (c+1);
                         if(arrH[topH] && arrH[botH] && arrV[leftV] && arrV[rightV]) {
                             arrB[bIdx] = myRole;
                             if(myRole === '1') s1++; else s2++;
@@ -724,7 +1016,7 @@
             updateDoc(docRef, updateData);
         }
 
-        /* ==================== 5. Wordle (Solo with Dictionary API) ==================== */
+        /* ==================== 5. Wordle (Solo with API) ==================== */
         const wdlWordsList = ["APPLE", "TRAIN", "BRAIN", "MOUSE", "GHOST", "HEART", "SMART", "PLANT", "SPACE", "TABLE", "CHAIR", "DREAM", "SMILE", "WATER", "EARTH", "LIGHT", "SOUND", "POWER", "MAGIC", "WORLD"];
         let wdlTarget = ""; let wdlBoard = []; let wdlRow = 0; let wdlCol = 0; let wdlGameOver = false; let wdlColors = {};
         
@@ -737,7 +1029,7 @@
         function renderWordleGrid() {
             const grid = document.getElementById('wdl-grid');
             grid.style.gridTemplateColumns = "repeat(5, 1fr)";
-            grid.innerHTML = wdlBoard.map((row, r) => row.map((char, c) => `<div id="wdl-c-${r}-${c}" class="wdl-cell w-12 h-12 md:w-14 md:h-14 border-2 border-zinc-300 dark:border-zinc-700 bg-surface-light dark:bg-surface-dark flex items-center justify-center text-2xl font-black rounded-lg ${char ? 'border-zinc-500 dark:border-zinc-400' : ''} uppercase">${char}</div>`).join('')).join('');
+            grid.innerHTML = wdlBoard.map((row, r) => row.map((char, c) => `<div id="wdl-c-${r}-${c}" class="wdl-cell w-12 h-12 md:w-14 md:h-14 border-2 border-zinc-300 dark:border-zinc-700 bg-surface-light dark:bg-surface-dark flex items-center justify-center text-2xl font-black rounded-lg ${char ? 'border-zinc-500 dark:border-zinc-400' : ''}"><div class="wdl-inner backface-hidden w-full h-full flex items-center justify-center uppercase">${char}</div></div>`).join('')).join('');
         }
 
         function renderWordleKB() {
@@ -850,7 +1142,7 @@
         }
         function renderCbHistory() { document.getElementById('cb-history').innerHTML = cbHistory.map(h => `<div class="flex justify-between items-center bg-background-light dark:bg-background-dark p-3 rounded-xl border border-zinc-200 dark:border-zinc-800" dir="ltr"><div class="flex gap-2">${h.guess.map(n => `<div class="w-8 h-10 rounded-lg flex items-center justify-center text-lg font-black bg-surface-light dark:bg-surface-dark border border-zinc-200 dark:border-zinc-700 shadow-sm">${n}</div>`).join('')}</div><div class="flex gap-1 flex-wrap w-14 justify-end items-center">${Array(h.exact).fill('<div class="w-3 h-3 bg-primary rounded-full shadow-sm"></div>').join('')}${Array(h.valOnly).fill('<div class="w-3 h-3 bg-zinc-300 dark:bg-zinc-600 rounded-full border border-zinc-400"></div>').join('')}</div></div>`).join(''); }
 
-        /* ==================== Older Games Handlers (WordChain, Hangman, Tapwar, RPS, TTT, MS, Hunter, Memory) ==================== */
+        /* ==================== Older Games Handlers (WordChain, Hangman, Tapwar, TTT, MS, Hunter, Memory, 2048) ==================== */
         window.openSoloGame = function(gameId) { vibe(); isMultiplayer = false; showGameArea(gameId); if(gameId === 'minesweeper') initMinesweeper(); if(gameId === 'hunter') initHunter(); if(gameId === 'memory') initMemory(); if(gameId === 'wordle') initWordle(); if(gameId === 'codebreaker') initCodeBreaker(); if(gameId === '2048') init2048(); }
         
         function handleWordChainSync(data) { const words = data.wcWords || []; const historyDiv = document.getElementById('wc-history'); const input = document.getElementById('wc-input'); const requiredLetterEl = document.getElementById('wc-required-letter'); historyDiv.innerHTML = words.map((w, i) => { const isMe = w.role === myRole; return `<div class="p-2 px-4 rounded-xl text-sm font-bold w-max max-w-[80%] ${isMe ? 'bg-primary text-white self-end border-r-4 border-primary-light' : 'bg-surface-light dark:bg-surface-dark border border-zinc-200 dark:border-zinc-700 self-start border-l-4 border-zinc-500'}">${w.word.toUpperCase()}</div>`; }).join(''); historyDiv.scrollTop = historyDiv.scrollHeight; if (words.length > 0) { const lastWord = words[words.length - 1].word; requiredLetterEl.innerText = lastWord.charAt(lastWord.length - 1).toUpperCase(); } else { requiredLetterEl.innerText = 'ANY'; } if (data.wcWinner) { input.disabled = true; const msg = data.wcWinner === myRole ? "Victory! Opponent Quit 🥇" : "Incorrect! You lost 💔"; if(!document.getElementById('game-overlay').classList.contains('flex')) showUnifiedOverlay(msg); } else { const myTurn = data.wcTurn === myRole; document.getElementById('wc-turn-indicator').innerText = myTurn ? 'You' : 'Opponent'; input.disabled = !myTurn; if(myTurn) input.focus(); else input.value = ''; } }
@@ -886,189 +1178,15 @@
         window.flipMemoryCard = function(i) { if(memoryLocked || memoryCards[i].isFlipped || memoryCards[i].isMatched) return; vibe(10); memoryCards[i].isFlipped = true; memoryFlipped.push(i); renderMemory(); if(memoryFlipped.length === 2) { memoryMoves++; document.getElementById('memory-moves').innerText = memoryMoves; memoryLocked = true; const [i1, i2] = memoryFlipped; if(memoryCards[i1].emoji === memoryCards[i2].emoji) { vibe(30); memoryCards[i1].isMatched = true; memoryCards[i2].isMatched = true; memoryMatched += 2; memoryFlipped = []; memoryLocked = false; if(memoryMatched === 16) { vibe([100,50,200]); showUnifiedOverlay(`Won in ${memoryMoves} moves!`); } } else { setTimeout(() => { memoryCards[i1].isFlipped = false; memoryCards[i2].isFlipped = false; memoryFlipped = []; memoryLocked = false; renderMemory(); }, 800); } } }
 
         /* ==================== 2048 Logic ==================== */
-        let b2048 = [];
-        let score2048 = 0;
-        let gameOver2048 = false;
-
-        window.init2048 = function() {
-            b2048 = Array(16).fill(0);
-            score2048 = 0;
-            gameOver2048 = false;
-            document.getElementById('score-2048').innerText = '0';
-            
-            // Draw empty grid background once
-            document.getElementById('grid-bg-2048').innerHTML = Array(16).fill('<div class="bg-zinc-200 dark:bg-zinc-600 rounded-xl w-full h-full shadow-inner"></div>').join('');
-            
-            spawn2048(); spawn2048();
-            render2048();
-        }
-
-        function spawn2048() {
-            let empty = [];
-            for(let i=0; i<16; i++) if(b2048[i] === 0) empty.push(i);
-            if(empty.length === 0) return;
-            let idx = empty[Math.floor(Math.random() * empty.length)];
-            b2048[idx] = Math.random() < 0.9 ? 2 : 4;
-            b2048.spawnIdx = idx; // Target for animation
-        }
-
-        function getTileStyle2048(val) {
-            const styles = {
-                2: 'bg-zinc-100 text-zinc-800 dark:bg-zinc-200', 
-                4: 'bg-zinc-200 text-zinc-800 dark:bg-zinc-300',
-                8: 'bg-orange-400 text-white', 
-                16: 'bg-orange-500 text-white',
-                32: 'bg-rose-400 text-white', 
-                64: 'bg-rose-500 text-white',
-                128: 'bg-yellow-400 text-white shadow-[0_0_10px_rgba(250,204,21,0.5)]', 
-                256: 'bg-yellow-500 text-white shadow-[0_0_15px_rgba(234,179,8,0.6)]',
-                512: 'bg-green-500 text-white shadow-[0_0_20px_rgba(34,197,94,0.6)]', 
-                1024: 'bg-blue-500 text-white text-3xl shadow-[0_0_20px_rgba(59,130,246,0.6)]',
-                2048: 'bg-purple-500 text-white text-3xl shadow-[0_0_25px_rgba(168,85,247,0.8)]'
-            };
-            return styles[val] || 'bg-zinc-900 text-white text-2xl';
-        }
-
-        function render2048() {
-            const container = document.getElementById('tiles-2048');
-            let html = '';
-            
-            for(let r=0; r<4; r++) {
-                for(let c=0; c<4; c++) {
-                    let idx = r*4 + c;
-                    let val = b2048[idx];
-                    if(val !== 0) {
-                        // Math to position tiles correctly over the grid cells (gap is 0.625rem/10px)
-                        let top = `calc(${r * 25}% + ${r * 0.625}rem)`; 
-                        let left = `calc(${c * 25}% + ${c * 0.625}rem)`;
-                        let w = `calc(25% - 0.46875rem)`;
-                        
-                        let animClass = (b2048.spawnIdx === idx) ? 'tile-spawn' : '';
-                        if (b2048.mergeIdx && b2048.mergeIdx.includes(idx)) animClass = 'tile-merge';
-
-                        html += `<div class="absolute tile-2048 flex items-center justify-center font-black text-4xl rounded-xl ${getTileStyle2048(val)} ${animClass}" style="top: ${top}; left: ${left}; width: ${w}; height: ${w};">${val}</div>`;
-                    }
-                }
-            }
-            container.innerHTML = html;
-            document.getElementById('score-2048').innerText = score2048;
-            b2048.spawnIdx = -1; b2048.mergeIdx = [];
-        }
-
-        window.move2048 = function(direction) {
-            if(gameOver2048 || currentActiveGame !== '2048') return;
-            let moved = false; let mergedIndices = [];
-
-            const slide = (row) => {
-                let arr = row.filter(val => val);
-                let missing = 4 - arr.length;
-                let zeros = Array(missing).fill(0);
-                return arr.concat(zeros);
-            }
-
-            const merge = (row, startIdx, step) => {
-                for(let i=0; i<3; i++) {
-                    if(row[i] !== 0 && row[i] === row[i+1]) {
-                        row[i] *= 2; score2048 += row[i];
-                        row[i+1] = 0; mergedIndices.push(startIdx + i*step);
-                    }
-                }
-                return row;
-            }
-
-            let newB = [...b2048];
-
-            if(direction === 'left') {
-                for(let r=0; r<4; r++) {
-                    let row = [newB[r*4], newB[r*4+1], newB[r*4+2], newB[r*4+3]]; let original = [...row];
-                    row = slide(row); row = merge(row, r*4, 1); row = slide(row);
-                    for(let c=0; c<4; c++) newB[r*4+c] = row[c];
-                    if(original.join(',') !== row.join(',')) moved = true;
-                }
-            } else if (direction === 'right') {
-                for(let r=0; r<4; r++) {
-                    let row = [newB[r*4+3], newB[r*4+2], newB[r*4+1], newB[r*4+0]]; let original = [...row];
-                    row = slide(row); row = merge(row, r*4+3, -1); row = slide(row);
-                    for(let c=0; c<4; c++) newB[r*4+(3-c)] = row[c];
-                    if(original.join(',') !== row.join(',')) moved = true;
-                }
-            } else if (direction === 'up') {
-                for(let c=0; c<4; c++) {
-                    let col = [newB[c], newB[4+c], newB[8+c], newB[12+c]]; let original = [...col];
-                    col = slide(col); col = merge(col, c, 4); col = slide(col);
-                    for(let r=0; r<4; r++) newB[r*4+c] = col[r];
-                    if(original.join(',') !== col.join(',')) moved = true;
-                }
-            } else if (direction === 'down') {
-                for(let c=0; c<4; c++) {
-                    let col = [newB[12+c], newB[8+c], newB[4+c], newB[c]]; let original = [...col];
-                    col = slide(col); col = merge(col, 12+c, -4); col = slide(col);
-                    for(let r=0; r<4; r++) newB[(3-r)*4+c] = col[r];
-                    if(original.join(',') !== col.join(',')) moved = true;
-                }
-            }
-
-            if(moved) {
-                b2048 = newB; b2048.mergeIdx = mergedIndices;
-                spawn2048(); render2048(); vibe(10);
-                
-                if(b2048.includes(2048)) {
-                    gameOver2048 = true; vibe([100,50,200]); showUnifiedOverlay("You Reached 2048! 🏆");
-                } else if(checkGameOver2048()) {
-                    gameOver2048 = true; vibe(500); showUnifiedOverlay(`Game Over! Score: ${score2048}`);
-                }
-            }
-        }
-
-        function checkGameOver2048() {
-            if(b2048.includes(0)) return false;
-            for(let r=0; r<4; r++) {
-                for(let c=0; c<4; c++) {
-                    let idx = r*4+c; let val = b2048[idx];
-                    if(c<3 && val === b2048[idx+1]) return false; // right
-                    if(r<3 && val === b2048[idx+4]) return false; // down
-                }
-            }
-            return true;
-        }
-
-        // 2048 Keyboard Listeners
-        window.addEventListener('keydown', (e) => {
-            if(currentActiveGame !== '2048' || gameOver2048) return;
-            if(e.key === 'ArrowUp' || e.key === 'w') { e.preventDefault(); move2048('up'); }
-            if(e.key === 'ArrowDown' || e.key === 's') { e.preventDefault(); move2048('down'); }
-            if(e.key === 'ArrowLeft' || e.key === 'a') { e.preventDefault(); move2048('left'); }
-            if(e.key === 'ArrowRight' || e.key === 'd') { e.preventDefault(); move2048('right'); }
-        });
-
-        // 2048 Touch/Swipe Listeners
-        let tStartX = 0; let tStartY = 0;
-        document.addEventListener('touchstart', e => {
-            if(currentActiveGame !== '2048' || gameOver2048) return;
-            tStartX = e.changedTouches[0].screenX; tStartY = e.changedTouches[0].screenY;
-        }, {passive: false});
-        
-        document.addEventListener('touchend', e => {
-            if(currentActiveGame !== '2048' || gameOver2048) return;
-            let tEndX = e.changedTouches[0].screenX; let tEndY = e.changedTouches[0].screenY;
-            let dx = tEndX - tStartX; let dy = tEndY - tStartY;
-            
-            // Threshold 30px to trigger swipe
-            if(Math.abs(dx) > 30 || Math.abs(dy) > 30) {
-                if(Math.abs(dx) > Math.abs(dy)) {
-                    if(dx > 0) move2048('right'); else move2048('left');
-                } else {
-                    if(dy > 0) move2048('down'); else move2048('up');
-                }
-            }
-        }, {passive: false});
-        
-        // Prevent scrolling while swiping on the 2048 board
-        document.addEventListener('touchmove', e => {
-            if(currentActiveGame === '2048' && e.target.closest('#board-2048')) {
-                e.preventDefault();
-            }
-        }, {passive: false});
+        let b2048 = []; let score2048 = 0; let gameOver2048 = false;
+        window.init2048 = function() { b2048 = Array(16).fill(0); score2048 = 0; gameOver2048 = false; document.getElementById('score-2048').innerText = '0'; document.getElementById('grid-bg-2048').innerHTML = Array(16).fill('<div class="bg-zinc-200 dark:bg-zinc-600 rounded-xl w-full h-full shadow-inner"></div>').join(''); spawn2048(); spawn2048(); render2048(); }
+        function spawn2048() { let empty = []; for(let i=0; i<16; i++) if(b2048[i] === 0) empty.push(i); if(empty.length === 0) return; let idx = empty[Math.floor(Math.random() * empty.length)]; b2048[idx] = Math.random() < 0.9 ? 2 : 4; b2048.spawnIdx = idx; }
+        function getTileStyle2048(val) { const styles = { 2: 'bg-zinc-100 text-zinc-800 dark:bg-zinc-200', 4: 'bg-zinc-200 text-zinc-800 dark:bg-zinc-300', 8: 'bg-orange-400 text-white', 16: 'bg-orange-500 text-white', 32: 'bg-rose-400 text-white', 64: 'bg-rose-500 text-white', 128: 'bg-yellow-400 text-white shadow-[0_0_10px_rgba(250,204,21,0.5)]', 256: 'bg-yellow-500 text-white shadow-[0_0_15px_rgba(234,179,8,0.6)]', 512: 'bg-green-500 text-white shadow-[0_0_20px_rgba(34,197,94,0.6)]', 1024: 'bg-blue-500 text-white text-3xl shadow-[0_0_20px_rgba(59,130,246,0.6)]', 2048: 'bg-purple-500 text-white text-3xl shadow-[0_0_25px_rgba(168,85,247,0.8)]' }; return styles[val] || 'bg-zinc-900 text-white text-2xl'; }
+        function render2048() { const container = document.getElementById('tiles-2048'); let html = ''; for(let r=0; r<4; r++) { for(let c=0; c<4; c++) { let idx = r*4 + c; let val = b2048[idx]; if(val !== 0) { let top = `calc(${r * 25}% + ${r * 0.625}rem)`; let left = `calc(${c * 25}% + ${c * 0.625}rem)`; let w = `calc(25% - 0.46875rem)`; let animClass = (b2048.spawnIdx === idx) ? 'tile-spawn' : ''; if (b2048.mergeIdx && b2048.mergeIdx.includes(idx)) animClass = 'tile-merge'; html += `<div class="absolute tile-2048 flex items-center justify-center font-black text-4xl rounded-xl ${getTileStyle2048(val)} ${animClass}" style="top: ${top}; left: ${left}; width: ${w}; height: ${w};">${val}</div>`; } } } container.innerHTML = html; document.getElementById('score-2048').innerText = score2048; b2048.spawnIdx = -1; b2048.mergeIdx = []; }
+        window.move2048 = function(direction) { if(gameOver2048 || currentActiveGame !== '2048') return; let moved = false; let mergedIndices = []; const slide = (row) => { let arr = row.filter(val => val); let missing = 4 - arr.length; let zeros = Array(missing).fill(0); return arr.concat(zeros); }; const merge = (row, startIdx, step) => { for(let i=0; i<3; i++) { if(row[i] !== 0 && row[i] === row[i+1]) { row[i] *= 2; score2048 += row[i]; row[i+1] = 0; mergedIndices.push(startIdx + i*step); } } return row; }; let newB = [...b2048]; if(direction === 'left') { for(let r=0; r<4; r++) { let row = [newB[r*4], newB[r*4+1], newB[r*4+2], newB[r*4+3]]; let original = [...row]; row = slide(row); row = merge(row, r*4, 1); row = slide(row); for(let c=0; c<4; c++) newB[r*4+c] = row[c]; if(original.join(',') !== row.join(',')) moved = true; } } else if (direction === 'right') { for(let r=0; r<4; r++) { let row = [newB[r*4+3], newB[r*4+2], newB[r*4+1], newB[r*4+0]]; let original = [...row]; row = slide(row); row = merge(row, r*4+3, -1); row = slide(row); for(let c=0; c<4; c++) newB[r*4+(3-c)] = row[c]; if(original.join(',') !== row.join(',')) moved = true; } } else if (direction === 'up') { for(let c=0; c<4; c++) { let col = [newB[c], newB[4+c], newB[8+c], newB[12+c]]; let original = [...col]; col = slide(col); col = merge(col, c, 4); col = slide(col); for(let r=0; r<4; r++) newB[r*4+c] = col[r]; if(original.join(',') !== col.join(',')) moved = true; } } else if (direction === 'down') { for(let c=0; c<4; c++) { let col = [newB[12+c], newB[8+c], newB[4+c], newB[c]]; let original = [...col]; col = slide(col); col = merge(col, 12+c, -4); col = slide(col); for(let r=0; r<4; r++) newB[(3-r)*4+c] = col[r]; if(original.join(',') !== col.join(',')) moved = true; } } if(moved) { b2048 = newB; b2048.mergeIdx = mergedIndices; spawn2048(); render2048(); vibe(10); if(b2048.includes(2048)) { gameOver2048 = true; vibe([100,50,200]); showUnifiedOverlay("You Reached 2048! 🏆"); } else if(checkGameOver2048()) { gameOver2048 = true; vibe(500); showUnifiedOverlay(`Game Over! Score: ${score2048}`); } } }
+        function checkGameOver2048() { if(b2048.includes(0)) return false; for(let r=0; r<4; r++) { for(let c=0; c<4; c++) { let idx = r*4+c; let val = b2048[idx]; if(c<3 && val === b2048[idx+1]) return false; if(r<3 && val === b2048[idx+4]) return false; } } return true; }
+        window.addEventListener('keydown', (e) => { if(currentActiveGame !== '2048' || gameOver2048) return; if(e.key === 'ArrowUp' || e.key === 'w') { e.preventDefault(); move2048('up'); } if(e.key === 'ArrowDown' || e.key === 's') { e.preventDefault(); move2048('down'); } if(e.key === 'ArrowLeft' || e.key === 'a') { e.preventDefault(); move2048('left'); } if(e.key === 'ArrowRight' || e.key === 'd') { e.preventDefault(); move2048('right'); } });
+        let tStartX = 0; let tStartY = 0; document.addEventListener('touchstart', e => { if(currentActiveGame !== '2048' || gameOver2048) return; tStartX = e.changedTouches[0].screenX; tStartY = e.changedTouches[0].screenY; }, {passive: false}); document.addEventListener('touchend', e => { if(currentActiveGame !== '2048' || gameOver2048) return; let tEndX = e.changedTouches[0].screenX; let tEndY = e.changedTouches[0].screenY; let dx = tEndX - tStartX; let dy = tEndY - tStartY; if(Math.abs(dx) > 30 || Math.abs(dy) > 30) { if(Math.abs(dx) > Math.abs(dy)) { if(dx > 0) move2048('right'); else move2048('left'); } else { if(dy > 0) move2048('down'); else move2048('up'); } } }, {passive: false}); document.addEventListener('touchmove', e => { if(currentActiveGame === '2048' && e.target.closest('#board-2048')) { e.preventDefault(); } }, {passive: false});
 
     </script>
 </body>
