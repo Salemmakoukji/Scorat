@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Scorat Games Hub</title>
+    <title>Scorat - Games Hub</title>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -11,7 +11,7 @@
     <!-- Google Fonts & Material Symbols -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800;900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
 
     <script>
@@ -39,986 +39,1036 @@
                     colors: {
                         primary: 'var(--color-primary)',
                         'primary-light': 'var(--color-primary-light)',
-                        'primary-dark': 'var(--color-primary-dark)',
                         surface: { light: '#ffffff', dark: '#18181b' },
                         background: { light: '#f4f4f5', dark: '#09090b' }
                     },
-                    boxShadow: {
-                        'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.05)',
-                        'float': '0 10px 40px -10px rgba(0, 0, 0, 0.1)',
-                        'glow': '0 0 15px var(--color-primary-light)',
-                    }
+                    boxShadow: { 'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.05)' }
                 }
             }
         }
     </script>
 
     <style>
-        body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
-        ::-webkit-scrollbar { display: none; } * { scrollbar-width: none; }
-        .fade-in { animation: fadeIn 0.4s cubic-bezier(0.2, 1, 0.3, 1) forwards; }
-        @keyframes fadeIn { 0% { opacity: 0; transform: translateY(15px); } 100% { opacity: 1; transform: translateY(0); } }
-
-        .glass-header { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
-        .dark .glass-header { background: rgba(24, 24, 27, 0.85); }
-
-        /* Grids */
-        .dots-grid { display: grid; grid-template-columns: 12px 50px 12px 50px 12px 50px 12px 50px 12px; gap: 0; margin: 0 auto; width: max-content; }
-        .dot { background-color: #3f3f46; border-radius: 50%; }
-        .line-h { height: 12px; cursor: pointer; transition: background 0.2s; }
-        .line-v { width: 12px; cursor: pointer; transition: background 0.2s; }
-        .c4-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; background: var(--color-primary); padding: 8px; border-radius: 16px; width: max-content; margin: 0 auto; }
-        .c4-cell { width: 35px; height: 35px; background: rgba(255,255,255,0.2); border-radius: 50%; cursor: pointer; position: relative; overflow: hidden; }
-        .c4-piece { width: 100%; height: 100%; border-radius: 50%; transform: translateY(-100%); transition: transform 0.4s; }
-        .c4-piece.dropped { transform: translateY(0); }
-        .uttt-macro { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; background: #27272a; padding: 6px; border-radius: 12px; width: max-content; margin: 0 auto; }
-        .uttt-board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; background: #e4e4e7; padding: 2px; border-radius: 8px; position: relative; }
-        .dark .uttt-board { background: #3f3f46; }
-        .uttt-cell { width: 30px; height: 30px; background: white; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 900; cursor: pointer; }
-        .dark .uttt-cell { background: #18181b; color: white; }
-        .uttt-board.active { background: var(--color-primary); box-shadow: 0 0 10px rgba(59, 130, 246, 0.5); }
-        .uttt-board.won::after { content: attr(data-winner); position: absolute; inset: 0; background: rgba(255,255,255,0.9); display: flex; align-items: center; justify-content: center; font-size: 50px; font-weight: 900; z-index: 10; color: #18181b; }
+        body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; overscroll-behavior: none; }
+        ::-webkit-scrollbar { display: none; }
         
-        .reversi-grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 2px; background: #166534; padding: 4px; border-radius: 8px; width: max-content; margin: 0 auto; }
-        .reversi-cell { width: 35px; height: 35px; background: #22c55e; display: flex; align-items: center; justify-content: center; cursor: pointer; border-radius: 2px; }
-        .reversi-piece { width: 85%; height: 85%; border-radius: 50%; transition: all 0.3s; }
-        .reversi-piece.p1 { background: #18181b; box-shadow: inset -2px -2px 4px rgba(255,255,255,0.2); }
-        .reversi-piece.p2 { background: #f4f4f5; box-shadow: inset -2px -2px 4px rgba(0,0,0,0.2); }
-
-        .memory-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; width: max-content; margin: 0 auto; }
-        .memory-card { width: 60px; height: 60px; background: var(--color-primary); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 30px; cursor: pointer; transition: transform 0.3s; transform-style: preserve-3d; box-shadow: inset 0 -4px 0 rgba(0,0,0,0.2); }
-        .memory-card.flipped { background: white; transform: rotateY(180deg); border: 2px solid #e4e4e7; box-shadow: none; }
-        .memory-card.matched { visibility: hidden; }
-        .memory-content { transform: rotateY(180deg); display: none; }
-        .memory-card.flipped .memory-content { display: block; }
-
-        .wordle-grid { display: grid; grid-template-rows: repeat(6, 1fr); gap: 6px; width: max-content; margin: 0 auto; }
-        .wordle-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
-        .wordle-cell { width: 50px; height: 50px; border: 2px solid #e4e4e7; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 900; text-transform: uppercase; background: white; color: #18181b; transition: all 0.3s; }
-        .dark .wordle-cell { border-color: #3f3f46; background: #18181b; color: white; }
-        .wordle-cell.correct { background: #22c55e; border-color: #22c55e; color: white; }
-        .wordle-cell.present { background: #eab308; border-color: #eab308; color: white; }
-        .wordle-cell.absent { background: #71717a; border-color: #71717a; color: white; }
+        .page-enter { animation: fadeSlideUp 0.3s cubic-bezier(0.2, 1, 0.3, 1) forwards; }
+        @keyframes fadeSlideUp { 0% { opacity: 0; transform: translateY(15px); } 100% { opacity: 1; transform: translateY(0); } }
         
-        .wordle-key { flex: 1; height: 48px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; cursor: pointer; transition: background 0.2s; user-select: none; }
-        .wordle-key.wide { flex: 1.5; font-size: 12px; }
-
-        .grid-2048 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; background: #a1a1aa; padding: 8px; border-radius: 12px; width: max-content; margin: 0 auto; }
-        .cell-2048 { width: 60px; height: 60px; background: #e4e4e7; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 24px; color: #3f3f46; transition: all 0.1s; }
-        .val-2 { background: #f8fafc; } .val-4 { background: #f1f5f9; } .val-8 { background: #fed7aa; color: white; }
-        .val-16 { background: #fdba74; color: white; } .val-32 { background: #fb923c; color: white; } .val-64 { background: #f97316; color: white; }
-        .val-128 { background: #fde047; color: white; font-size: 20px;} .val-256 { background: #facc15; color: white; font-size: 20px;}
-        .val-512 { background: #eab308; color: white; font-size: 20px;} .val-1024 { background: #ca8a04; color: white; font-size: 16px;} .val-2048 { background: #a16207; color: white; font-size: 16px;}
-
-        .mine-grid { display: grid; gap: 2px; background: #71717a; padding: 4px; border-radius: 8px; width: max-content; margin: 0 auto; }
-        .mine-cell { width: 30px; height: 30px; background: #d4d4d8; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 16px; cursor: pointer; box-shadow: inset 2px 2px 0px #fff, inset -2px -2px 0px #a1a1aa; }
-        .mine-cell.revealed { background: #e4e4e7; box-shadow: none; border: 1px solid #a1a1aa; }
+        .ghost-pop { animation: popUp 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        @keyframes popUp { 0% { transform: scale(0) translateY(20px); opacity: 0; } 100% { transform: scale(1) translateY(0); opacity: 1; } }
         
-        .battleship-grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 2px; background: #0369a1; padding: 4px; border-radius: 8px; width: max-content; margin: 0 auto; }
-        .bs-cell { width: 35px; height: 35px; background: #0ea5e9; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-        .bs-cell:hover { background: #38bdf8; }
-        .bs-hit { background: #ef4444; } .bs-hit::after { content: '💥'; font-size: 20px; }
-        .bs-miss { background: #e0f2fe; } .bs-miss::after { content: '💧'; font-size: 14px; opacity: 0.5; }
+        /* Minesweeper */
+        .ms-cell { width: 100%; aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-weight: bold; border-radius: 6px; cursor: pointer; user-select: none; }
+        .ms-hidden { background-color: #e4e4e7; border: 2px solid #d4d4d8; }
+        .dark .ms-hidden { background-color: #27272a; border: 2px solid #3f3f46; }
+        .ms-revealed { background-color: #f4f4f5; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05); }
+        .dark .ms-revealed { background-color: #18181b; }
+        
+        /* Memory */
+        .memory-card { perspective: 1000px; aspect-ratio: 1; cursor: pointer; }
+        .memory-card-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.4s; transform-style: preserve-3d; }
+        .memory-card.flipped .memory-card-inner { transform: rotateY(180deg); }
+        .memory-card-front, .memory-card-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; display: flex; align-items: center; justify-content: center; border-radius: 12px; }
+        .memory-card-front { background-color: #e4e4e7; border: 2px solid #d4d4d8; }
+        .dark .memory-card-front { background-color: #27272a; border: 2px solid #3f3f46; }
+        .memory-card-back { background-color: #ffffff; transform: rotateY(180deg); box-shadow: inset 0 0 0 2px #d4d4d8; font-size: 2rem;}
+        .dark .memory-card-back { background-color: #18181b; box-shadow: inset 0 0 0 2px #3f3f46; }
+
+        /* Wordle */
+        .wdl-cell { transition: background-color 0.25s, border-color 0.25s; }
+        .wdl-flip { animation: wdlFlip 0.5s ease forwards; }
+        @keyframes wdlFlip { 0% { transform: rotateX(0deg); } 50% { transform: rotateX(90deg); } 100% { transform: rotateX(0deg); } }
+        .shake { animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both; }
+        @keyframes shake { 10%, 90% { transform: translate3d(-1px, 0, 0); } 20%, 80% { transform: translate3d(2px, 0, 0); } 30%, 50%, 70% { transform: translate3d(-4px, 0, 0); } 40%, 60% { transform: translate3d(4px, 0, 0); } }
+
+        /* Dots & Boxes */
+        .db-dot { width: 10px; height: 10px; background-color: #71717a; border-radius: 50%; z-index: 10; position: absolute; transform: translate(-50%, -50%); }
+        .db-line-h { height: 14px; position: absolute; transform: translateY(-50%); cursor: pointer; transition: background-color 0.2s; z-index: 5; }
+        .db-line-v { width: 14px; position: absolute; transform: translateX(-50%); cursor: pointer; transition: background-color 0.2s; z-index: 5; }
+        .db-box { position: absolute; transition: background-color 0.3s; z-index: 1; }
+        
+        .db-line-unclaimed { background-color: transparent; }
+        .db-line-unclaimed:hover { background-color: rgba(161, 161, 170, 0.3); }
+        
+        /* Hangman */
+        .hangman-letter { width: 2.5rem; height: 2.5rem; border-bottom: 3px solid; display: flex; align-items: flex-end; justify-content: center; font-size: 1.5rem; font-weight: bold; text-transform: uppercase; margin: 0 4px; }
+        
+        /* 2048 */
+        .tile-2048 { transition: transform 0.15s ease-in-out; }
+        .tile-spawn { animation: spawn2048 0.2s ease forwards; }
+        .tile-merge { animation: merge2048 0.2s ease forwards; }
+        @keyframes spawn2048 { 0% { transform: scale(0); } 100% { transform: scale(1); } }
+        @keyframes merge2048 { 0% { transform: scale(1); } 50% { transform: scale(1.15); } 100% { transform: scale(1); } }
     </style>
 </head>
-<body class="bg-background-light dark:bg-background-dark text-zinc-800 dark:text-zinc-200 min-h-screen flex flex-col transition-colors duration-300">
+<body class="bg-background-light text-zinc-900 dark:bg-background-dark dark:text-zinc-100 transition-colors duration-300 min-h-screen flex flex-col select-none">
 
-    <!-- Header -->
-    <header class="glass-header shadow-sm px-4 sm:px-6 py-4 flex items-center justify-between sticky top-0 z-50 border-b border-zinc-200/50 dark:border-zinc-800/50">
-        <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-primary text-white flex items-center justify-center shadow-glow">
-                <span class="material-symbols-outlined">stadia_controller</span>
-            </div>
-            <div>
-                <h1 class="text-xl font-black text-zinc-900 dark:text-white leading-tight">Scorat Games</h1>
-                <p class="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">Multiplayer Hub</p>
-            </div>
-        </div>
-        
-        <div class="flex items-center gap-2">
-            <!-- Go Back to Main Scorat App -->
-            <a href="index.html" class="hidden sm:flex items-center gap-1.5 px-3 py-2 rounded-xl bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors text-xs font-bold text-zinc-600 dark:text-zinc-300">
-                <span class="material-symbols-outlined text-[16px]">arrow_back</span> Main App
-            </a>
-            <a href="index.html" class="sm:hidden flex items-center justify-center w-10 h-10 rounded-xl bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors text-zinc-600 dark:text-zinc-300">
-                <span class="material-symbols-outlined text-[18px]">home</span>
-            </a>
-
-            <!-- User Profile Widget (Clickable) -->
-            <div id="user-profile-widget" onclick="window.showMyProfileModal()" class="flex items-center gap-3 ml-2 cursor-pointer hover:bg-zinc-100 dark:hover:bg-zinc-800/50 p-1.5 pr-3 rounded-full transition-colors border border-transparent hover:border-zinc-200 dark:hover:border-zinc-700 fade-in">
-                <img id="header-user-avatar" src="https://api.dicebear.com/7.x/initials/svg?seed=U" class="w-9 h-9 rounded-full border-2 border-primary object-cover shadow-sm bg-zinc-100">
-                <div class="text-left hidden sm:block">
-                    <div class="text-[11px] font-bold text-zinc-800 dark:text-zinc-200 leading-none mb-1" id="header-user-name">Loading...</div>
-                    <div class="text-[10px] text-primary font-bold flex items-center justify-start gap-1 leading-none"><span class="material-symbols-outlined text-[12px]">stars</span> <span id="header-user-points">0</span></div>
-                </div>
-            </div>
-            
-            <button id="btn-back-hub" onclick="window.goBackToHub()" class="hidden w-10 h-10 rounded-xl bg-rose-50 dark:bg-rose-900/20 flex items-center justify-center text-rose-500 hover:bg-rose-100 dark:hover:bg-rose-900/40 transition-colors ml-2 shadow-sm">
-                <span class="material-symbols-outlined">close</span>
+    <!-- Lobby View -->
+    <div id="lobby-view" class="max-w-md mx-auto w-full flex-1 flex flex-col pt-6 px-5 page-enter">
+        <header class="flex justify-between items-center mb-6">
+            <h1 class="text-2xl font-black tracking-tight flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary text-3xl">sports_esports</span>
+                Games Hub
+            </h1>
+            <button onclick="location.href='./index.html'" class="w-10 h-10 rounded-full flex items-center justify-center bg-surface-light dark:bg-surface-dark shadow-sm hover:scale-105 active:scale-95 transition-all text-zinc-500 border border-zinc-200 dark:border-zinc-800">
+                <span class="material-symbols-outlined text-[20px]">close</span>
             </button>
-        </div>
-    </header>
+        </header>
 
-    <main class="flex-1 p-4 md:p-6 overflow-y-auto relative">
-        
-        <!-- Onboarding Container -->
-        <div id="onboarding-container" class="fixed inset-0 z-[100] hidden bg-background-light dark:bg-background-dark flex flex-col items-center justify-center p-6">
-            <div class="w-full max-w-sm bg-surface-light dark:bg-surface-dark p-8 rounded-[32px] shadow-soft border border-zinc-100 dark:border-zinc-800 fade-in">
-                
-                <div id="view-create-profile" class="flex flex-col gap-4 items-center">
-                    <div class="w-16 h-16 rounded-2xl bg-primary-light text-primary flex items-center justify-center mb-2">
-                        <span class="material-symbols-outlined text-4xl">sports_esports</span>
-                    </div>
-                    <h2 class="text-2xl font-bold text-zinc-900 dark:text-white text-center">Join Scorat Games</h2>
-                    <p class="text-zinc-500 text-sm text-center mb-2">Create your profile to play online and save your stats.</p>
-                    
-                    <div class="relative mb-2">
-                        <div id="ob-avatar-preview" class="w-24 h-24 rounded-full bg-zinc-100 dark:bg-zinc-800 border-2 border-dashed border-zinc-300 dark:border-zinc-600 flex items-center justify-center overflow-hidden">
-                            <span class="material-symbols-outlined text-3xl text-zinc-400">add_a_photo</span>
-                        </div>
-                        <label class="absolute bottom-0 right-0 bg-primary text-white p-2 rounded-full cursor-pointer shadow-md hover:scale-105 transition-transform">
-                            <span class="material-symbols-outlined text-[16px]">edit</span>
-                            <input type="file" accept="image/*" class="hidden" onchange="window.previewOnboardingAvatar(event)">
-                        </label>
-                    </div>
-                    
-                    <input type="text" id="ob-player-name" placeholder="Enter Nickname" class="w-full bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 px-4 py-3.5 rounded-2xl font-medium focus:border-primary focus:ring-1 focus:ring-primary outline-none text-center select-text transition-colors text-zinc-900 dark:text-white">
-                    
-                    <button onclick="window.saveUserProfile()" class="w-full mt-2 bg-primary text-white py-3.5 rounded-2xl font-semibold shadow-md shadow-primary/20 hover:bg-blue-600 active:scale-95 transition-all">Start Playing</button>
-                    <button onclick="window.toggleRestoreView(true)" class="mt-3 text-sm text-zinc-500 font-medium hover:text-primary transition-colors">Already have an account? Restore ID</button>
+        <!-- Profile Card -->
+        <div class="bg-surface-light dark:bg-surface-dark p-4 rounded-3xl shadow-soft border border-zinc-200 dark:border-zinc-800 flex items-center gap-4 mb-8 relative overflow-hidden">
+            <div class="absolute inset-0 bg-primary/5"></div>
+            <div id="prof-avatar-container" class="w-14 h-14 rounded-2xl bg-zinc-200 dark:bg-zinc-800 border-2 border-zinc-300 dark:border-zinc-700 overflow-hidden flex items-center justify-center relative z-10">
+                <span class="material-symbols-outlined text-zinc-400">person</span>
+            </div>
+            <div class="flex-1 relative z-10">
+                <h2 id="prof-name" class="font-black text-lg text-zinc-900 dark:text-white">Loading...</h2>
+                <div class="flex items-center gap-1 mt-1 text-xs font-bold text-primary uppercase tracking-widest">
+                    <span class="material-symbols-outlined text-[14px]">military_tech</span>
+                    <span id="prof-points" class="mx-1 font-black">0</span> Wins
                 </div>
-
-                <div id="view-restore-profile" class="hidden flex-col gap-4 items-center">
-                    <div class="w-16 h-16 rounded-2xl bg-zinc-100 dark:bg-zinc-800 text-zinc-500 flex items-center justify-center mb-2">
-                        <span class="material-symbols-outlined text-4xl">manage_search</span>
-                    </div>
-                    <h2 class="text-2xl font-bold text-zinc-900 dark:text-white text-center">Restore Account</h2>
-                    <p class="text-zinc-500 text-sm text-center mb-4">Enter your unique ID to restore your stats.</p>
-                    
-                    <input type="text" id="restore-id-input" placeholder="Paste ID here..." class="w-full bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 px-4 py-4 rounded-2xl font-mono text-sm focus:border-primary outline-none text-center select-text transition-colors text-zinc-900 dark:text-white">
-                    
-                    <button onclick="window.restoreAccount()" class="w-full mt-2 bg-zinc-900 dark:bg-white dark:text-zinc-900 text-white py-3.5 rounded-2xl font-semibold shadow-md active:scale-95 transition-all">Confirm & Restore</button>
-                    <button onclick="window.toggleRestoreView(false)" class="mt-3 text-sm text-zinc-500 font-medium hover:text-primary transition-colors">Back to Create Account</button>
-                </div>
-
             </div>
         </div>
 
-        <!-- HUB View -->
-        <div id="hub-view" class="fade-in max-w-4xl mx-auto pb-10 hidden">
+        <div class="flex-1 overflow-y-auto pb-8 space-y-8 pr-1">
             
-            <h2 class="text-lg font-black text-zinc-800 dark:text-zinc-100 mb-4 flex items-center gap-2"><span class="material-symbols-outlined text-primary">swords</span> Multiplayer Matches (1v1)</h2>
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-8">
-                
-                <div onclick="window.openLobby('reversi')" class="bg-gradient-to-br from-surface-light to-zinc-50 dark:from-surface-dark dark:to-zinc-900/50 p-5 rounded-[32px] shadow-soft border border-zinc-100 dark:border-zinc-800/50 cursor-pointer hover:-translate-y-1 hover:shadow-md transition-all group">
-                    <div class="w-14 h-14 rounded-2xl bg-zinc-800 dark:bg-zinc-100 text-white dark:text-zinc-900 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform shadow-md"><span class="material-symbols-outlined">tonality</span></div>
-                    <h3 class="text-lg font-bold mb-1">Reversi / Othello</h3>
-                    <p class="text-xs text-zinc-500 font-medium">Trap opponent pieces to flip them to your color.</p>
-                </div>
-
-                <div onclick="window.openLobby('memory')" class="bg-gradient-to-br from-surface-light to-zinc-50 dark:from-surface-dark dark:to-zinc-900/50 p-5 rounded-[32px] shadow-soft border border-zinc-100 dark:border-zinc-800/50 cursor-pointer hover:-translate-y-1 hover:shadow-md transition-all group">
-                    <div class="w-14 h-14 rounded-2xl bg-purple-500 text-white flex items-center justify-center mb-3 group-hover:scale-110 transition-transform shadow-md shadow-purple-500/30"><span class="material-symbols-outlined">style</span></div>
-                    <h3 class="text-lg font-bold mb-1">Memory Duel</h3>
-                    <p class="text-xs text-zinc-500 font-medium">Flip cards to find pairs. Highest matched pairs wins.</p>
-                </div>
-
-                <div onclick="window.openLobby('battleship')" class="bg-gradient-to-br from-surface-light to-zinc-50 dark:from-surface-dark dark:to-zinc-900/50 p-5 rounded-[32px] shadow-soft border border-zinc-100 dark:border-zinc-800/50 cursor-pointer hover:-translate-y-1 hover:shadow-md transition-all group">
-                    <div class="w-14 h-14 rounded-2xl bg-cyan-500 text-white flex items-center justify-center mb-3 group-hover:scale-110 transition-transform shadow-md shadow-cyan-500/30"><span class="material-symbols-outlined">sailing</span></div>
-                    <h3 class="text-lg font-bold mb-1">Fleet Strike</h3>
-                    <p class="text-xs text-zinc-500 font-medium">Bombard the grid to find all 5 hidden enemy ships first!</p>
-                </div>
-
-                <div onclick="window.openLobby('connect4')" class="bg-gradient-to-br from-surface-light to-zinc-50 dark:from-surface-dark dark:to-zinc-900/50 p-5 rounded-[32px] shadow-soft border border-zinc-100 dark:border-zinc-800/50 cursor-pointer hover:-translate-y-1 hover:shadow-md transition-all group">
-                    <div class="w-14 h-14 rounded-2xl bg-blue-500 text-white flex items-center justify-center mb-3 group-hover:scale-110 transition-transform shadow-md shadow-blue-500/30"><span class="material-symbols-outlined">blur_on</span></div>
-                    <h3 class="text-lg font-bold mb-1">Connect 4</h3>
-                    <p class="text-xs text-zinc-500 font-medium">Drop discs to form a line of 4 before your opponent.</p>
-                </div>
-
-                <div onclick="window.openLobby('uttt')" class="bg-gradient-to-br from-surface-light to-zinc-50 dark:from-surface-dark dark:to-zinc-900/50 p-5 rounded-[32px] shadow-soft border border-zinc-100 dark:border-zinc-800/50 cursor-pointer hover:-translate-y-1 hover:shadow-md transition-all group">
-                    <div class="w-14 h-14 rounded-2xl bg-rose-500 text-white flex items-center justify-center mb-3 group-hover:scale-110 transition-transform shadow-md shadow-rose-500/30"><span class="material-symbols-outlined">close</span></div>
-                    <h3 class="text-lg font-bold mb-1">Ultimate X-O</h3>
-                    <p class="text-xs text-zinc-500 font-medium">A massive grid where your move dictates the next board.</p>
-                </div>
-
-                <div onclick="window.openLobby('dots')" class="bg-gradient-to-br from-surface-light to-zinc-50 dark:from-surface-dark dark:to-zinc-900/50 p-5 rounded-[32px] shadow-soft border border-zinc-100 dark:border-zinc-800/50 cursor-pointer hover:-translate-y-1 hover:shadow-md transition-all group">
-                    <div class="w-14 h-14 rounded-2xl bg-indigo-500 text-white flex items-center justify-center mb-3 group-hover:scale-110 transition-transform shadow-md shadow-indigo-500/30"><span class="material-symbols-outlined">grid_on</span></div>
-                    <h3 class="text-lg font-bold mb-1">Dots & Boxes</h3>
-                    <p class="text-xs text-zinc-500 font-medium">Connect dots to claim boxes and score points.</p>
+            <!-- Solo Games -->
+            <div>
+                <h2 class="text-xs font-bold text-zinc-500 dark:text-zinc-400 mb-3 uppercase tracking-widest flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">person</span> Solo Games</h2>
+                <div class="flex flex-col gap-3">
+                    <button onclick="openSoloGame('wordle')" class="bg-surface-light dark:bg-surface-dark p-4 rounded-3xl shadow-soft border border-zinc-200 dark:border-zinc-800 flex items-center gap-4 hover:-translate-y-1 transition-all text-left group">
+                        <div class="w-12 h-12 rounded-2xl bg-green-100 text-green-600 flex items-center justify-center group-hover:scale-110 transition-transform"><span class="material-symbols-outlined text-2xl">spellcheck</span></div>
+                        <div class="flex-1"><h3 class="font-black text-md">Wordle</h3><p class="text-[10px] text-zinc-500 mt-1">Guess the 5-letter word</p></div>
+                    </button>
+                    <button onclick="openSoloGame('codebreaker')" class="bg-surface-light dark:bg-surface-dark p-4 rounded-3xl shadow-soft border border-zinc-200 dark:border-zinc-800 flex items-center gap-4 hover:-translate-y-1 transition-all text-left group">
+                        <div class="w-12 h-12 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center group-hover:scale-110 transition-transform"><span class="material-symbols-outlined text-2xl">password</span></div>
+                        <div class="flex-1"><h3 class="font-black text-md">Code Breaker</h3><p class="text-[10px] text-zinc-500 mt-1">Crack the numeric PIN</p></div>
+                    </button>
+                    <button onclick="openSoloGame('minesweeper')" class="bg-surface-light dark:bg-surface-dark p-4 rounded-3xl shadow-soft border border-zinc-200 dark:border-zinc-800 flex items-center gap-4 hover:-translate-y-1 transition-all text-left group">
+                        <div class="w-12 h-12 rounded-2xl bg-orange-100 text-orange-500 flex items-center justify-center group-hover:scale-110 transition-transform"><span class="material-symbols-outlined text-2xl">bomb</span></div>
+                        <div class="flex-1"><h3 class="font-black text-md">Minesweeper</h3><p class="text-[10px] text-zinc-500 mt-1">Classic bomb defusal</p></div>
+                    </button>
+                    <button onclick="openSoloGame('memory')" class="bg-surface-light dark:bg-surface-dark p-4 rounded-3xl shadow-soft border border-zinc-200 dark:border-zinc-800 flex items-center gap-4 hover:-translate-y-1 transition-all text-left group">
+                        <div class="w-12 h-12 rounded-2xl bg-blue-100 text-blue-500 flex items-center justify-center group-hover:scale-110 transition-transform"><span class="material-symbols-outlined text-2xl">dashboard</span></div>
+                        <div class="flex-1"><h3 class="font-black text-md">Memory Match</h3><p class="text-[10px] text-zinc-500 mt-1">Train your brain</p></div>
+                    </button>
+                    <button onclick="openSoloGame('2048')" class="bg-surface-light dark:bg-surface-dark p-4 rounded-3xl shadow-soft border border-zinc-200 dark:border-zinc-800 flex items-center gap-4 hover:-translate-y-1 transition-all text-left group">
+                        <div class="w-12 h-12 rounded-2xl bg-yellow-100 text-yellow-600 flex items-center justify-center group-hover:scale-110 transition-transform"><span class="material-symbols-outlined text-2xl">grid_view</span></div>
+                        <div class="flex-1"><h3 class="font-black text-md">2048</h3><p class="text-[10px] text-zinc-500 mt-1">Swipe to merge tiles</p></div>
+                    </button>
                 </div>
             </div>
 
-            <h2 class="text-lg font-black text-zinc-800 dark:text-zinc-100 mb-4 flex items-center gap-2 mt-8"><span class="material-symbols-outlined text-emerald-500">extension</span> Solo Puzzles</h2>
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                
-                <div onclick="window.initSoloGame('2048')" class="bg-surface-light dark:bg-surface-dark p-4 rounded-[32px] shadow-soft border border-zinc-100 dark:border-zinc-800/50 cursor-pointer hover:-translate-y-1 hover:shadow-md transition-all group text-center">
-                    <div class="w-12 h-12 mx-auto rounded-2xl bg-orange-500 text-white flex items-center justify-center mb-2 group-hover:scale-110 transition-transform shadow-md shadow-orange-500/30"><span class="material-symbols-outlined">apps</span></div>
-                    <h3 class="font-bold text-sm">2048</h3>
-                </div>
-
-                <div onclick="window.initSoloGame('wordle')" class="bg-surface-light dark:bg-surface-dark p-4 rounded-[32px] shadow-soft border border-zinc-100 dark:border-zinc-800/50 cursor-pointer hover:-translate-y-1 hover:shadow-md transition-all group text-center">
-                    <div class="w-12 h-12 mx-auto rounded-2xl bg-green-500 text-white flex items-center justify-center mb-2 group-hover:scale-110 transition-transform shadow-md shadow-green-500/30"><span class="material-symbols-outlined">font_download</span></div>
-                    <h3 class="font-bold text-sm">Wordle</h3>
-                </div>
-
-                <div onclick="window.initSoloGame('minesweeper')" class="bg-surface-light dark:bg-surface-dark p-4 rounded-[32px] shadow-soft border border-zinc-100 dark:border-zinc-800/50 cursor-pointer hover:-translate-y-1 hover:shadow-md transition-all group text-center">
-                    <div class="w-12 h-12 mx-auto rounded-2xl bg-red-500 text-white flex items-center justify-center mb-2 group-hover:scale-110 transition-transform shadow-md shadow-red-500/30"><span class="material-symbols-outlined">brightness_high</span></div>
-                    <h3 class="font-bold text-sm">Minesweeper</h3>
-                </div>
-
-                <div onclick="window.initSoloGame('mastermind')" class="bg-surface-light dark:bg-surface-dark p-4 rounded-[32px] shadow-soft border border-zinc-100 dark:border-zinc-800/50 cursor-pointer hover:-translate-y-1 hover:shadow-md transition-all group text-center">
-                    <div class="w-12 h-12 mx-auto rounded-2xl bg-emerald-500 text-white flex items-center justify-center mb-2 group-hover:scale-110 transition-transform shadow-md shadow-emerald-500/30"><span class="material-symbols-outlined">lock_open</span></div>
-                    <h3 class="font-bold text-sm">Code Breaker</h3>
-                </div>
-
-            </div>
-        </div>
-
-        <!-- Lobby View -->
-        <div id="lobby-view" class="hidden fade-in max-w-sm mx-auto mt-10">
-            <h2 id="lobby-title" class="text-3xl font-black text-center mb-8 tracking-tight"></h2>
-            <div class="bg-surface-light dark:bg-surface-dark p-8 rounded-[32px] shadow-soft border border-zinc-100 dark:border-zinc-800/50 mb-6 text-center">
-                <span class="material-symbols-outlined text-5xl text-primary mb-3">cell_tower</span>
-                <h3 class="font-bold text-lg mb-6">Host a Match</h3>
-                <button onclick="window.hostMatch()" class="w-full bg-primary text-white py-3.5 rounded-2xl font-bold shadow-md hover:bg-blue-600 active:scale-95 transition-all text-sm">Create Room</button>
-            </div>
-            
-            <div class="flex items-center gap-4 my-6"><div class="flex-1 h-px bg-zinc-200 dark:bg-zinc-800"></div><span class="text-xs font-bold text-zinc-400 uppercase">OR</span><div class="flex-1 h-px bg-zinc-200 dark:bg-zinc-800"></div></div>
-            
-            <div class="bg-surface-light dark:bg-surface-dark p-8 rounded-[32px] shadow-soft border border-zinc-100 dark:border-zinc-800/50 text-center">
-                <span class="material-symbols-outlined text-5xl text-emerald-500 mb-3">login</span>
-                <h3 class="font-bold text-lg mb-6">Join a Friend</h3>
-                <input type="text" id="join-code" placeholder="Enter 5-Letter Code" class="w-full bg-background-light dark:bg-background-dark border-none text-center px-4 py-4 rounded-2xl font-mono font-black tracking-widest uppercase focus:ring-2 focus:ring-primary outline-none mb-4 text-zinc-900 dark:text-white">
-                <button onclick="window.joinMatch()" class="w-full bg-zinc-900 dark:bg-white dark:text-zinc-900 text-white py-3.5 rounded-2xl font-bold shadow-md active:scale-95 transition-all text-sm">Join Room</button>
-            </div>
-        </div>
-
-        <!-- Waiting View -->
-        <div id="waiting-view" class="hidden fade-in max-w-sm mx-auto mt-10 text-center">
-            <div class="bg-surface-light dark:bg-surface-dark p-8 rounded-[32px] shadow-soft border border-zinc-100 dark:border-zinc-800/50">
-                <div class="w-20 h-20 rounded-full bg-primary-light dark:bg-primary/20 text-primary flex items-center justify-center mx-auto mb-6 animate-pulse"><span class="material-symbols-outlined text-4xl">hourglass_empty</span></div>
-                <h2 class="text-xl font-bold mb-2">Waiting for opponent...</h2>
-                <p class="text-sm text-zinc-500 mb-6">Share this code with your friend:</p>
-                <div class="bg-background-light dark:bg-background-dark py-6 rounded-2xl border border-zinc-200 dark:border-zinc-700 mb-4 cursor-pointer hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors" onclick="window.copyRoomCode()">
-                    <span id="display-room-code" class="text-5xl font-black font-mono tracking-widest text-primary"></span>
-                    <p class="text-[10px] text-zinc-400 mt-3 font-bold uppercase tracking-widest">Tap to Copy</p>
+            <!-- Online Word Games -->
+            <div>
+                <h2 class="text-xs font-bold text-zinc-500 dark:text-zinc-400 mb-3 uppercase tracking-widest flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">menu_book</span> Word Games (Online)</h2>
+                <div class="flex flex-col gap-3">
+                    <button onclick="openRoomModal('wordchain')" class="bg-surface-light dark:bg-surface-dark p-4 rounded-3xl shadow-soft border border-zinc-200 dark:border-zinc-800 flex items-center gap-4 hover:-translate-y-1 transition-all text-left group">
+                        <div class="w-12 h-12 rounded-2xl bg-indigo-100 text-indigo-500 flex items-center justify-center group-hover:scale-110 transition-transform"><span class="material-symbols-outlined text-2xl">link</span></div>
+                        <div class="flex-1"><h3 class="font-black text-md">Word Chain</h3><p class="text-[10px] text-zinc-500 mt-1">Start with the last letter</p></div>
+                    </button>
+                    <button onclick="openRoomModal('hangman')" class="bg-surface-light dark:bg-surface-dark p-4 rounded-3xl shadow-soft border border-zinc-200 dark:border-zinc-800 flex items-center gap-4 hover:-translate-y-1 transition-all text-left group">
+                        <div class="w-12 h-12 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center group-hover:scale-110 transition-transform"><span class="material-symbols-outlined text-2xl">quiz</span></div>
+                        <div class="flex-1"><h3 class="font-black text-md">Smart Hangman</h3><p class="text-[10px] text-zinc-500 mt-1">Dictionary-powered hints</p></div>
+                    </button>
                 </div>
             </div>
-        </div>
 
-        <!-- Game View -->
-        <div id="game-view" class="hidden fade-in pb-10 max-w-2xl mx-auto"></div>
+            <!-- Online Classic Games -->
+            <div>
+                <h2 class="text-xs font-bold text-zinc-500 dark:text-zinc-400 mb-3 uppercase tracking-widest flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">wifi</span> Classic & Board (Online)</h2>
+                <div class="flex flex-col gap-3">
+                    <button onclick="openRoomModal('connect4')" class="bg-surface-light dark:bg-surface-dark p-4 rounded-3xl shadow-soft border border-zinc-200 dark:border-zinc-800 flex items-center gap-4 hover:-translate-y-1 transition-all text-left group">
+                        <div class="w-12 h-12 rounded-2xl bg-yellow-100 text-yellow-600 flex items-center justify-center group-hover:scale-110 transition-transform"><span class="material-symbols-outlined text-2xl">blur_on</span></div>
+                        <div class="flex-1"><h3 class="font-black text-md">Connect 4</h3><p class="text-[10px] text-zinc-500 mt-1">Connect 4 tokens to win</p></div>
+                    </button>
+                    <button onclick="openRoomModal('dotsboxes')" class="bg-surface-light dark:bg-surface-dark p-4 rounded-3xl shadow-soft border border-zinc-200 dark:border-zinc-800 flex items-center gap-4 hover:-translate-y-1 transition-all text-left group">
+                        <div class="w-12 h-12 rounded-2xl bg-fuchsia-100 text-fuchsia-600 flex items-center justify-center group-hover:scale-110 transition-transform"><span class="material-symbols-outlined text-2xl">border_all</span></div>
+                        <div class="flex-1"><h3 class="font-black text-md">Dots & Boxes</h3><p class="text-[10px] text-zinc-500 mt-1">Claim the most boxes</p></div>
+                    </button>
+                    <button onclick="openRoomModal('tictactoe')" class="bg-surface-light dark:bg-surface-dark p-4 rounded-3xl shadow-soft border border-zinc-200 dark:border-zinc-800 flex items-center gap-4 hover:-translate-y-1 transition-all text-left group">
+                        <div class="w-12 h-12 rounded-2xl bg-teal-100 text-teal-600 flex items-center justify-center group-hover:scale-110 transition-transform"><span class="material-symbols-outlined text-2xl">grid_3x3</span></div>
+                        <div class="flex-1"><h3 class="font-black text-md">Tic-Tac-Toe</h3><p class="text-[10px] text-zinc-500 mt-1">Classic strategy</p></div>
+                    </button>
+                    <button onclick="openRoomModal('tapwar')" class="bg-surface-light dark:bg-surface-dark p-4 rounded-3xl shadow-soft border border-zinc-200 dark:border-zinc-800 flex items-center gap-4 hover:-translate-y-1 transition-all text-left group">
+                        <div class="w-12 h-12 rounded-2xl bg-red-100 text-red-500 flex items-center justify-center group-hover:scale-110 transition-transform"><span class="material-symbols-outlined text-2xl">touch_app</span></div>
+                        <div class="flex-1"><h3 class="font-black text-md">Tap War</h3><p class="text-[10px] text-zinc-500 mt-1">Tap faster than opponent</p></div>
+                    </button>
+                </div>
+            </div>
 
-    </main>
-
-    <!-- Modals Container -->
-    <div id="modal-container" class="fixed inset-0 z-[100] hidden bg-zinc-900/40 backdrop-blur-sm flex items-end sm:items-center justify-center pb-0 sm:pb-0">
-        <div id="modal-content" class="bg-surface-light dark:bg-surface-dark w-full max-w-sm rounded-t-[32px] sm:rounded-[32px] shadow-2xl transform transition-transform translate-y-full max-h-[90vh] flex flex-col p-6 items-center text-center">
-            <div class="w-12 h-1.5 bg-zinc-300 dark:bg-zinc-700 rounded-full mx-auto mb-4 sm:hidden"></div>
-            <div id="modal-inner" class="w-full"></div>
-            <button onclick="window.closeModal()" class="mt-6 w-full bg-zinc-100 dark:bg-zinc-800 py-3.5 rounded-2xl font-bold text-zinc-600 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors">Close</button>
         </div>
     </div>
 
-    <div id="toast-container" class="fixed top-6 left-1/2 -translate-x-1/2 z-[200] flex flex-col gap-2 w-[calc(100%-2.5rem)] max-w-sm pointer-events-none transition-all"></div>
+    <!-- Room Modal (Create/Join) -->
+    <div id="room-modal" class="fixed inset-0 z-50 hidden bg-zinc-900/60 backdrop-blur-sm flex items-center justify-center px-4">
+        <div class="bg-surface-light dark:bg-surface-dark w-full max-w-sm rounded-[32px] shadow-2xl p-6 transform scale-95 opacity-0 transition-all duration-200 border border-zinc-200 dark:border-zinc-800" id="room-modal-content">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-bold" id="room-modal-title">Game Room</h2>
+                <button onclick="closeRoomModal()" class="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200"><span class="material-symbols-outlined">close</span></button>
+            </div>
+            
+            <div class="flex flex-col gap-4">
+                <button onclick="createRoom()" class="w-full bg-primary text-white py-4 rounded-2xl font-bold text-lg shadow-md active:scale-95 transition-all">Create Room (Host)</button>
+                <div class="text-center text-zinc-400 text-sm font-bold">OR</div>
+                <input type="number" id="room-code-input" placeholder="Enter PIN (4 Digits)" class="w-full bg-background-light dark:bg-background-dark border border-zinc-200 dark:border-zinc-800 px-4 py-4 rounded-2xl text-center text-xl font-black outline-none focus:ring-2 focus:ring-primary tracking-[0.5em]">
+                <button onclick="joinRoom()" class="w-full bg-zinc-200 dark:bg-zinc-800 text-zinc-900 dark:text-white py-4 rounded-2xl font-bold text-lg shadow-md active:scale-95 transition-all hover:bg-zinc-300 dark:hover:bg-zinc-700">Join Room</button>
+            </div>
+            <div id="room-status" class="mt-4 text-center text-sm font-bold hidden text-zinc-500"></div>
+        </div>
+    </div>
 
+    <!-- Waiting Room -->
+    <div id="waiting-room" class="fixed inset-0 bg-background-light dark:bg-background-dark z-50 hidden flex-col items-center justify-center px-4">
+        <div class="bg-surface-light dark:bg-surface-dark p-8 rounded-[32px] shadow-soft text-center max-w-xs w-full border border-zinc-200 dark:border-zinc-800">
+            <span class="material-symbols-outlined text-5xl text-primary mb-4 animate-spin">sync</span>
+            <h2 class="text-xl font-black mb-2">Waiting Room</h2>
+            <p class="text-sm text-zinc-500 mb-6">Share this code with your friend</p>
+            <div class="bg-background-light dark:bg-background-dark py-4 rounded-2xl mb-6 border border-zinc-200 dark:border-zinc-800">
+                <span id="display-room-code" class="text-4xl font-black tracking-[0.25em] text-primary">----</span>
+            </div>
+            <button onclick="exitMultiplayerGame()" class="text-rose-500 font-bold active:scale-95 transition-transform hover:underline">Cancel & Close Room</button>
+        </div>
+    </div>
+
+    <!-- Unified Game Container -->
+    <div id="game-container" class="hidden fixed inset-0 bg-background-light dark:bg-background-dark z-40 flex flex-col">
+        
+        <!-- Unified Header -->
+        <header class="p-4 flex justify-between items-center bg-surface-light dark:bg-surface-dark border-b border-zinc-200 dark:border-zinc-800 shadow-sm z-50">
+            <h2 class="font-black text-lg flex items-center gap-2 text-primary">
+                <span class="material-symbols-outlined" id="game-icon">sports_esports</span>
+                <span id="game-title">Game</span>
+            </h2>
+            <div class="flex gap-2">
+                <button onclick="restartCurrentGame()" class="w-10 h-10 bg-zinc-100 dark:bg-zinc-800 rounded-full flex items-center justify-center active:scale-95 border border-zinc-200 dark:border-zinc-700 transition-colors hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-900 dark:text-white" title="Restart">
+                    <span class="material-symbols-outlined text-[20px]">refresh</span>
+                </button>
+                <button onclick="exitCurrentGame()" class="w-10 h-10 bg-zinc-100 dark:bg-zinc-800 rounded-full flex items-center justify-center active:scale-95 border border-zinc-200 dark:border-zinc-700 transition-colors hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-900 dark:text-white" title="Exit">
+                    <span class="material-symbols-outlined text-[20px]">close</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Game Areas -->
+        <div id="game-area" class="flex-1 relative flex flex-col overflow-hidden">
+            
+            <!-- 2048 -->
+            <div id="area-2048" class="hidden flex-1 flex-col items-center justify-center px-4 py-6 w-full">
+                <div class="w-full max-w-sm mb-6 flex justify-between items-center bg-surface-light dark:bg-surface-dark p-4 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm">
+                    <div class="text-zinc-500 font-bold tracking-widest text-sm">SCORE</div>
+                    <div id="score-2048" class="text-3xl font-black text-primary">0</div>
+                </div>
+                
+                <div id="board-2048" class="bg-zinc-300 dark:bg-zinc-700 p-2.5 rounded-2xl w-full max-w-sm aspect-square relative touch-none shadow-inner">
+                    <div class="grid grid-cols-4 grid-rows-4 gap-2.5 w-full h-full" id="grid-bg-2048">
+                        <!-- Background empty cells -->
+                    </div>
+                    <div id="tiles-2048" class="absolute inset-0 p-2.5 pointer-events-none">
+                        <!-- Tiles are dynamically positioned here -->
+                    </div>
+                </div>
+                <p class="mt-8 text-zinc-500 text-sm font-bold animate-pulse text-center">Swipe anywhere or use Arrow Keys!</p>
+            </div>
+
+            <!-- 0.1 Wordle (API Integrated) -->
+            <div id="area-wordle" class="hidden flex-1 flex-col items-center justify-center px-4 py-6 relative">
+                <div id="wdl-loading" class="absolute top-4 left-1/2 -translate-x-1/2 bg-zinc-900 text-white px-4 py-2 rounded-full text-xs font-bold shadow-lg hidden items-center gap-2 z-10"><span class="material-symbols-outlined animate-spin text-[16px]">sync</span> Checking Dictionary...</div>
+                <div id="wdl-grid" class="grid grid-rows-6 gap-1.5 mb-6">
+                    <!-- JS generated -->
+                </div>
+                <div id="wdl-kb" class="flex flex-col gap-1.5 w-full max-w-sm mx-auto">
+                    <!-- JS generated -->
+                </div>
+            </div>
+
+            <!-- 0.2 Code Breaker (Numbers) -->
+            <div id="area-codebreaker" class="hidden flex-1 flex-col items-center px-4 py-4 w-full max-w-sm mx-auto">
+                <div class="w-full flex justify-between items-center bg-surface-light dark:bg-surface-dark p-4 rounded-2xl shadow-sm border border-zinc-200 dark:border-zinc-800 mb-4">
+                    <div class="flex gap-2" id="cb-current-guess">
+                        <!-- 4 slots -->
+                    </div>
+                    <button onclick="cbSubmit()" id="cb-submit-btn" class="bg-primary text-white p-3 rounded-xl shadow-md disabled:opacity-50 disabled:bg-zinc-400">
+                        <span class="material-symbols-outlined">done</span>
+                    </button>
+                </div>
+                
+                <div class="grid grid-cols-5 gap-2 mb-4 w-full" id="cb-picker">
+                    <!-- Num buttons -->
+                </div>
+
+                <div class="flex justify-between w-full text-[10px] font-bold text-zinc-500 uppercase px-2 mb-2">
+                    <span>Your Guesses</span>
+                    <span>Result</span>
+                </div>
+                <div id="cb-history" class="w-full flex-1 overflow-y-auto bg-surface-light dark:bg-surface-dark border border-zinc-200 dark:border-zinc-800 rounded-2xl p-3 flex flex-col gap-3"></div>
+            </div>
+
+            <!-- 1. Minesweeper -->
+            <div id="area-minesweeper" class="hidden flex-1 flex-col items-center justify-center px-4">
+                <div id="ms-grid" class="grid grid-cols-9 gap-1 w-full max-w-sm bg-surface-light dark:bg-surface-dark p-2 rounded-2xl shadow-soft border border-zinc-200 dark:border-zinc-800"></div>
+            </div>
+
+            <!-- 2. Memory -->
+            <div id="area-memory" class="hidden flex-1 flex-col items-center justify-center px-4">
+                <div class="text-center mb-6"><div class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Moves</div><div id="memory-moves" class="text-2xl font-black text-primary">0</div></div>
+                <div id="memory-grid" class="grid grid-cols-4 gap-3 w-full max-w-sm aspect-square relative"></div>
+            </div>
+
+            <!-- 3. Connect 4 (Online) -->
+            <div id="area-connect4" class="hidden flex-1 flex-col items-center justify-center px-4">
+                <div class="w-full max-w-sm mb-4 flex justify-between items-center bg-surface-light dark:bg-surface-dark p-4 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm">
+                    <div class="flex items-center gap-2"><div class="w-4 h-4 rounded-full bg-blue-500"></div><span class="font-bold text-sm">Player 1</span></div>
+                    <div id="c4-status" class="font-black text-primary">Waiting...</div>
+                    <div class="flex items-center gap-2"><span class="font-bold text-sm">Player 2</span><div class="w-4 h-4 rounded-full bg-red-500"></div></div>
+                </div>
+                <div class="bg-blue-600 dark:bg-blue-800 p-3 rounded-2xl shadow-lg border-b-8 border-blue-800 dark:border-blue-950">
+                    <div id="c4-grid" class="grid grid-cols-7 gap-2 bg-blue-700 dark:bg-blue-900 p-2 rounded-xl">
+                        <!-- 42 Cells -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. Dots & Boxes (Online) -->
+            <div id="area-dotsboxes" class="hidden flex-1 flex-col items-center justify-center px-4 w-full">
+                <div class="w-full max-w-sm mb-8 flex justify-between items-center bg-surface-light dark:bg-surface-dark p-4 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm">
+                    <div class="text-center"><span class="text-xs font-bold text-blue-500 uppercase">Player 1</span><div id="db-s1" class="text-2xl font-black">0</div></div>
+                    <div id="db-status" class="font-black text-primary px-4 py-1 bg-primary/10 rounded-full text-sm">Wait...</div>
+                    <div class="text-center"><span class="text-xs font-bold text-red-500 uppercase">Player 2</span><div id="db-s2" class="text-2xl font-black">0</div></div>
+                </div>
+                
+                <!-- The Board: 4x4 Dots = 3x3 Boxes -->
+                <div id="db-board-container" class="relative bg-surface-light dark:bg-surface-dark p-6 rounded-3xl shadow-soft border border-zinc-200 dark:border-zinc-800">
+                    <div id="db-grid" class="relative" style="width: 240px; height: 240px;">
+                        <!-- Generated via JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5. Tic Tac Toe (Online) -->
+            <div id="area-tictactoe" class="hidden flex-1 flex-col items-center justify-center px-4">
+                <h3 id="ttt-status" class="text-xl font-bold mb-8 text-primary border border-zinc-200 dark:border-zinc-700 bg-surface-light dark:bg-surface-dark px-6 py-2 rounded-full shadow-sm">Waiting...</h3>
+                <div id="ttt-grid" class="grid grid-cols-3 gap-2 w-full max-w-xs aspect-square bg-zinc-300 dark:bg-zinc-700 p-2 rounded-2xl"></div>
+            </div>
+
+            <!-- 6. Tap War (Online) -->
+            <div id="area-tapwar" class="hidden flex-1 flex-col">
+                <div class="flex-1 relative flex flex-col items-center justify-center px-8 w-full">
+                    <div class="absolute left-0 w-3 h-full bg-zinc-200 dark:bg-zinc-800 flex flex-col overflow-hidden border-r border-zinc-300 dark:border-zinc-700">
+                        <div id="tw-opponent-bar" class="w-full bg-rose-500 transition-all duration-100" style="height: 50%;"></div>
+                        <div id="tw-my-bar" class="w-full bg-primary transition-all duration-100" style="height: 50%;"></div>
+                    </div>
+                    <div class="text-center mb-12 relative z-10 w-full">
+                        <h2 class="text-xl font-bold text-zinc-500 mb-2">Opponent</h2>
+                        <div class="text-6xl font-black text-rose-500" id="tw-opponent-score">50</div>
+                    </div>
+                    <div class="w-full max-w-[200px] h-0.5 bg-zinc-200 dark:bg-zinc-800 my-4 rounded-full relative z-10"></div>
+                    <div class="text-center mb-8 relative z-10 w-full">
+                        <div class="text-6xl font-black mb-2 text-primary" id="tw-my-score">50</div>
+                        <h2 class="text-xl font-bold text-zinc-500">You</h2>
+                    </div>
+                    <button onclick="multiTapClick()" class="w-full aspect-square max-w-[200px] rounded-full bg-primary text-white font-black text-4xl shadow-lg active:scale-95 transition-transform flex items-center justify-center relative z-10">
+                        TAP!!
+                    </button>
+                </div>
+            </div>
+
+            <!-- 7. Word Chain (Online) -->
+            <div id="area-wordchain" class="hidden flex-1 flex-col bg-surface-light dark:bg-surface-dark p-4">
+                <div class="flex justify-between items-center bg-background-light dark:bg-background-dark p-4 rounded-2xl border border-zinc-200 dark:border-zinc-800 mb-4 shadow-sm">
+                    <div class="text-center"><span class="text-[10px] text-zinc-500 font-bold uppercase block">Turn</span><span id="wc-turn-indicator" class="font-black text-lg text-primary">...</span></div>
+                    <div class="text-center"><span class="text-[10px] text-zinc-500 font-bold uppercase block">Required Letter</span><span id="wc-required-letter" class="font-black text-2xl uppercase border-b-2 border-primary text-primary">?</span></div>
+                </div>
+                <div id="wc-history" class="flex-1 overflow-y-auto bg-background-light dark:bg-background-dark rounded-2xl border border-zinc-200 dark:border-zinc-800 p-4 flex flex-col gap-2 mb-4"></div>
+                <div class="flex gap-2 relative">
+                    <input type="text" id="wc-input" placeholder="Type an English word..." class="flex-1 bg-background-light dark:bg-background-dark border border-zinc-200 dark:border-zinc-800 rounded-2xl px-4 font-bold outline-none focus:ring-2 focus:ring-primary uppercase" onkeypress="if(event.key==='Enter') submitWordChain()">
+                    <button onclick="submitWordChain()" class="w-14 h-14 bg-primary text-white rounded-2xl flex items-center justify-center shadow-md active:scale-95"><span class="material-symbols-outlined">send</span></button>
+                    <div id="wc-loading" class="absolute inset-0 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-sm z-10 hidden items-center justify-center rounded-2xl font-bold text-sm text-primary">Checking Dictionary...</div>
+                </div>
+            </div>
+
+            <!-- 8. Smart Hangman (Online) -->
+            <div id="area-hangman" class="hidden flex-1 flex-col bg-surface-light dark:bg-surface-dark p-4">
+                <div id="hm-host-view" class="hidden flex-col items-center justify-center h-full gap-4">
+                    <span class="material-symbols-outlined text-6xl text-primary">visibility_off</span>
+                    <h3 class="text-xl font-black">Set a Secret Word</h3>
+                    <p class="text-xs text-zinc-500 text-center mb-4">Must be a valid dictionary word to generate a hint.</p>
+                    <input type="text" id="hm-secret-input" placeholder="Secret Word" class="w-full max-w-xs bg-background-light dark:bg-background-dark border border-zinc-200 dark:border-zinc-800 rounded-2xl px-4 py-4 text-center font-bold text-xl uppercase outline-none focus:ring-2 focus:ring-primary">
+                    <button onclick="submitHangmanWord()" class="w-full max-w-xs bg-primary text-white py-4 rounded-2xl font-bold shadow-md active:scale-95">Confirm Word</button>
+                    <div id="hm-host-loading" class="text-sm font-bold mt-2 hidden animate-pulse text-primary">Checking Dictionary...</div>
+                </div>
+                <div id="hm-game-view" class="hidden flex-col h-full">
+                    <div class="bg-background-light dark:bg-background-dark p-4 rounded-2xl border border-zinc-200 dark:border-zinc-800 mb-6 text-center shadow-sm border-t-4 border-t-primary">
+                        <span class="text-[10px] text-zinc-500 font-bold uppercase block mb-1">Dictionary Hint</span>
+                        <p id="hm-hint" class="text-sm font-bold leading-relaxed">Loading definition...</p>
+                    </div>
+                    <div id="hm-word-display" class="flex justify-center flex-wrap gap-2 mb-8"></div>
+                    <div class="text-center mb-4"><span class="text-[10px] font-bold text-zinc-500 uppercase">Mistakes</span><div class="text-2xl font-black tracking-widest text-rose-500"><span id="hm-mistakes">0</span> / 6</div></div>
+                    <div class="mt-auto"><div id="hm-keyboard" class="grid grid-cols-7 gap-1"></div></div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Unified Outcome Overlay -->
+        <div id="game-overlay" class="absolute inset-0 z-40 bg-background-light/90 dark:bg-background-dark/90 backdrop-blur-sm hidden flex-col items-center justify-center">
+            <h1 id="overlay-text" class="text-4xl md:text-5xl font-black mb-8 text-center px-4 leading-tight text-primary"></h1>
+            <button onclick="restartCurrentGame()" class="bg-primary text-white px-8 py-4 rounded-2xl font-black text-lg shadow-md active:scale-95 mb-4">Play Again</button>
+            <button onclick="exitCurrentGame()" class="text-zinc-500 font-bold active:scale-95 hover:underline text-sm">Back to Hub</button>
+        </div>
+    </div>
+
+    <!-- Scripts -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, onSnapshot, collection, deleteDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, onSnapshot, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        const firebaseConfig = { apiKey: "AIzaSyAiX6ipa161rB1o715EfmtzfrHiz9zgChQ", authDomain: "dottech-scorat.firebaseapp.com", projectId: "dottech-scorat", storageBucket: "dottech-scorat.firebasestorage.app", messagingSenderId: "324240314924", appId: "1:324240314924:web:12866f2c25908f82fb7789" };
-        const scAppId = 'scorat-app';
-        let db, auth; let myUid = localStorage.getItem('scorat_uid');
-        let currentRoomId = null; let selectedGameType = null; let unsubscribeRoom = null; let isHost = false;
-        window.players = []; let gameState = {}; let soloState = {}; let onboardingAvatarBase64 = null;
-
-        // --- Modals & Toasts ---
-        window.showToast = function(msg, type = 'info') {
-            const container = document.getElementById('toast-container'); const toast = document.createElement('div');
-            const bg = type === 'success' ? 'bg-emerald-500' : (type === 'error' ? 'bg-rose-500' : 'bg-zinc-900 dark:bg-white dark:text-zinc-900 text-white');
-            toast.className = `${bg} px-5 py-4 rounded-2xl shadow-float flex items-center gap-3 transform transition-all duration-300 -translate-y-10 opacity-0 text-white`;
-            if(type === 'info') toast.className = `bg-zinc-900 text-white dark:bg-white dark:text-zinc-900 px-5 py-4 rounded-2xl shadow-float flex items-center gap-3 transform transition-all duration-300 -translate-y-10 opacity-0`;
-            toast.innerHTML = `<span class="font-bold text-sm">${msg}</span>`; container.appendChild(toast);
-            requestAnimationFrame(() => toast.classList.remove('-translate-y-10', 'opacity-0'));
-            setTimeout(() => { toast.classList.add('-translate-y-10', 'opacity-0'); setTimeout(() => toast.remove(), 300); }, 3000);
+        const firebaseConfig = {
+            apiKey: "AIzaSyAiX6ipa161rB1o715EfmtzfrHiz9zgChQ",
+            authDomain: "dottech-scorat.firebaseapp.com",
+            projectId: "dottech-scorat",
+            storageBucket: "dottech-scorat.firebasestorage.app",
+            messagingSenderId: "324240314924",
+            appId: "1:324240314924:web:12866f2c25908f82fb7789"
         };
 
-        window.showModal = function(content) {
-            const container = document.getElementById('modal-container'); const modContent = document.getElementById('modal-content');
-            document.getElementById('modal-inner').innerHTML = content;
-            container.classList.remove('hidden'); setTimeout(() => modContent.classList.remove('translate-y-full'), 10);
-        };
+        const appId = 'scorat-app';
+        let db, auth, currentUser, userProfile = null;
 
-        window.closeModal = function() {
-            const container = document.getElementById('modal-container'); const modContent = document.getElementById('modal-content');
-            modContent.classList.add('translate-y-full'); setTimeout(() => container.classList.add('hidden'), 300);
-        };
+        let gameTimers = []; let currentRoomId = null; let unsubRoom = null; let myRole = null; 
+        let currentActiveGame = null; let isMultiplayer = false; let lastResetTimestamp = 0;
 
-        // --- User Profile ---
-        window.showMyProfileModal = function() {
-            const myInfo = window.getPlayerInfo(myUid);
-            const avatarSrc = myInfo.avatar || `https://api.dicebear.com/7.x/initials/svg?seed=${myUid}`;
-            const name = myInfo.name !== 'Player' ? myInfo.name : 'Welcome';
-            const pts = myInfo.gamePoints || 0;
-            
-            window.showModal(`
-                <div class="flex flex-col items-center">
-                    <img src="${avatarSrc}" class="w-28 h-28 rounded-full object-cover shadow-lg mb-4 border-4 border-surface-light dark:border-surface-dark bg-zinc-100">
-                    <h3 class="text-2xl font-black text-center mb-1 tracking-tight">${name}</h3>
-                    <p class="text-xs text-zinc-400 font-mono mb-6">${myUid}</p>
-                    
-                    <div class="bg-primary-light dark:bg-primary/20 text-primary px-6 py-3 rounded-2xl font-bold flex items-center gap-2 mb-2 w-full justify-center">
-                        <span class="material-symbols-outlined text-2xl">stars</span> 
-                        <span class="text-xl">${pts}</span> <span class="text-sm opacity-80">Game Points</span>
-                    </div>
-                    <p class="text-[10px] text-zinc-500 uppercase tracking-widest font-semibold mt-2">Win matches to earn more points!</p>
-                </div>
-            `);
-        };
+        window.vibe = function(ms = 40) { if (navigator.vibrate) navigator.vibrate(ms); };
+        function clearTimers() { gameTimers.forEach(t => clearTimeout(t)); gameTimers = []; }
 
-        // --- Navigation ---
-        window.goBackToHub = function() {
-            window.leaveMatch();
-            document.getElementById('hub-view').classList.remove('hidden');
-            document.getElementById('user-profile-widget').classList.remove('hidden');
-            document.getElementById('btn-back-hub').classList.add('hidden');
-            document.getElementById('game-view').innerHTML = ''; 
-        };
-
-        window.openLobby = function(gameType) {
-            selectedGameType = gameType;
-            const names = { 'dots': 'Dots & Boxes', 'connect4': 'Connect 4', 'uttt': 'Ultimate X-O', 'reversi': 'Reversi', 'memory': 'Memory Duel', 'battleship': 'Fleet Strike' };
-            document.getElementById('lobby-title').innerText = names[gameType];
-            document.getElementById('hub-view').classList.add('hidden'); document.getElementById('lobby-view').classList.remove('hidden');
-            document.getElementById('btn-back-hub').classList.remove('hidden'); document.getElementById('user-profile-widget').classList.add('hidden');
-        };
-
-        window.copyRoomCode = function() { navigator.clipboard.writeText(currentRoomId); window.showToast("Code Copied!", "success"); };
-
-        window.getPlayerInfo = function(uid) {
-            if(!uid) return { name: 'Waiting...', avatar: 'https://api.dicebear.com/7.x/initials/svg?seed=wait', gamePoints: 0 };
-            const p = window.players?.find(x => x.id === uid);
-            return p || { name: 'Player', avatar: 'https://api.dicebear.com/7.x/initials/svg?seed=' + uid, gamePoints: 0 };
-        };
-
-        // --- Onboarding Logic ---
-        window.toggleRestoreView = function(showRestore) {
-            const vCreate = document.getElementById('view-create-profile'); const vRestore = document.getElementById('view-restore-profile');
-            if (showRestore) { vCreate.classList.add('hidden'); vRestore.classList.remove('hidden'); vRestore.style.display = 'flex'; } 
-            else { vRestore.classList.add('hidden'); vRestore.style.display = ''; vCreate.classList.remove('hidden'); }
-        };
-
-        window.previewOnboardingAvatar = function(e) {
-            const file = e.target.files[0]; if (!file) return; const reader = new FileReader();
-            reader.onload = (event) => {
-                const img = new Image(); img.onload = () => {
-                    const canvas = document.createElement('canvas'); const MAX_SIZE = 150; let w = img.width; let h = img.height;
-                    if (w > h) { if (w > MAX_SIZE) { h *= MAX_SIZE / w; w = MAX_SIZE; } } else { if (h > MAX_SIZE) { w *= MAX_SIZE / h; h = MAX_SIZE; } }
-                    canvas.width = w; canvas.height = h; const ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0, w, h);
-                    onboardingAvatarBase64 = canvas.toDataURL('image/jpeg', 0.7);
-                    document.getElementById('ob-avatar-preview').innerHTML = `<img src="${onboardingAvatarBase64}" class="w-full h-full object-cover">`;
-                }; img.src = event.target.result;
-            }; reader.readAsDataURL(file);
-        };
-
-        window.saveUserProfile = async function() {
-            const name = document.getElementById('ob-player-name').value.trim(); if (!name) return window.showToast("Nickname required!", "error");
-            try {
-                if(!myUid) { const cred = await signInAnonymously(auth); myUid = cred.user.uid; }
-                await setDoc(doc(db, 'artifacts', scAppId, 'public', 'data', 'users', myUid), { name, avatar: onboardingAvatarBase64, joinedAt: Date.now(), wins: 0, losses: 0, gamePoints: 0 });
-                localStorage.setItem('scorat_uid', myUid); document.getElementById('onboarding-container').classList.add('hidden'); window.showToast("Profile created!"); loadMainHub();
-            } catch (e) { window.showToast("Error creating profile.", "error"); }
-        };
-
-        window.restoreAccount = async function() {
-            const id = document.getElementById('restore-id-input').value.trim(); if (!id) return window.showToast("Please enter your ID", "error");
-            try {
-                const userDoc = await getDoc(doc(db, 'artifacts', scAppId, 'public', 'data', 'users', id));
-                if (userDoc.exists()) { localStorage.setItem('scorat_uid', id); myUid = id; window.showToast("Account restored!"); document.getElementById('onboarding-container').classList.add('hidden'); loadMainHub(); } 
-                else { window.showToast("No account found matching this ID", "error"); }
-            } catch (e) { window.showToast("Connection error", "error"); }
-        };
-
+        /* ==================== 1. Init & User Profile ==================== */
         async function init() {
             try {
-                const app = initializeApp(firebaseConfig); auth = getAuth(app); db = getFirestore(app);
-                
-                if (!myUid) {
-                    document.getElementById('onboarding-container').classList.remove('hidden');
-                } else {
-                    const userDoc = await getDoc(doc(db, 'artifacts', scAppId, 'public', 'data', 'users', myUid));
-                    if (!userDoc.exists()) document.getElementById('onboarding-container').classList.remove('hidden');
-                    else loadMainHub();
-                }
-            } catch (error) { window.showToast("Connection failed.", "error"); }
+                const app = initializeApp(firebaseConfig);
+                auth = getAuth(app); db = getFirestore(app);
+                const storedUid = localStorage.getItem('scorat_uid');
+                onAuthStateChanged(auth, async (user) => { 
+                    if(user) { currentUser = user; const activeUid = storedUid || user.uid; await loadUserProfile(activeUid); } 
+                });
+                if(!storedUid) await signInAnonymously(auth);
+            } catch (error) { console.error("Init Error:", error); }
         }
 
-        function loadMainHub() {
-            document.getElementById('hub-view').classList.remove('hidden');
-            onSnapshot(collection(db, 'artifacts', scAppId, 'public', 'data', 'users'), (snap) => {
-                window.players = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-                updateHeaderProfile();
-                if (!document.getElementById('game-view').classList.contains('hidden') && currentRoomId) renderActiveGame();
-            });
+        async function loadUserProfile(uid) {
+            try {
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'users', uid);
+                const snap = await getDoc(docRef);
+                if(snap.exists()) {
+                    userProfile = snap.data();
+                    document.getElementById('prof-name').innerText = userProfile.name;
+                    document.getElementById('prof-points').innerText = userProfile.wins || 0;
+                    if(userProfile.avatar) { document.getElementById('prof-avatar-container').innerHTML = `<img src="${userProfile.avatar}" class="w-full h-full object-cover">`; }
+                } else { document.getElementById('prof-name').innerText = "Guest Player"; }
+            } catch (e) { }
+        }
+        init();
+
+        /* ==================== 2. Dictionary API Helper ==================== */
+        async function validateWordAPI(word) {
+            try { const res = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`); if (!res.ok) return null; const data = await res.json(); return data[0]; } catch (e) { return null; }
         }
 
-        function updateHeaderProfile() {
-            const myInfo = window.getPlayerInfo(myUid);
-            document.getElementById('header-user-name').innerText = myInfo.name !== 'Player' ? myInfo.name : 'Welcome';
-            if(myInfo.avatar) document.getElementById('header-user-avatar').src = myInfo.avatar;
-            document.getElementById('header-user-points').innerText = `${myInfo.gamePoints || 0}`;
-        }
-
-        // --- Multiplayer Core ---
-        window.hostMatch = async function() {
-            if(!db || !myUid) return window.showToast("Connecting...", "error");
-            currentRoomId = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'.split('').sort(()=>0.5-Math.random()).join('').substring(0,5);
-            isHost = true; gameState = getInitialState(selectedGameType);
-            await setDoc(doc(db, 'minigames', currentRoomId), { type: selectedGameType, p1: myUid, p2: null, status: 'waiting', state: JSON.stringify(gameState), updatedAt: Date.now() });
-            document.getElementById('lobby-view').classList.add('hidden'); document.getElementById('waiting-view').classList.remove('hidden');
-            document.getElementById('display-room-code').innerText = currentRoomId; listenToRoom();
+        /* ==================== 3. Unified Game Manager ==================== */
+        const GAME_INFO = {
+            'minesweeper': { title: 'Minesweeper', icon: 'bomb' },
+            'memory': { title: 'Memory Match', icon: 'dashboard' },
+            'wordle': { title: 'Wordle', icon: 'spellcheck' },
+            'codebreaker': { title: 'Code Breaker', icon: 'password' },
+            'tictactoe': { title: 'Tic-Tac-Toe', icon: 'grid_3x3' },
+            'tapwar': { title: 'Tap War', icon: 'touch_app' },
+            'wordchain': { title: 'Word Chain', icon: 'link' },
+            'hangman': { title: 'Smart Hangman', icon: 'quiz' },
+            'connect4': { title: 'Connect 4', icon: 'blur_on' },
+            'dotsboxes': { title: 'Dots & Boxes', icon: 'border_all' },
+            '2048': { title: '2048', icon: 'grid_view' }
         };
 
-        window.joinMatch = async function() {
-            const code = document.getElementById('join-code').value.trim().toUpperCase();
-            if(code.length !== 5) return window.showToast("Invalid Code", "error");
-            const docRef = doc(db, 'minigames', code); const snap = await getDoc(docRef);
-            if(!snap.exists()) return window.showToast("Room not found", "error");
-            const data = snap.data();
-            if(data.status !== 'waiting' && data.p2 !== myUid && data.p1 !== myUid) return window.showToast("Room full", "error");
-            currentRoomId = code; isHost = (data.p1 === myUid); selectedGameType = data.type;
-            if (!isHost && data.status === 'waiting') await setDoc(docRef, { p2: myUid, status: 'playing' }, { merge: true });
-            document.getElementById('lobby-view').classList.add('hidden'); listenToRoom();
-        };
-
-        window.leaveMatch = async function() {
-            if (unsubscribeRoom) { unsubscribeRoom(); unsubscribeRoom = null; }
-            if (currentRoomId && isHost) try { await deleteDoc(doc(db, 'minigames', currentRoomId)); } catch(e){}
-            currentRoomId = null;
-            document.getElementById('waiting-view').classList.add('hidden');
-            document.getElementById('lobby-view').classList.add('hidden');
-            document.getElementById('game-view').classList.add('hidden');
-        };
-
-        function listenToRoom() {
-            if (unsubscribeRoom) unsubscribeRoom();
-            unsubscribeRoom = onSnapshot(doc(db, 'minigames', currentRoomId), (docSnap) => {
-                if (!docSnap.exists()) { window.showToast("Room closed.", "error"); window.goBackToHub(); return; }
-                const data = docSnap.data(); window.roomData = data; 
-                if (data.status === 'playing') {
-                    document.getElementById('waiting-view').classList.add('hidden'); 
-                    document.getElementById('game-view').classList.remove('hidden');
-                    
-                    let parsedState = typeof data.state === 'string' ? JSON.parse(data.state) : data.state;
-                    if(parsedState.gameOver && (!gameState.gameOver) && parsedState.winner === (myUid === data.p1 ? 1 : 2)) {
-                        awardPoints(10);
-                    }
-                    
-                    gameState = parsedState; gameState.myRole = (myUid === data.p1) ? 1 : 2; 
-                    renderActiveGame();
-                }
-            });
+        function showGameArea(gameId) {
+            document.getElementById('lobby-view').classList.add('hidden'); document.getElementById('game-container').classList.remove('hidden');
+            document.getElementById('game-title').innerText = GAME_INFO[gameId].title; document.getElementById('game-icon').innerText = GAME_INFO[gameId].icon;
+            Object.keys(GAME_INFO).forEach(a => document.getElementById(`area-${a}`)?.classList.add('hidden'));
+            document.getElementById(`area-${gameId}`)?.classList.remove('hidden');
+            document.getElementById('game-overlay').classList.add('hidden'); document.getElementById('game-overlay').classList.remove('flex');
+            currentActiveGame = gameId;
         }
 
-        function syncMove(newState) {
-            if (!currentRoomId) return;
-            setDoc(doc(db, 'minigames', currentRoomId), { state: JSON.stringify(newState), updatedAt: Date.now() }, { merge: true });
+        window.exitCurrentGame = function() {
+            vibe(); clearTimers();
+            if (isMultiplayer) return window.exitMultiplayerGame();
+            document.getElementById('game-container').classList.add('hidden'); document.getElementById('lobby-view').classList.remove('hidden');
+            currentActiveGame = null;
         }
 
-        function awardPoints(pts) {
-            if(myUid) updateDoc(doc(db, 'artifacts', scAppId, 'public', 'data', 'users', myUid), { gamePoints: increment(pts) }).catch(()=>{});
-        }
-
-        window.requestRestart = function() { syncMove(getInitialState(selectedGameType)); };
-
-        function getInitialState(type) {
-            if (type === 'dots') return { turn: 1, scores: {1:0, 2:0}, lines: {}, boxes: {}, size: 4, gameOver: false };
-            if (type === 'connect4') return { turn: 1, board: Array.from({length: 6}, () => Array(7).fill(0)), gameOver: false, winner: 0 };
-            if (type === 'uttt') return { turn: 1, activeMacro: -1, gameOver: false, winner: 0, macro: Array(9).fill(0), micro: Array.from({length: 9}, () => Array(9).fill(0)) };
-            if (type === 'reversi') {
-                let b = Array.from({length: 8}, () => Array(8).fill(0));
-                b[3][3] = 2; b[4][4] = 2; b[3][4] = 1; b[4][3] = 1;
-                return { turn: 1, board: b, gameOver: false, winner: 0, scores: {1:2, 2:2} };
+        window.restartCurrentGame = function() {
+            vibe();
+            if (isMultiplayer) {
+                if(!currentRoomId) return; const resetData = { resetAt: Date.now() };
+                if(currentActiveGame === 'tapwar') { resetData.p1Taps = 0; resetData.p2Taps = 0; }
+                else if(currentActiveGame === 'tictactoe') { resetData.tttBoard = Array(9).fill(null); resetData.tttTurn = '1'; resetData.tttWinner = null; }
+                else if(currentActiveGame === 'wordchain') { resetData.wcWords = []; resetData.wcTurn = '1'; resetData.wcWinner = null; }
+                else if(currentActiveGame === 'hangman') { resetData.hmSecret = null; resetData.hmHint = null; resetData.hmGuesses = []; resetData.hmWinner = null; }
+                else if(currentActiveGame === 'connect4') { resetData.c4Board = Array(42).fill(null); resetData.c4Turn = '1'; resetData.c4Winner = null; }
+                else if(currentActiveGame === 'dotsboxes') { resetData.dbH = Array(12).fill(false); resetData.dbV = Array(12).fill(false); resetData.dbB = Array(9).fill(null); resetData.dbTurn = '1'; resetData.dbS1 = 0; resetData.dbS2 = 0; resetData.dbWinner = null; }
+                updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'minigame_rooms', currentRoomId), resetData);
+            } else {
+                document.getElementById('game-overlay').classList.add('hidden'); document.getElementById('game-overlay').classList.remove('flex');
+                if(currentActiveGame === 'minesweeper') initMinesweeper();
+                if(currentActiveGame === 'memory') initMemory();
+                if(currentActiveGame === 'wordle') initWordle();
+                if(currentActiveGame === 'codebreaker') initCodeBreaker();
+                if(currentActiveGame === '2048') init2048();
             }
-            if (type === 'memory') {
-                const emojis = ['🍎','🍕','🚀','🎈','🐶','🐱','🎸','⚽'];
-                let deck = [...emojis, ...emojis].sort(()=>Math.random()-0.5);
-                return { turn: 1, deck: deck, flipped: [], matched: [], scores: {1:0, 2:0}, gameOver: false, winner: 0, lock: false };
-            }
-            if (type === 'battleship') {
-                let s1=[], s2=[];
-                while(s1.length<5){ let rnd=Math.floor(Math.random()*64); if(!s1.includes(rnd)) s1.push(rnd); }
-                while(s2.length<5){ let rnd=Math.floor(Math.random()*64); if(!s2.includes(rnd)) s2.push(rnd); }
-                return { turn: 1, s1: s1, s2: s2, hits1: [], hits2: [], misses1: [], misses2: [], gameOver: false, winner: 0 };
-            }
-            return {};
         }
 
-        function renderActiveGame() {
-            if (selectedGameType === 'dots') renderDots();
-            else if (selectedGameType === 'connect4') renderConnect4();
-            else if (selectedGameType === 'uttt') renderUTTT();
-            else if (selectedGameType === 'reversi') renderReversi();
-            else if (selectedGameType === 'memory') renderMemory();
-            else if (selectedGameType === 'battleship') renderBattleship();
+        window.showUnifiedOverlay = function(text) {
+            document.getElementById('overlay-text').innerText = text;
+            document.getElementById('game-overlay').classList.remove('hidden'); document.getElementById('game-overlay').classList.add('flex');
         }
 
-        function renderPlayerHeader() {
-            const myR = gameState.myRole; const p1I = window.getPlayerInfo(window.roomData.p1); const p2I = window.getPlayerInfo(window.roomData.p2);
-            const myI = myR === 1 ? p1I : p2I; const oppI = myR === 1 ? p2I : p1I;
-            return `
-                <div class="flex justify-between items-center bg-surface-light dark:bg-surface-dark p-4 rounded-[32px] shadow-soft border border-zinc-100 dark:border-zinc-800/50 mb-6">
-                    <div class="flex flex-col items-center flex-1 overflow-hidden">
-                        <img src="${myI.avatar}" class="w-12 h-12 rounded-2xl mb-2 object-cover shadow-sm border-[3px] ${myR===1?'border-primary':'border-rose-500'}">
-                        <span class="text-[10px] font-bold truncate w-full text-center text-zinc-800 dark:text-zinc-200">${myI.name} <span class="opacity-50">(You)</span></span>
-                    </div>
-                    <div class="text-xl font-black text-zinc-300 dark:text-zinc-700 px-4">VS</div>
-                    <div class="flex flex-col items-center flex-1 overflow-hidden">
-                        <img src="${oppI.avatar}" class="w-12 h-12 rounded-2xl mb-2 object-cover shadow-sm border-[3px] ${myR===1?'border-rose-500':'border-primary'}">
-                        <span class="text-[10px] font-bold truncate w-full text-center text-zinc-800 dark:text-zinc-200">${oppI.name}</span>
-                    </div>
-                </div>`;
-        }
+        /* ==================== 4. Multiplayer Rooms ==================== */
+        window.openRoomModal = function(gameType) { vibe(); if (!currentUser) return alert("Connecting to server..."); currentActiveGame = gameType; isMultiplayer = true; document.getElementById('room-modal-title').innerText = GAME_INFO[gameType].title; document.getElementById('room-status').classList.add('hidden'); document.getElementById('room-code-input').value = ''; const modal = document.getElementById('room-modal'); const content = document.getElementById('room-modal-content'); modal.classList.remove('hidden'); setTimeout(() => { content.classList.remove('scale-95', 'opacity-0'); }, 10); }
+        window.closeRoomModal = function() { const modal = document.getElementById('room-modal'); const content = document.getElementById('room-modal-content'); content.classList.add('scale-95', 'opacity-0'); setTimeout(() => { modal.classList.add('hidden'); }, 200); }
+        window.createRoom = async function() { vibe(); const code = Math.floor(1000 + Math.random() * 9000).toString(); currentRoomId = code; myRole = '1'; const initialData = { hostId: currentUser.uid, guestId: null, game: currentActiveGame, status: 'waiting', resetAt: Date.now() }; if (currentActiveGame === 'tapwar') { initialData.p1Taps = 0; initialData.p2Taps = 0; } else if (currentActiveGame === 'tictactoe') { initialData.tttBoard = Array(9).fill(null); initialData.tttTurn = '1'; initialData.tttWinner = null; } else if (currentActiveGame === 'wordchain') { initialData.wcWords = []; initialData.wcTurn = '1'; initialData.wcWinner = null; } else if (currentActiveGame === 'hangman') { initialData.hmSecret = null; initialData.hmHint = null; initialData.hmGuesses = []; initialData.hmWinner = null; } else if (currentActiveGame === 'connect4') { initialData.c4Board = Array(42).fill(null); initialData.c4Turn = '1'; initialData.c4Winner = null; } else if (currentActiveGame === 'dotsboxes') { initialData.dbH = Array(12).fill(false); initialData.dbV = Array(12).fill(false); initialData.dbB = Array(9).fill(null); initialData.dbTurn = '1'; initialData.dbS1 = 0; initialData.dbS2 = 0; initialData.dbWinner = null; } try { await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'minigame_rooms', code), initialData); closeRoomModal(); showWaitingRoom(code); listenToRoom(); } catch (e) { alert("Failed to create room"); } }
+        window.joinRoom = async function() { vibe(); const code = document.getElementById('room-code-input').value.trim(); if(code.length !== 4) return alert("PIN must be 4 digits"); document.getElementById('room-status').innerText = 'Searching...'; document.getElementById('room-status').classList.remove('hidden'); try { const roomRef = doc(db, 'artifacts', appId, 'public', 'data', 'minigame_rooms', code); const snap = await getDoc(roomRef); if (!snap.exists()) return document.getElementById('room-status').innerText = 'Room not found!'; const data = snap.data(); if (data.status !== 'waiting') return document.getElementById('room-status').innerText = 'Room is full!'; if (data.game !== currentActiveGame) return document.getElementById('room-status').innerText = 'Room is for another game!'; await updateDoc(roomRef, { guestId: currentUser.uid, status: 'playing' }); currentRoomId = code; myRole = '2'; closeRoomModal(); listenToRoom(); } catch (e) { alert("Connection error"); } }
+        function showWaitingRoom(code) { document.getElementById('display-room-code').innerText = code; document.getElementById('lobby-view').classList.add('hidden'); document.getElementById('waiting-room').classList.remove('hidden', 'flex'); document.getElementById('waiting-room').classList.add('flex'); }
+        function listenToRoom() { if (unsubRoom) unsubRoom(); unsubRoom = onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'minigame_rooms', currentRoomId), (snap) => { if (!snap.exists()) { alert("Room closed."); return window.exitMultiplayerGame(false); } const data = snap.data(); if (data.resetAt && data.resetAt !== lastResetTimestamp) { lastResetTimestamp = data.resetAt; document.getElementById('game-overlay').classList.add('hidden'); document.getElementById('game-overlay').classList.remove('flex'); if(data.game === 'tapwar') { myLocalTaps = 0; lastSentTaps = 0; } if(data.game === 'hangman') { document.getElementById('hm-secret-input').value = ''; } } if (data.status === 'playing' || data.status === 'finished') { document.getElementById('waiting-room').classList.add('hidden'); document.getElementById('waiting-room').classList.remove('flex'); showGameArea(data.game); if (data.game === 'tapwar') handleTapWarSync(data); if (data.game === 'tictactoe') handleTicTacToeSync(data); if (data.game === 'wordchain') handleWordChainSync(data); if (data.game === 'hangman') handleHangmanSync(data); if (data.game === 'connect4') handleConnect4Sync(data); if (data.game === 'dotsboxes') handleDotsBoxesSync(data); } }); }
+        window.exitMultiplayerGame = async function(deleteRoom = true) { vibe(); clearTimers(); if (unsubRoom) unsubRoom(); if (deleteRoom && currentRoomId && myRole === '1') deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'minigame_rooms', currentRoomId)).catch(e=>{}); document.getElementById('waiting-room').classList.add('hidden'); document.getElementById('waiting-room').classList.remove('flex'); document.getElementById('game-container').classList.add('hidden'); document.getElementById('lobby-view').classList.remove('hidden'); currentRoomId = null; myRole = null; isMultiplayer = false; currentActiveGame = null; if(twInterval) clearInterval(twInterval); }
+        window.addEventListener('beforeunload', () => { if (currentRoomId && myRole === '1') deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'minigame_rooms', currentRoomId)).catch(e=>{}); });
 
-        function renderRestart() {
-            if (!gameState.gameOver) return '';
-            return `<div class="mt-8 flex justify-center fade-in"><button onclick="window.requestRestart()" class="bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 px-8 py-3.5 rounded-2xl font-bold hover:scale-105 active:scale-95 transition-all shadow-md">Play Again</button></div>`;
-        }
 
-        function renderStatus(isMyTurn) {
-            const st = gameState;
-            let msg = st.gameOver ? (st.winner === st.myRole ? 'YOU WON! 🎉' : (st.winner===0?'DRAW':'YOU LOST 💀')) : (isMyTurn ? 'YOUR TURN' : "Opponent's Turn");
-            const col = st.turn === st.myRole ? (st.myRole===1?'text-primary':'text-rose-500') : (st.turn===1?'text-primary':'text-rose-500');
-            return `<div class="text-center font-black ${col} mb-6 tracking-widest uppercase text-lg">${msg}</div>`;
-        }
-
-        // --- Dots & Boxes ---
-        function renderDots() {
-            const st = gameState; const isMyTurn = st.turn === st.myRole && !st.gameOver;
-            let html = '<div class="dots-grid bg-surface-light dark:bg-surface-dark p-6 rounded-[32px] shadow-soft border border-zinc-100 dark:border-zinc-800/50">';
-            for (let r=0; r<=st.size*2; r++) {
-                for (let c=0; c<=st.size*2; c++) {
-                    if (r%2===0 && c%2===0) html += `<div class="dot w-3 h-3"></div>`;
-                    else if (r%2===0 && c%2!==0) { const k=`h-${r/2}-${Math.floor(c/2)}`; const bg=st.lines[k]===1?'#2563eb':(st.lines[k]===2?'#f43f5e':''); html += `<div class="line-h bg-zinc-200 dark:bg-zinc-700 rounded-full my-auto ${st.lines[k]?'claimed':''}" style="background-color:${bg}" onclick="window.dbPlay('h',${r/2},${Math.floor(c/2)})"></div>`; }
-                    else if (r%2!==0 && c%2===0) { const k=`v-${Math.floor(r/2)}-${c/2}`; const bg=st.lines[k]===1?'#2563eb':(st.lines[k]===2?'#f43f5e':''); html += `<div class="line-v bg-zinc-200 dark:bg-zinc-700 rounded-full mx-auto ${st.lines[k]?'claimed':''}" style="background-color:${bg}" onclick="window.dbPlay('v',${Math.floor(r/2)},${c/2})"></div>`; }
-                    else { const o=st.boxes[`${Math.floor(r/2)}-${Math.floor(c/2)}`]; const bg=o===1?'rgba(37,99,235,0.2)':(o===2?'rgba(244,63,94,0.2)':''); html += `<div class="box-cell rounded-lg" style="background-color:${bg}"></div>`; }
-                }
-            }
-            html += '</div>';
-            document.getElementById('game-view').innerHTML = renderPlayerHeader() + `
-                <div class="flex justify-center gap-6 mb-4">
-                    <div class="text-center w-24"><span class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">P1 Score</span><div class="text-4xl font-black text-primary">${st.scores[1]}</div></div>
-                    <div class="text-center w-24"><span class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">P2 Score</span><div class="text-4xl font-black text-rose-500">${st.scores[2]}</div></div>
-                </div>` + renderStatus(isMyTurn) + `<div class="flex justify-center pointer-events-${isMyTurn?'auto':'none'}">${html}</div>` + renderRestart();
-        }
-        window.dbPlay = function(t,r,c) {
-            if(gameState.turn!==gameState.myRole || gameState.gameOver || gameState.lines[`${t}-${r}-${c}`]) return;
-            let st = JSON.parse(JSON.stringify(gameState)); st.lines[`${t}-${r}-${c}`] = st.turn;
-            let formed = false;
-            const chk = (br, bc) => {
-                if(br<0||br>=st.size||bc<0||bc>=st.size||st.boxes[`${br}-${bc}`]) return false;
-                if(st.lines[`h-${br}-${bc}`]&&st.lines[`h-${br+1}-${bc}`]&&st.lines[`v-${br}-${bc}`]&&st.lines[`v-${br}-${bc+1}`]){ st.boxes[`${br}-${bc}`]=st.turn; st.scores[st.turn]++; return true; } return false;
-            };
-            if(t==='h'){ formed|=chk(r-1,c); formed|=chk(r,c); } else { formed|=chk(r,c-1); formed|=chk(r,c); }
-            if(Object.keys(st.boxes).length === st.size*st.size){ st.gameOver=true; st.winner = st.scores[1]>st.scores[2]?1:(st.scores[2]>st.scores[1]?2:0); }
-            else if(!formed) st.turn = st.turn===1?2:1;
-            syncMove(st);
-        };
-
-        // --- Connect 4 ---
-        function renderConnect4() {
-            const st = gameState; const isMyTurn = st.turn === st.myRole && !st.gameOver;
-            let html = '<div class="c4-grid shadow-float">';
-            for(let r=0;r<6;r++) for(let c=0;c<7;c++) { const bg=st.board[r][c]===1?'#2563eb':(st.board[r][c]===2?'#f43f5e':'transparent'); html += `<div class="c4-cell" onclick="window.c4Play(${c})"><div class="c4-piece ${st.board[r][c]?'dropped':''}" style="background-color:${bg}"></div></div>`; }
-            document.getElementById('game-view').innerHTML = renderPlayerHeader() + renderStatus(isMyTurn) + `<div class="flex justify-center pointer-events-${isMyTurn?'auto':'none'}">${html}</div>` + renderRestart();
-        }
-        window.c4Play = function(c) {
-            if(gameState.turn!==gameState.myRole || gameState.gameOver) return;
-            let st = JSON.parse(JSON.stringify(gameState)); let dR=-1;
-            for(let r=5;r>=0;r--) if(st.board[r][c]===0){ dR=r; break; } if(dR===-1) return;
-            st.board[dR][c] = st.turn;
-            let won = false; const dirs=[[0,1],[1,0],[1,1],[1,-1]];
-            for(let [dr,dc] of dirs){ let cnt=1; for(let i=1;i<=3;i++){if(dR+dr*i<6&&dR+dr*i>=0&&c+dc*i<7&&c+dc*i>=0&&st.board[dR+dr*i][c+dc*i]===st.turn)cnt++;else break;} for(let i=1;i<=3;i++){if(dR-dr*i<6&&dR-dr*i>=0&&c-dc*i<7&&c-dc*i>=0&&st.board[dR-dr*i][c-dc*i]===st.turn)cnt++;else break;} if(cnt>=4) won=true; }
-            if(won){ st.gameOver=true; st.winner=st.turn; } else if(!st.board[0].includes(0)){ st.gameOver=true; st.winner=0; } else st.turn=st.turn===1?2:1;
-            syncMove(st);
-        };
-
-        // --- Ultimate TTT ---
-        function renderUTTT() {
-            const st = gameState; const isMyTurn = st.turn === st.myRole && !st.gameOver;
-            const sym={0:'',1:'X',2:'O',3:'-'}; const col={1:'#2563eb',2:'#f43f5e',3:'#71717a'};
-            let html = '<div class="uttt-macro shadow-float">';
-            for(let i=0;i<9;i++){
-                html += `<div class="uttt-board ${(!st.gameOver&&st.macro[i]===0&&(st.activeMacro===-1||st.activeMacro===i))?'active':''} ${st.macro[i]!==0?'won':''}" data-winner="${sym[st.macro[i]]}" style="color:${col[st.macro[i]]}">`;
-                for(let j=0;j<9;j++) html += `<div class="uttt-cell" style="color:${col[st.micro[i][j]]}" onclick="window.utttPlay(${i},${j})">${sym[st.micro[i][j]]}</div>`;
-                html += `</div>`;
-            }
-            document.getElementById('game-view').innerHTML = renderPlayerHeader() + renderStatus(isMyTurn) + `<div class="flex justify-center pointer-events-${isMyTurn?'auto':'none'}">${html}</div>` + renderRestart();
-        }
-        window.utttPlay = function(ma, mi) {
-            if(gameState.turn!==gameState.myRole||gameState.gameOver||gameState.macro[ma]!==0||gameState.micro[ma][mi]!==0||(gameState.activeMacro!==-1&&gameState.activeMacro!==ma)) return;
-            let st = JSON.parse(JSON.stringify(gameState)); st.micro[ma][mi] = st.turn;
-            const chk = (a,p) => [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]].some(l=>a[l[0]]===p&&a[l[1]]===p&&a[l[2]]===p);
-            if(chk(st.micro[ma],st.turn)) st.macro[ma]=st.turn; else if(!st.micro[ma].includes(0)) st.macro[ma]=3;
-            if(chk(st.macro,st.turn)){ st.gameOver=true; st.winner=st.turn; } else if(!st.macro.includes(0)){ st.gameOver=true; st.winner=3; }
-            else { st.activeMacro = st.macro[mi]===0?mi:-1; st.turn = st.turn===1?2:1; }
-            syncMove(st);
-        };
-
-        // --- Reversi ---
-        function renderReversi() {
-            const st = gameState; const isMyTurn = st.turn === st.myRole && !st.gameOver;
-            let html = '<div class="reversi-grid shadow-float">';
-            for(let r=0;r<8;r++) for(let c=0;c<8;c++) {
-                const p = st.board[r][c];
-                html += `<div class="reversi-cell" onclick="window.revPlay(${r},${c})">${p!==0?`<div class="reversi-piece ${p===1?'p1':'p2'}"></div>`:''}</div>`;
-            }
-            html += '</div>';
-            document.getElementById('game-view').innerHTML = renderPlayerHeader() + `
-                <div class="flex justify-center gap-6 mb-4">
-                    <div class="text-center w-24"><span class="text-[10px] font-bold text-zinc-400 uppercase">P1 (Black)</span><div class="text-4xl font-black text-zinc-800 dark:text-zinc-200">${st.scores[1]}</div></div>
-                    <div class="text-center w-24"><span class="text-[10px] font-bold text-zinc-400 uppercase">P2 (White)</span><div class="text-4xl font-black text-zinc-400">${st.scores[2]}</div></div>
-                </div>` + renderStatus(isMyTurn) + `<div class="flex justify-center pointer-events-${isMyTurn?'auto':'none'}">${html}</div>` + renderRestart();
-        }
-        window.revPlay = function(r, c) {
-            if(gameState.turn!==gameState.myRole||gameState.gameOver||gameState.board[r][c]!==0) return;
-            let st = JSON.parse(JSON.stringify(gameState)); let flips = []; const opp = st.turn===1?2:1;
-            const dirs = [[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]];
-            for(let [dr,dc] of dirs) {
-                let r2=r+dr, c2=c+dc, temp=[];
-                while(r2>=0&&r2<8&&c2>=0&&c2<8&&st.board[r2][c2]===opp) { temp.push([r2,c2]); r2+=dr; c2+=dc; }
-                if(r2>=0&&r2<8&&c2>=0&&c2<8&&st.board[r2][c2]===st.turn) flips.push(...temp);
-            }
-            if(flips.length===0) return; 
-            st.board[r][c] = st.turn; flips.forEach(([fr,fc]) => st.board[fr][fc] = st.turn);
-            st.scores = {1:0, 2:0}; st.board.forEach(row=>row.forEach(cell=>{if(cell) st.scores[cell]++;}));
+        /* ==================== Connect 4 (Online) ==================== */
+        function handleConnect4Sync(data) {
+            const board = data.c4Board || Array(42).fill(null);
+            const grid = document.getElementById('c4-grid');
+            const status = document.getElementById('c4-status');
             
-            const hasMoves = (player) => {
-                const op = player===1?2:1;
-                for(let i=0;i<8;i++) for(let j=0;j<8;j++) {
-                    if(st.board[i][j]!==0) continue;
-                    for(let [dr,dc] of dirs) {
-                        let r2=i+dr, c2=j+dc, count=0;
-                        while(r2>=0&&r2<8&&c2>=0&&c2<8&&st.board[r2][c2]===op) { count++; r2+=dr; c2+=dc; }
-                        if(count>0&&r2>=0&&r2<8&&c2>=0&&c2<8&&st.board[r2][c2]===player) return true;
-                    }
-                } return false;
-            };
-            if(hasMoves(opp)) st.turn = opp;
-            else if(!hasMoves(st.turn)) { st.gameOver=true; st.winner = st.scores[1]>st.scores[2]?1:(st.scores[2]>st.scores[1]?2:0); }
-            syncMove(st);
-        };
-
-        // --- Memory Duel ---
-        function renderMemory() {
-            const st = gameState; const isMyTurn = st.turn === st.myRole && !st.gameOver && !st.lock;
-            let html = '<div class="memory-grid">';
-            st.deck.forEach((card, i) => {
-                const isFlipped = st.flipped.includes(i); const isMatched = st.matched.includes(i);
-                html += `<div class="memory-card shadow-sm ${isFlipped?'flipped':''} ${isMatched?'matched':''}" onclick="window.memPlay(${i})"><div class="memory-content">${card}</div></div>`;
-            });
-            html += '</div>';
-            document.getElementById('game-view').innerHTML = renderPlayerHeader() + `
-                <div class="flex justify-center gap-6 mb-4">
-                    <div class="text-center w-24"><span class="text-[10px] font-bold text-zinc-400 uppercase">P1 Pairs</span><div class="text-4xl font-black text-primary">${st.scores[1]}</div></div>
-                    <div class="text-center w-24"><span class="text-[10px] font-bold text-zinc-400 uppercase">P2 Pairs</span><div class="text-4xl font-black text-rose-500">${st.scores[2]}</div></div>
-                </div>` + renderStatus(isMyTurn) + `<div class="flex justify-center pointer-events-${isMyTurn?'auto':'none'}">${html}</div>` + renderRestart();
-        }
-        window.memPlay = function(i) {
-            if(gameState.turn!==gameState.myRole||gameState.gameOver||gameState.lock||gameState.flipped.includes(i)||gameState.matched.includes(i)) return;
-            let st = JSON.parse(JSON.stringify(gameState)); st.flipped.push(i);
-            if(st.flipped.length === 2) {
-                st.lock = true; syncMove(st); 
-                setTimeout(() => {
-                    let newSt = JSON.parse(JSON.stringify(gameState));
-                    if(newSt.deck[newSt.flipped[0]] === newSt.deck[newSt.flipped[1]]) {
-                        newSt.matched.push(...newSt.flipped); newSt.scores[newSt.turn]++;
-                        if(newSt.matched.length === 16) { newSt.gameOver=true; newSt.winner = newSt.scores[1]>newSt.scores[2]?1:(newSt.scores[2]>newSt.scores[1]?2:0); }
-                    } else newSt.turn = newSt.turn===1?2:1;
-                    newSt.flipped = []; newSt.lock = false; syncMove(newSt);
-                }, 1000);
-            } else syncMove(st);
-        };
-
-        // --- Battleship ---
-        function renderBattleship() {
-            const st = gameState; const isMyTurn = st.turn === st.myRole && !st.gameOver;
-            const myHits = st.myRole===1?st.hits1:st.hits2; const myMisses = st.myRole===1?st.misses1:st.misses2;
-            let html = '<div class="battleship-grid shadow-float">';
-            for(let i=0; i<64; i++) {
-                const stateCls = myHits.includes(i) ? 'bs-hit' : (myMisses.includes(i) ? 'bs-miss' : '');
-                html += `<div class="bs-cell rounded-sm ${stateCls}" onclick="window.bsPlay(${i})"></div>`;
-            }
-            html += '</div>';
-            document.getElementById('game-view').innerHTML = renderPlayerHeader() + renderStatus(isMyTurn) + `
-                <p class="text-xs text-center text-zinc-500 mb-6 uppercase tracking-widest font-bold">Sink 5 Enemy Ships to Win!</p>
-                <div class="flex justify-center pointer-events-${isMyTurn?'auto':'none'}">${html}</div>` + renderRestart();
-        }
-        window.bsPlay = function(i) {
-            if(gameState.turn!==gameState.myRole||gameState.gameOver) return;
-            let st = JSON.parse(JSON.stringify(gameState));
-            const oppShips = st.myRole===1?st.s2:st.s1; const myHits = st.myRole===1?st.hits1:st.hits2; const myMisses = st.myRole===1?st.misses1:st.misses2;
-            if(myHits.includes(i) || myMisses.includes(i)) return; 
-            if(oppShips.includes(i)) {
-                myHits.push(i); if(myHits.length === 5) { st.gameOver=true; st.winner=st.myRole; }
-            } else { myMisses.push(i); st.turn = st.turn===1?2:1; }
-            syncMove(st);
-        };
-
-        // --- Solo Games Setup ---
-        window.initSoloGame = function(type) {
-            document.getElementById('hub-view').classList.add('hidden'); document.getElementById('user-profile-widget').classList.add('hidden');
-            document.getElementById('btn-back-hub').classList.remove('hidden'); document.getElementById('game-view').classList.remove('hidden');
-            document.getElementById('game-view').innerHTML = ''; 
-            
-            if(type === 'mastermind') window.initMastermindSolo();
-            else if(type === '2048') init2048();
-            else if(type === 'wordle') initWordle();
-            else if(type === 'minesweeper') initMinesweeper();
-        };
-
-        /* ================= 2048 ================= */
-        function init2048() {
-            soloState = { grid: Array(16).fill(0), score: 0, gameOver: false };
-            add2048Tile(); add2048Tile(); render2048();
-            document.removeEventListener('keydown', window.solo2048KeyHandler); document.addEventListener('keydown', window.solo2048KeyHandler);
-        }
-        function add2048Tile() {
-            let empty = []; soloState.grid.forEach((v,i) => { if(v===0) empty.push(i); });
-            if(empty.length>0) soloState.grid[empty[Math.floor(Math.random()*empty.length)]] = Math.random()>0.1?2:4;
-        }
-        function render2048() {
-            let html = '<div class="grid-2048 shadow-float mt-4">';
-            soloState.grid.forEach(v => { html += `<div class="cell-2048 ${v>0?'val-'+v:''}">${v>0?v:''}</div>`; });
-            html += '</div>';
-            document.getElementById('game-view').innerHTML = `
-                <div class="max-w-xs mx-auto">
-                    <div class="flex justify-between items-end mb-6"><h2 class="text-4xl font-black text-zinc-800 dark:text-zinc-100">2048</h2><div class="bg-zinc-800 dark:bg-white text-white dark:text-zinc-900 px-5 py-2 rounded-2xl text-center"><div class="text-[10px] text-zinc-400 font-bold uppercase tracking-widest">Score</div><div class="text-2xl font-black">${soloState.score}</div></div></div>
-                    ${html}
-                    ${soloState.gameOver ? `<div class="mt-8 text-center font-black text-rose-500 text-3xl fade-in">GAME OVER</div>` : `<p class="text-xs text-center text-zinc-400 mt-6 font-semibold uppercase tracking-widest">Use Arrow Keys</p>`}
-                    <div class="mt-8 flex justify-center"><button onclick="window.initSoloGame('2048')" class="bg-zinc-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 px-8 py-3.5 rounded-2xl font-bold hover:scale-105 active:scale-95 transition-all">Restart</button></div>
-                </div>`;
-        }
-        window.solo2048KeyHandler = function(e) {
-            if(!['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key) || soloState.gameOver || document.getElementById('game-view').classList.contains('hidden')) return;
-            e.preventDefault(); let moved = false; let g = [...soloState.grid];
-            const slide = (arr) => {
-                let filtered = arr.filter(v=>v);
-                for(let i=0;i<filtered.length-1;i++){ if(filtered[i]===filtered[i+1]){ filtered[i]*=2; soloState.score+=filtered[i]; filtered.splice(i+1,1); } }
-                while(filtered.length<4) filtered.push(0); return filtered;
-            };
-            if(e.key==='ArrowLeft'||e.key==='ArrowRight') {
-                for(let i=0;i<4;i++) {
-                    let row = [g[i*4], g[i*4+1], g[i*4+2], g[i*4+3]];
-                    if(e.key==='ArrowRight') row.reverse();
-                    let newRow = slide(row);
-                    if(e.key==='ArrowRight') newRow.reverse();
-                    for(let j=0;j<4;j++) { if(g[i*4+j]!==newRow[j]) moved=true; g[i*4+j] = newRow[j]; }
+            if(data.c4Winner) {
+                if(data.c4Winner === 'draw') status.innerText = 'Draw!';
+                else status.innerText = data.c4Winner === myRole ? 'You Won!' : 'Opponent Won';
+                if(!document.getElementById('game-overlay').classList.contains('flex')) {
+                    showUnifiedOverlay(data.c4Winner === 'draw' ? 'Draw!' : (data.c4Winner === myRole ? 'Victory! 🥇' : 'Defeat! 💔'));
                 }
             } else {
-                for(let c=0;c<4;c++) {
-                    let col = [g[c], g[c+4], g[c+8], g[c+12]];
-                    if(e.key==='ArrowDown') col.reverse();
-                    let newCol = slide(col);
-                    if(e.key==='ArrowDown') newCol.reverse();
-                    for(let r=0;r<4;r++) { if(g[r*4+c]!==newCol[r]) moved=true; g[r*4+c] = newCol[r]; }
-                }
+                status.innerText = data.c4Turn === myRole ? 'Your Turn' : 'Opponent...';
+                status.className = `font-black ${data.c4Turn === '1' ? 'text-blue-500' : 'text-red-500'}`;
             }
-            if(moved) { soloState.grid = g; add2048Tile(); render2048(); }
-            if(!soloState.grid.includes(0)) {
-                let canMove = false;
-                for(let i=0;i<16;i++){ if((i%4<3 && g[i]===g[i+1]) || (i<12 && g[i]===g[i+4])) canMove=true; }
-                if(!canMove) { soloState.gameOver=true; render2048(); }
-            }
-        };
 
-        /* ================= Wordle ================= */
-        const words = ["GAMES", "SCORE", "SMART", "BOARD", "POINT", "MATCH", "BRICK", "FLASH", "POWER", "LEVEL"];
-        const keyboardRows = [
-            ['Q','W','E','R','T','Y','U','I','O','P'],
-            ['A','S','D','F','G','H','J','K','L'],
-            ['ENTER','Z','X','C','V','B','N','M','DEL']
-        ];
-
-        function initWordle() {
-            soloState = { word: words[Math.floor(Math.random()*words.length)], guesses: [], current: '', gameOver: false, keyColors: {} };
-            renderWordle(); document.removeEventListener('keydown', window.wordleKeyHandler); document.addEventListener('keydown', window.wordleKeyHandler);
-        }
-        function renderWordle() {
-            let html = '<div class="wordle-grid mt-6">';
-            for(let r=0; r<6; r++) {
-                html += '<div class="wordle-row">';
-                let guess = r < soloState.guesses.length ? soloState.guesses[r] : (r === soloState.guesses.length ? soloState.current : '');
-                for(let c=0; c<5; c++) {
-                    let char = guess[c] || ''; let cls = '';
-                    if(r < soloState.guesses.length) {
-                        if(char === soloState.word[c]) cls = 'correct';
-                        else if(soloState.word.includes(char)) cls = 'present';
-                        else cls = 'absent';
-                    }
-                    html += `<div class="wordle-cell shadow-sm ${cls}">${char}</div>`;
-                }
-                html += '</div>';
-            }
-            html += '</div>';
-
-            // On-screen Keyboard
-            let kbHtml = '<div class="mt-8 flex flex-col items-center gap-2 w-full max-w-sm mx-auto select-none">';
-            keyboardRows.forEach(row => {
-                kbHtml += '<div class="flex gap-1 justify-center w-full">';
-                row.forEach(key => {
-                    let btnCls = 'bg-zinc-200 dark:bg-zinc-700 text-zinc-900 dark:text-white hover:bg-zinc-300 dark:hover:bg-zinc-600';
-                    if (soloState.keyColors[key] === 'correct') btnCls = 'bg-emerald-500 text-white';
-                    else if (soloState.keyColors[key] === 'present') btnCls = 'bg-yellow-500 text-white';
-                    else if (soloState.keyColors[key] === 'absent') btnCls = 'bg-zinc-500 text-white opacity-50';
-                    
-                    let label = key;
-                    if(key === 'BACKSPACE' || key === 'DEL') label = '<span class="material-symbols-outlined text-[18px]">backspace</span>';
-                    const isWide = (key === 'ENTER' || key === 'DEL') ? 'wide' : '';
-                    
-                    kbHtml += `<div class="wordle-key ${isWide} ${btnCls}" onclick="window.wordleKeyPress('${key}')">${label}</div>`;
-                });
-                kbHtml += '</div>';
-            });
-            kbHtml += '</div>';
-
-            document.getElementById('game-view').innerHTML = `
-                <div class="max-w-md mx-auto px-2">
-                    <h2 class="text-4xl font-black text-center mb-1 tracking-widest uppercase">Wordle</h2>
-                    <p class="text-[10px] text-center text-zinc-400 font-bold uppercase tracking-widest">Guess the 5-letter word</p>
-                    ${html}
-                    ${soloState.gameOver ? `<div class="mt-6 text-center font-black text-2xl fade-in">${soloState.guesses[soloState.guesses.length-1]===soloState.word?'SPLENDID! 🎉':`GAME OVER! <br><span class="text-sm mt-2 block opacity-70">Word was ${soloState.word}</span>`}</div>` : kbHtml}
-                    <div class="mt-6 flex justify-center pb-4"><button onclick="window.initSoloGame('wordle')" class="bg-zinc-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 px-8 py-3.5 rounded-2xl font-bold hover:scale-105 active:scale-95 transition-all">Restart</button></div>
-                </div>`;
+            grid.innerHTML = board.map((cell, i) => {
+                let colorClass = "bg-blue-800/50 dark:bg-blue-950/50 shadow-inner"; // Empty hole
+                if(cell === '1') colorClass = "bg-blue-500 shadow-md";
+                if(cell === '2') colorClass = "bg-red-500 shadow-md";
+                return `<div onclick="c4Click(${i % 7})" class="w-10 h-10 sm:w-12 sm:h-12 rounded-full cursor-pointer hover:bg-white/10 transition-colors flex items-center justify-center p-1"><div class="w-full h-full rounded-full ${colorClass}"></div></div>`;
+            }).join('');
         }
 
-        function processWordleGuess() {
-            if(soloState.current.length !== 5) return;
-            const guess = soloState.current;
-            soloState.guesses.push(guess);
+        window.c4Click = async function(col) {
+            if(!currentRoomId) return;
+            const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'minigame_rooms', currentRoomId);
+            const snap = await getDoc(docRef); const data = snap.data();
             
-            // Update keyboard colors
-            for(let i=0; i<5; i++) {
-                const char = guess[i];
-                if(soloState.word[i] === char) soloState.keyColors[char] = 'correct';
-                else if(soloState.word.includes(char) && soloState.keyColors[char] !== 'correct') soloState.keyColors[char] = 'present';
-                else if(!soloState.word.includes(char)) soloState.keyColors[char] = 'absent';
+            if(data.c4Winner || data.c4Turn !== myRole) return; 
+            
+            let newBoard = [...data.c4Board];
+            let placed = false;
+            // Find lowest empty row in this column
+            for(let r = 5; r >= 0; r--) {
+                const idx = r * 7 + col;
+                if(!newBoard[idx]) {
+                    newBoard[idx] = myRole;
+                    placed = true;
+                    break;
+                }
             }
+            if(!placed) return; // Column full
+            vibe(15);
+            
+            let winner = checkC4Winner(newBoard);
+            let updateData = { c4Board: newBoard, c4Turn: myRole === '1' ? '2' : '1' };
+            if(winner) updateData.c4Winner = winner;
 
-            if(guess === soloState.word || soloState.guesses.length === 6) { 
-                soloState.gameOver=true; 
-                if(guess === soloState.word) awardPoints(5); 
-            }
-            soloState.current = ''; 
-            renderWordle();
+            updateDoc(docRef, updateData);
         }
 
-        window.wordleKeyPress = function(key) {
-            if(soloState.gameOver) return;
-            if(key === 'ENTER') {
-                processWordleGuess();
-            } else if (key === 'DEL' || key === 'BACKSPACE') {
-                soloState.current = soloState.current.slice(0, -1); renderWordle();
-            } else if (/^[A-Z]$/.test(key) && soloState.current.length < 5) {
-                soloState.current += key; renderWordle();
+        function checkC4Winner(b) {
+            const cols = 7, rows = 6;
+            // Check horiz
+            for(let r=0; r<rows; r++) for(let c=0; c<cols-3; c++) { const i = r*cols+c; if(b[i] && b[i]===b[i+1] && b[i]===b[i+2] && b[i]===b[i+3]) return b[i]; }
+            // Check vert
+            for(let r=0; r<rows-3; r++) for(let c=0; c<cols; c++) { const i = r*cols+c; if(b[i] && b[i]===b[i+cols] && b[i]===b[i+cols*2] && b[i]===b[i+cols*3]) return b[i]; }
+            // Diag Right
+            for(let r=0; r<rows-3; r++) for(let c=0; c<cols-3; c++) { const i = r*cols+c; if(b[i] && b[i]===b[i+cols+1] && b[i]===b[i+(cols+1)*2] && b[i]===b[i+(cols+1)*3]) return b[i]; }
+            // Diag Left
+            for(let r=3; r<rows; r++) for(let c=0; c<cols-3; c++) { const i = r*cols+c; if(b[i] && b[i]===b[i-cols+1] && b[i]===b[i-(cols-1)*2] && b[i]===b[i-(cols-1)*3]) return b[i]; }
+            if(!b.includes(null)) return 'draw';
+            return null;
+        }
+
+        /* ==================== Dots and Boxes (Online) ==================== */
+        // Grid: 4x4 dots => 3x3 boxes. 
+        // 3 rows of 4 h-lines = 12 h-lines
+        // 4 columns of 3 v-lines = 12 v-lines
+        function handleDotsBoxesSync(data) {
+            document.getElementById('db-s1').innerText = data.dbS1 || 0;
+            document.getElementById('db-s2').innerText = data.dbS2 || 0;
+            
+            const status = document.getElementById('db-status');
+            if(data.dbWinner) {
+                if(data.dbWinner === 'draw') status.innerText = 'Draw!';
+                else status.innerText = data.dbWinner === myRole ? 'You Won!' : 'Opponent Won';
+                if(!document.getElementById('game-overlay').classList.contains('flex')) {
+                    showUnifiedOverlay(data.dbWinner === 'draw' ? 'Draw!' : (data.dbWinner === myRole ? 'Victory! 🥇' : 'Defeat! 💔'));
+                }
+            } else {
+                status.innerText = data.dbTurn === myRole ? 'Your Turn' : 'Opponent...';
+                status.className = `font-black px-4 py-1 rounded-full text-sm ${data.dbTurn === '1' ? 'bg-blue-500/10 text-blue-500' : 'bg-red-500/10 text-red-500'}`;
             }
-        };
 
-        window.wordleKeyHandler = function(e) {
-            if(soloState.gameOver || document.getElementById('game-view').classList.contains('hidden') || selectedGameType) return;
-            let key = e.key.toUpperCase();
-            if(key === 'BACKSPACE') key = 'DEL';
-            window.wordleKeyPress(key);
-        };
-
-        /* ================= Mastermind ================= */
-        window.initMastermindSolo = function() {
-            let digits = [1,2,3,4,5,6,7,8,9]; soloState = { secret: [], attempts: [] };
-            for(let i=0; i<4; i++) { const idx = Math.floor(Math.random() * digits.length); soloState.secret.push(digits[idx]); digits.splice(idx, 1); }
-            document.getElementById('game-view').innerHTML = `
-                <div class="max-w-xs mx-auto mt-4 fade-in">
-                    <h2 class="text-4xl font-black text-center mb-6 tracking-tight">Code Breaker</h2>
-                    <div class="bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-500 text-[10px] font-bold text-center p-4 rounded-3xl mb-6 uppercase tracking-wide leading-relaxed shadow-sm">
-                        <span class="text-sm">🔥</span> = Correct Number & Position<br>
-                        <span class="text-sm">🟢</span> = Correct Number, Wrong Position
-                    </div>
-                    <div class="flex gap-2 mb-6">
-                        <input type="text" pattern="\\d*" maxlength="4" id="mm-input" placeholder="4 Digits (1-9)..." class="flex-1 bg-surface-light dark:bg-surface-dark shadow-sm rounded-2xl px-4 py-4 text-center font-black text-xl outline-none focus:ring-2 focus:ring-primary tracking-[0.3em] text-zinc-900 dark:text-white">
-                        <button onclick="window.mmGuess()" class="bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 px-6 rounded-2xl font-bold shadow-md hover:scale-105 active:scale-95 transition-all">GUESS</button>
-                    </div>
-                    <div class="bg-surface-light dark:bg-surface-dark rounded-3xl shadow-soft p-2 min-h-[200px] max-h-[300px] overflow-y-auto" id="mm-history">
-                        <div class="text-center text-sm text-zinc-400 mt-10 font-medium">History will appear here...</div>
-                    </div>
-                </div>`;
-            document.getElementById('game-view').classList.remove('hidden');
-        };
-        window.mmGuess = function() {
-            const inputEl = document.getElementById('mm-input'); const val = inputEl.value;
-            if(val.length !== 4) return window.showToast("Must be exactly 4 digits!", "error");
-            const guess = val.split('').map(Number);
-            if(guess.some(n => isNaN(n) || n<1 || n>9)) return window.showToast("Use numbers 1-9 only", "error");
-
-            let bulls = 0, cows = 0; let secretCopy = [...soloState.secret]; let guessCopy = [...guess];
-            for(let i=0; i<4; i++) { if(guessCopy[i] === secretCopy[i]) { bulls++; secretCopy[i] = -1; guessCopy[i] = -2; } }
-            for(let i=0; i<4; i++) { if(guessCopy[i] > 0) { const idx = secretCopy.indexOf(guessCopy[i]); if(idx !== -1) { cows++; secretCopy[idx] = -1; } } }
-
-            soloState.attempts.unshift({ guess: val, b: bulls, c: cows }); inputEl.value = '';
-            document.getElementById('mm-history').innerHTML = soloState.attempts.map(atm => `
-                <div class="flex justify-between items-center p-4 border-b border-zinc-100 dark:border-zinc-800 last:border-0 fade-in">
-                    <span class="font-black tracking-[0.4em] text-xl text-zinc-800 dark:text-zinc-200">${atm.guess}</span>
-                    <div class="flex gap-2 text-sm font-bold">
-                        <span class="text-rose-500 bg-rose-50 dark:bg-rose-900/20 px-3 py-1.5 rounded-xl">${atm.b} 🔥</span>
-                        <span class="text-emerald-500 bg-emerald-50 dark:bg-emerald-900/20 px-3 py-1.5 rounded-xl">${atm.c} 🟢</span>
-                    </div>
-                </div>`).join('');
-            if(bulls === 4) { window.showToast(`Code Cracked in ${soloState.attempts.length} attempts! 🏆`, 'success'); inputEl.disabled = true; awardPoints(10); }
-        };
-
-        /* ================= Minesweeper ================= */
-        function initMinesweeper() {
-            let b = Array.from({length: 81}, ()=>({m:false, r:false, f:false, n:0}));
-            let mCount = 0; while(mCount<10){ let i=Math.floor(Math.random()*81); if(!b[i].m){ b[i].m=true; mCount++; } }
-            for(let i=0;i<81;i++){ if(!b[i].m){ let n=0; const r=Math.floor(i/9), c=i%9; 
-                for(let dr=-1;dr<=1;dr++) for(let dc=-1;dc<=1;dc++) { const nr=r+dr, nc=c+dc; if(nr>=0&&nr<9&&nc>=0&&nc<9&&b[nr*9+nc].m) n++; } b[i].n=n; } }
-            soloState = { b, gameOver: false, won: false, firstClick: true }; renderMinesweeper();
+            renderDbBoard(data.dbH, data.dbV, data.dbB);
         }
-        function renderMinesweeper() {
-            const cols = ['','text-blue-500','text-green-500','text-red-500','text-purple-500','text-orange-500','text-cyan-500','text-black','text-gray-500'];
-            let html = '<div class="mine-grid shadow-float mt-6" style="grid-template-columns: repeat(9, 1fr);">';
-            soloState.b.forEach((c,i) => {
-                let cnt = ''; let cls = c.r ? 'revealed' : '';
-                if(c.r){ if(c.m) cnt='💣'; else if(c.n>0){ cnt=c.n; cls+=' '+cols[c.n]; } } else if(c.f) cnt='🚩';
-                html += `<div class="mine-cell rounded-sm ${cls}" oncontextmenu="event.preventDefault(); window.msFlag(${i})" onclick="window.msClick(${i})">${cnt}</div>`;
-            });
-            html += '</div>';
-            document.getElementById('game-view').innerHTML = `
-                <div class="max-w-xs mx-auto">
-                    <h2 class="text-4xl font-black text-center mb-2 tracking-tight">Minesweeper</h2>
-                    <p class="text-[10px] text-center text-zinc-400 uppercase tracking-widest font-bold">Find 10 Mines. Right-click to Flag.</p>
-                    ${html}
-                    ${soloState.gameOver ? `<div class="mt-8 text-center font-black ${soloState.won?'text-primary':'text-rose-500'} text-3xl fade-in tracking-tight">${soloState.won?'YOU WON!':'BOOM! 💥'}</div>` : ''}
-                    <div class="mt-8 flex justify-center"><button onclick="window.initSoloGame('minesweeper')" class="bg-zinc-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 px-8 py-3.5 rounded-2xl font-bold hover:scale-105 active:scale-95 transition-all">Restart</button></div>
-                </div>`;
+
+        function renderDbBoard(dbH, dbV, dbB) {
+            const grid = document.getElementById('db-grid');
+            let html = '';
+            const boxSize = 80; // pixels
+            
+            // Render Boxes
+            for(let r=0; r<3; r++) {
+                for(let c=0; c<3; c++) {
+                    let owner = dbB[r*3+c];
+                    let bg = owner === '1' ? 'bg-blue-500/30' : (owner === '2' ? 'bg-red-500/30' : 'bg-transparent');
+                    html += `<div class="db-box ${bg} w-[80px] h-[80px]" style="top: ${r*boxSize}px; left: ${c*boxSize}px;"></div>`;
+                }
+            }
+
+            // Render H-Lines (4 rows, 3 cols)
+            for(let r=0; r<4; r++) {
+                for(let c=0; c<3; c++) {
+                    let idx = r*3 + c;
+                    let claimed = dbH[idx];
+                    let bg = claimed ? 'bg-zinc-800 dark:bg-zinc-200' : 'db-line-unclaimed';
+                    html += `<div onclick="dbLineClick('h', ${idx})" class="db-line-h w-[80px] ${bg}" style="top: ${r*boxSize}px; left: ${c*boxSize}px;"></div>`;
+                }
+            }
+
+            // Render V-Lines (3 rows, 4 cols)
+            for(let r=0; r<3; r++) {
+                for(let c=0; c<4; c++) {
+                    let idx = r*4 + c;
+                    let claimed = dbV[idx];
+                    let bg = claimed ? 'bg-zinc-800 dark:bg-zinc-200' : 'db-line-unclaimed';
+                    html += `<div onclick="dbLineClick('v', ${idx})" class="db-line-v h-[80px] ${bg}" style="top: ${r*boxSize}px; left: ${c*boxSize}px;"></div>`;
+                }
+            }
+
+            // Render Dots
+            for(let r=0; r<4; r++) {
+                for(let c=0; c<4; c++) {
+                    html += `<div class="db-dot" style="top: ${r*boxSize}px; left: ${c*boxSize}px;"></div>`;
+                }
+            }
+            grid.innerHTML = html;
         }
-        window.msClick = function(i) {
-            if(soloState.gameOver || soloState.b[i].f || soloState.b[i].r) return;
-            if(soloState.firstClick && soloState.b[i].m) { initMinesweeper(); window.msClick(i); return; } 
-            soloState.firstClick = false;
-            if(soloState.b[i].m) { soloState.b.forEach(c => { if(c.m) c.r=true; }); soloState.gameOver = true; } 
-            else {
-                const flood = (idx) => {
-                    if(idx<0||idx>=81||soloState.b[idx].r) return; soloState.b[idx].r = true;
-                    if(soloState.b[idx].n===0) {
-                        const r=Math.floor(idx/9), c=idx%9;
-                        for(let dr=-1;dr<=1;dr++) for(let dc=-1;dc<=1;dc++) { const nr=r+dr, nc=c+dc; if(nr>=0&&nr<9&&nc>=0&&nc<9) flood(nr*9+nc); }
+
+        window.dbLineClick = async function(type, idx) {
+            if(!currentRoomId) return;
+            const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'minigame_rooms', currentRoomId);
+            const snap = await getDoc(docRef); const data = snap.data();
+            
+            if(data.dbWinner || data.dbTurn !== myRole) return;
+            let arrH = [...data.dbH], arrV = [...data.dbV], arrB = [...data.dbB];
+            
+            if(type === 'h' && arrH[idx]) return;
+            if(type === 'v' && arrV[idx]) return;
+            vibe(15);
+            
+            if(type === 'h') arrH[idx] = true; else arrV[idx] = true;
+            
+            // Check completed boxes
+            let scored = false;
+            let s1 = data.dbS1, s2 = data.dbS2;
+            for(let r=0; r<3; r++) {
+                for(let c=0; c<3; c++) {
+                    let bIdx = r*3 + c;
+                    if(!arrB[bIdx]) {
+                        // Box requires: top H, bottom H, left V, right V
+                        let topH = r*3 + c;
+                        let botH = (r+1)*3 + c;
+                        let leftV = r*4 + c;
+                        let rightV = r*4 + (c+1);
+                        if(arrH[topH] && arrH[botH] && arrV[leftV] && arrV[rightV]) {
+                            arrB[bIdx] = myRole;
+                            if(myRole === '1') s1++; else s2++;
+                            scored = true;
+                        }
                     }
-                }; flood(i);
-                if(soloState.b.filter(c => !c.m && !c.r).length === 0) { soloState.gameOver=true; soloState.won=true; awardPoints(10); }
-            } renderMinesweeper();
-        };
-        window.msFlag = function(i) { if(soloState.gameOver || soloState.b[i].r) return; soloState.b[i].f = !soloState.b[i].f; renderMinesweeper(); };
+                }
+            }
 
-        window.addEventListener('DOMContentLoaded', init);
+            let nextTurn = scored ? myRole : (myRole === '1' ? '2' : '1');
+            let updateData = { dbH: arrH, dbV: arrV, dbB: arrB, dbTurn: nextTurn, dbS1: s1, dbS2: s2 };
+            
+            if(!arrB.includes(null)) {
+                if(s1 > s2) updateData.dbWinner = '1';
+                else if(s2 > s1) updateData.dbWinner = '2';
+                else updateData.dbWinner = 'draw';
+            }
+
+            updateDoc(docRef, updateData);
+        }
+
+        /* ==================== 5. Wordle (Solo with Dictionary API) ==================== */
+        const wdlWordsList = ["APPLE", "TRAIN", "BRAIN", "MOUSE", "GHOST", "HEART", "SMART", "PLANT", "SPACE", "TABLE", "CHAIR", "DREAM", "SMILE", "WATER", "EARTH", "LIGHT", "SOUND", "POWER", "MAGIC", "WORLD"];
+        let wdlTarget = ""; let wdlBoard = []; let wdlRow = 0; let wdlCol = 0; let wdlGameOver = false; let wdlColors = {};
+        
+        window.initWordle = function() {
+            wdlTarget = wdlWordsList[Math.floor(Math.random() * wdlWordsList.length)];
+            wdlBoard = Array(6).fill().map(() => Array(5).fill("")); wdlRow = 0; wdlCol = 0; wdlGameOver = false; wdlColors = {};
+            renderWordleGrid(); renderWordleKB();
+        }
+
+        function renderWordleGrid() {
+            const grid = document.getElementById('wdl-grid');
+            grid.style.gridTemplateColumns = "repeat(5, 1fr)";
+            grid.innerHTML = wdlBoard.map((row, r) => row.map((char, c) => `<div id="wdl-c-${r}-${c}" class="wdl-cell w-12 h-12 md:w-14 md:h-14 border-2 border-zinc-300 dark:border-zinc-700 bg-surface-light dark:bg-surface-dark flex items-center justify-center text-2xl font-black rounded-lg ${char ? 'border-zinc-500 dark:border-zinc-400' : ''} uppercase">${char}</div>`).join('')).join('');
+        }
+
+        function renderWordleKB() {
+            const layout = ["QWERTYUIOP", "ASDFGHJKL", "E_ZXCVBNM_B"];
+            document.getElementById('wdl-kb').innerHTML = layout.map(rowStr => {
+                let keys = rowStr === "E_ZXCVBNM_B" ? ['ENTER',...'ZXCVBNM'.split(''),'BACK'] : rowStr.split('');
+                return `<div class="flex justify-center gap-1 w-full">${keys.map(k => {
+                    let text = k, w = "flex-1", cls = "bg-zinc-200 dark:bg-zinc-700";
+                    if(k==='ENTER') { text="ENT"; w="flex-[1.5]"; } else if(k==='BACK') { text="⌫"; w="flex-[1.5]"; }
+                    if(wdlColors[k]) cls = wdlColors[k];
+                    return `<button onclick="handleWdlKey('${k}')" class="${w} h-12 rounded-lg font-bold text-sm flex items-center justify-center active:scale-95 transition-all text-zinc-900 dark:text-white ${cls}">${text}</button>`;
+                }).join('')}</div>`;
+            }).join('');
+        }
+
+        window.handleWdlKey = async function(k) {
+            if(wdlGameOver) return; vibe(10);
+            if(k === 'BACK') { if(wdlCol > 0) { wdlCol--; wdlBoard[wdlRow][wdlCol] = ""; renderWordleGrid(); } }
+            else if(k === 'ENTER') {
+                if(wdlCol === 5) {
+                    const guess = wdlBoard[wdlRow].join('');
+                    document.getElementById('wdl-loading').style.display = 'flex';
+                    const isValidAPI = await validateWordAPI(guess);
+                    document.getElementById('wdl-loading').style.display = 'none';
+                    
+                    if(isValidAPI || wdlWordsList.includes(guess)) {
+                        checkWordle(guess);
+                    } else { 
+                        vibe(50); 
+                        for(let i=0; i<5; i++) {
+                            const cell = document.getElementById(`wdl-c-${wdlRow}-${i}`);
+                            cell.classList.add('shake');
+                            setTimeout(() => cell.classList.remove('shake'), 400);
+                        }
+                        showUnifiedOverlay("Not in dictionary! Try another word."); 
+                        setTimeout(()=> {
+                            document.getElementById('game-overlay').classList.add('hidden');
+                            document.getElementById('game-overlay').classList.remove('flex');
+                            wdlBoard[wdlRow] = Array(5).fill("");
+                            wdlCol = 0;
+                            renderWordleGrid();
+                        }, 1500); 
+                    }
+                } else { vibe(20); showUnifiedOverlay("Not enough letters!"); setTimeout(()=> { document.getElementById('game-overlay').classList.add('hidden'); document.getElementById('game-overlay').classList.remove('flex'); }, 1000); }
+            }
+            else { if(wdlCol < 5) { wdlBoard[wdlRow][wdlCol] = k; wdlCol++; renderWordleGrid(); } }
+        }
+
+        function checkWordle(guess) {
+            let targetArr = wdlTarget.split(''); let guessArr = guess.split('');
+            let rowColors = Array(5).fill('bg-zinc-500 dark:bg-zinc-600 text-white border-transparent');
+            for(let i=0; i<5; i++) { if(guessArr[i] === targetArr[i]) { rowColors[i] = 'bg-emerald-500 text-white border-transparent'; targetArr[i] = null; guessArr[i] = null; } }
+            for(let i=0; i<5; i++) { if(guessArr[i] && targetArr.includes(guessArr[i])) { rowColors[i] = 'bg-amber-500 text-white border-transparent'; targetArr[targetArr.indexOf(guessArr[i])] = null; } }
+            
+            for(let i=0; i<5; i++) {
+                setTimeout(() => {
+                    const cell = document.getElementById(`wdl-c-${wdlRow}-${i}`);
+                    cell.classList.add('wdl-flip');
+                    setTimeout(() => {
+                        cell.className = `wdl-cell w-12 h-12 md:w-14 md:h-14 flex items-center justify-center text-2xl font-black rounded-lg uppercase wdl-flip ${rowColors[i]}`;
+                        const char = wdlBoard[wdlRow][i];
+                        if(rowColors[i].includes('emerald')) wdlColors[char] = 'bg-emerald-500 text-white';
+                        else if(rowColors[i].includes('amber') && wdlColors[char] !== 'bg-emerald-500 text-white') wdlColors[char] = 'bg-amber-500 text-white';
+                        else if(!wdlColors[char]) wdlColors[char] = 'bg-zinc-500 dark:bg-zinc-600 text-white';
+                        if(i === 4) renderWordleKB();
+                    }, 250);
+                }, i * 300);
+            }
+
+            setTimeout(() => {
+                if(guess === wdlTarget) { wdlGameOver = true; vibe([100,50,200]); showUnifiedOverlay("Genius! 🥇"); }
+                else if(wdlRow === 5) { wdlGameOver = true; vibe(500); showUnifiedOverlay(`Game Over! Word was ${wdlTarget}`); }
+                else { wdlRow++; wdlCol = 0; }
+            }, 1800);
+        }
+
+        /* ==================== 6. Code Breaker (Solo - Numbers) ==================== */
+        let cbTarget = []; let cbCurrentGuess = []; let cbHistory = []; let cbGameOver = false;
+
+        window.initCodeBreaker = function() {
+            cbTarget = Array(4).fill().map(() => Math.floor(Math.random() * 10).toString());
+            cbCurrentGuess = []; cbHistory = []; cbGameOver = false;
+            document.getElementById('cb-submit-btn').disabled = true;
+            document.getElementById('cb-history').innerHTML = '';
+            renderCbPicker(); renderCbCurrent();
+        }
+
+        function renderCbPicker() {
+            const picker = document.getElementById('cb-picker'); let html = '';
+            for(let i=1; i<=9; i++) html += `<button onclick="cbPickNumber('${i}')" class="w-full aspect-square rounded-xl bg-surface-light dark:bg-surface-dark shadow-sm border border-zinc-200 dark:border-zinc-700 text-2xl font-black active:scale-90 transition-transform text-zinc-900 dark:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800">${i}</button>`;
+            html += `<button onclick="cbPickNumber('0')" class="w-full aspect-square rounded-xl bg-surface-light dark:bg-surface-dark shadow-sm border border-zinc-200 dark:border-zinc-700 text-2xl font-black active:scale-90 transition-transform text-zinc-900 dark:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800">0</button>`;
+            picker.innerHTML = html;
+        }
+
+        function renderCbCurrent() {
+            const container = document.getElementById('cb-current-guess');
+            container.innerHTML = Array(4).fill().map((_, i) => { const num = cbCurrentGuess[i]; return `<div onclick="cbRemoveNumber(${i})" class="w-12 h-14 rounded-xl border-2 flex items-center justify-center text-2xl font-black ${num !== undefined ? 'border-primary text-primary cursor-pointer shadow-inner bg-primary/5' : 'border-dashed border-zinc-300 dark:border-zinc-600'} transition-colors">${num !== undefined ? num : ''}</div>`; }).join('');
+            document.getElementById('cb-submit-btn').disabled = cbCurrentGuess.length < 4 || cbGameOver;
+        }
+
+        window.cbPickNumber = function(num) { if(cbGameOver || cbCurrentGuess.length >= 4) return; vibe(10); cbCurrentGuess.push(num); renderCbCurrent(); }
+        window.cbRemoveNumber = function(idx) { if(cbGameOver || cbCurrentGuess[idx] === undefined) return; vibe(10); cbCurrentGuess.splice(idx, 1); renderCbCurrent(); }
+        window.cbSubmit = function() {
+            if(cbCurrentGuess.length < 4 || cbGameOver) return; vibe(20);
+            let exact = 0; let valOnly = 0; let targetCopy = [...cbTarget]; let guessCopy = [...cbCurrentGuess];
+            for(let i=0; i<4; i++) { if(guessCopy[i] === targetCopy[i]) { exact++; targetCopy[i] = null; guessCopy[i] = null; } }
+            for(let i=0; i<4; i++) { if(guessCopy[i] !== null && targetCopy.includes(guessCopy[i])) { valOnly++; targetCopy[targetCopy.indexOf(guessCopy[i])] = null; } }
+            cbHistory.unshift({ guess: [...cbCurrentGuess], exact, valOnly }); cbCurrentGuess = []; renderCbCurrent(); renderCbHistory();
+            if(exact === 4) { cbGameOver = true; vibe([100,50,200]); showUnifiedOverlay("Mastermind! 🧠"); } else if(cbHistory.length >= 10) { cbGameOver = true; vibe(500); showUnifiedOverlay(`Out of tries! Code was ${cbTarget.join('')} 💔`); }
+        }
+        function renderCbHistory() { document.getElementById('cb-history').innerHTML = cbHistory.map(h => `<div class="flex justify-between items-center bg-background-light dark:bg-background-dark p-3 rounded-xl border border-zinc-200 dark:border-zinc-800" dir="ltr"><div class="flex gap-2">${h.guess.map(n => `<div class="w-8 h-10 rounded-lg flex items-center justify-center text-lg font-black bg-surface-light dark:bg-surface-dark border border-zinc-200 dark:border-zinc-700 shadow-sm">${n}</div>`).join('')}</div><div class="flex gap-1 flex-wrap w-14 justify-end items-center">${Array(h.exact).fill('<div class="w-3 h-3 bg-primary rounded-full shadow-sm"></div>').join('')}${Array(h.valOnly).fill('<div class="w-3 h-3 bg-zinc-300 dark:bg-zinc-600 rounded-full border border-zinc-400"></div>').join('')}</div></div>`).join(''); }
+
+        /* ==================== Older Games Handlers (WordChain, Hangman, Tapwar, RPS, TTT, MS, Hunter, Memory) ==================== */
+        window.openSoloGame = function(gameId) { vibe(); isMultiplayer = false; showGameArea(gameId); if(gameId === 'minesweeper') initMinesweeper(); if(gameId === 'hunter') initHunter(); if(gameId === 'memory') initMemory(); if(gameId === 'wordle') initWordle(); if(gameId === 'codebreaker') initCodeBreaker(); if(gameId === '2048') init2048(); }
+        
+        function handleWordChainSync(data) { const words = data.wcWords || []; const historyDiv = document.getElementById('wc-history'); const input = document.getElementById('wc-input'); const requiredLetterEl = document.getElementById('wc-required-letter'); historyDiv.innerHTML = words.map((w, i) => { const isMe = w.role === myRole; return `<div class="p-2 px-4 rounded-xl text-sm font-bold w-max max-w-[80%] ${isMe ? 'bg-primary text-white self-end border-r-4 border-primary-light' : 'bg-surface-light dark:bg-surface-dark border border-zinc-200 dark:border-zinc-700 self-start border-l-4 border-zinc-500'}">${w.word.toUpperCase()}</div>`; }).join(''); historyDiv.scrollTop = historyDiv.scrollHeight; if (words.length > 0) { const lastWord = words[words.length - 1].word; requiredLetterEl.innerText = lastWord.charAt(lastWord.length - 1).toUpperCase(); } else { requiredLetterEl.innerText = 'ANY'; } if (data.wcWinner) { input.disabled = true; const msg = data.wcWinner === myRole ? "Victory! Opponent Quit 🥇" : "Incorrect! You lost 💔"; if(!document.getElementById('game-overlay').classList.contains('flex')) showUnifiedOverlay(msg); } else { const myTurn = data.wcTurn === myRole; document.getElementById('wc-turn-indicator').innerText = myTurn ? 'You' : 'Opponent'; input.disabled = !myTurn; if(myTurn) input.focus(); else input.value = ''; } }
+        window.submitWordChain = async function() { const input = document.getElementById('wc-input'); const word = input.value.trim().toLowerCase(); if (!word || !currentRoomId) return; const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'minigame_rooms', currentRoomId); const snap = await getDoc(docRef); const data = snap.data(); if (data.wcTurn !== myRole || data.wcWinner) return; const words = data.wcWords || []; if (words.length > 0) { const lastWord = words[words.length - 1].word; const required = lastWord.charAt(lastWord.length - 1); if (word.charAt(0) !== required) { vibe(50); alert(`Word must start with ${required.toUpperCase()}`); return; } if (words.some(w => w.word === word)) { vibe(50); alert("Word already used!"); return; } } document.getElementById('wc-loading').classList.remove('hidden'); document.getElementById('wc-loading').classList.add('flex'); const validData = await validateWordAPI(word); document.getElementById('wc-loading').classList.add('hidden'); document.getElementById('wc-loading').classList.remove('flex'); if (validData) { vibe(20); const newWords = [...words, { word: word, role: myRole }]; updateDoc(docRef, { wcWords: newWords, wcTurn: myRole === '1' ? '2' : '1' }); input.value = ''; } else { vibe([100,50,100]); updateDoc(docRef, { wcWinner: myRole === '1' ? '2' : '1' }); } }
+        
+        function handleHangmanSync(data) { const hostView = document.getElementById('hm-host-view'); const gameView = document.getElementById('hm-game-view'); if (!data.hmSecret) { if (myRole === '1') { hostView.classList.remove('hidden'); hostView.classList.add('flex'); gameView.classList.add('hidden'); gameView.classList.remove('flex'); } else { hostView.classList.add('hidden'); hostView.classList.remove('flex'); gameView.classList.add('hidden'); gameView.classList.remove('flex'); if(!document.getElementById('game-overlay').classList.contains('flex')) showUnifiedOverlay("Host is typing..."); } } else { document.getElementById('game-overlay').classList.add('hidden'); document.getElementById('game-overlay').classList.remove('flex'); hostView.classList.add('hidden'); hostView.classList.remove('flex'); gameView.classList.remove('hidden'); gameView.classList.add('flex'); document.getElementById('hm-hint').innerText = data.hmHint || "No hint available."; const secret = data.hmSecret.toUpperCase(); const guesses = data.hmGuesses || []; let mistakes = 0; guesses.forEach(g => { if(!secret.includes(g)) mistakes++; }); document.getElementById('hm-mistakes').innerText = mistakes; document.getElementById('hm-word-display').innerHTML = secret.split('').map(char => { const rev = guesses.includes(char) || data.hmWinner; return `<div class="hangman-letter text-zinc-900 dark:text-white border-zinc-400 dark:border-zinc-600">${rev ? char : ''}</div>`; }).join(''); const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""); document.getElementById('hm-keyboard').innerHTML = alphabet.map(letter => { const isGuessed = guesses.includes(letter); let cls = "bg-surface-light dark:bg-surface-dark border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-white shadow-sm"; if (isGuessed) { const isCorrect = secret.includes(letter); cls = isCorrect ? "bg-primary text-white border-transparent" : "bg-zinc-200 dark:bg-zinc-800 text-zinc-400 border-transparent opacity-50"; } const canClick = !isGuessed && myRole === '2' && !data.hmWinner; return `<button ${canClick ? `onclick="guessHangman('${letter}')"` : 'disabled'} class="w-full aspect-square rounded-xl font-black text-lg flex items-center justify-center ${cls} ${canClick ? 'hover:-translate-y-1 active:scale-95 transition-all' : ''}">${letter}</button>`; }).join(''); if (data.hmWinner) { const msg = data.hmWinner === '2' ? "Guessed Successfully! 🎉" : "Hung! You lost 💀"; if(!document.getElementById('game-overlay').classList.contains('flex')) showUnifiedOverlay(msg); } } }
+        window.submitHangmanWord = async function() { const input = document.getElementById('hm-secret-input'); const word = input.value.trim().toLowerCase(); if (!word || word.includes(' ') || myRole !== '1') return; document.getElementById('hm-host-loading').classList.remove('hidden'); const validData = await validateWordAPI(word); document.getElementById('hm-host-loading').classList.add('hidden'); if (validData) { vibe(20); const hint = validData.meanings[0]?.definitions[0]?.definition || "Valid Dictionary Word."; updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'minigame_rooms', currentRoomId), { hmSecret: word, hmHint: hint, hmGuesses: [], hmWinner: null }); } else { vibe(50); alert("Word not in dictionary!"); } }
+        window.guessHangman = async function(letter) { if(myRole !== '2' || !currentRoomId) return; vibe(10); const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'minigame_rooms', currentRoomId); const snap = await getDoc(docRef); const data = snap.data(); if (data.hmWinner) return; const guesses = data.hmGuesses || []; if (guesses.includes(letter)) return; const newGuesses = [...guesses, letter]; const secret = data.hmSecret.toUpperCase(); let mistakes = 0; let correctChars = 0; newGuesses.forEach(g => { if(!secret.includes(g)) mistakes++; }); secret.split('').forEach(char => { if(newGuesses.includes(char)) correctChars++; }); let updateData = { hmGuesses: newGuesses }; if (mistakes >= 6) updateData.hmWinner = '1'; else if (correctChars === secret.length) updateData.hmWinner = '2'; updateDoc(docRef, updateData); }
+        
+        let myLocalTaps = 0; let lastSentTaps = 0; let twInterval = null;
+        function handleTapWarSync(data) { if(!twInterval) { twInterval = setInterval(() => { if (myLocalTaps !== lastSentTaps && currentRoomId) { updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'minigame_rooms', currentRoomId), { [`p${myRole}Taps`]: myLocalTaps }); lastSentTaps = myLocalTaps; } }, 300); } const p1 = data.p1Taps || 0; const p2 = data.p2Taps || 0; let tugPosition = 50 + (p1 - p2); let myVisualScore = myRole === '1' ? tugPosition : 100 - tugPosition; let oppVisualScore = myRole === '1' ? 100 - tugPosition : tugPosition; if (myVisualScore >= 100) return winMultiTapWar(true); if (oppVisualScore >= 100) return winMultiTapWar(false); document.getElementById('tw-my-bar').style.height = `${myVisualScore}%`; document.getElementById('tw-opponent-bar').style.height = `${oppVisualScore}%`; document.getElementById('tw-my-score').innerText = myVisualScore; document.getElementById('tw-opponent-score').innerText = oppVisualScore; }
+        window.multiTapClick = function() { vibe(20); myLocalTaps += 2; let currentOpp = parseInt(document.getElementById('tw-opponent-score').innerText)||50; let currentMe = parseInt(document.getElementById('tw-my-score').innerText)||50; if(currentMe<100) { currentMe+=2; currentOpp-=2; document.getElementById('tw-my-score').innerText=currentMe; document.getElementById('tw-opponent-score').innerText=currentOpp; document.getElementById('tw-my-bar').style.height=`${currentMe}%`; document.getElementById('tw-opponent-bar').style.height=`${currentOpp}%`; } if(currentMe>=100) winMultiTapWar(true); }
+        function winMultiTapWar(iWon) { clearInterval(twInterval); twInterval = null; vibe(iWon ? [100,50,100,50,200] : 500); if(!document.getElementById('game-overlay').classList.contains('flex')) showUnifiedOverlay(iWon ? "You Won! 🏆" : "You Lost! 💔"); }
+        
+        function handleTicTacToeSync(data) { const board = data.tttBoard || Array(9).fill(null); const grid = document.getElementById('ttt-grid'); const status = document.getElementById('ttt-status'); if(data.tttWinner) { if(data.tttWinner === 'draw') status.innerText = 'Draw!'; else status.innerText = data.tttWinner === myRole ? 'You Won! 🎉' : 'You Lost!'; if(!document.getElementById('game-overlay').classList.contains('flex')) { showUnifiedOverlay(data.tttWinner === 'draw' ? 'Draw!' : (data.tttWinner === myRole ? 'Victory! 🥇' : 'Defeat! 💔')); } } else { status.innerText = data.tttTurn === myRole ? 'Your Turn' : 'Opponent...'; } grid.innerHTML = board.map((cell, i) => { let content = cell === '1' ? 'X' : (cell === '2' ? 'O' : ''); return `<div onclick="tttClick(${i})" class="bg-surface-light dark:bg-surface-dark w-full h-full rounded-xl flex items-center justify-center text-5xl font-black cursor-pointer shadow-sm text-primary dark:text-primary-light hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors ${!cell && data.tttTurn === myRole && !data.tttWinner ? 'hover:scale-95' : ''}">${content}</div>`; }).join(''); }
+        window.tttClick = async function(i) { if(!currentRoomId) return; const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'minigame_rooms', currentRoomId); const snap = await getDoc(docRef); const data = snap.data(); if(data.tttWinner || data.tttTurn !== myRole || data.tttBoard[i]) return; vibe(10); let newBoard = [...data.tttBoard]; newBoard[i] = myRole; let winner = checkTttWinner(newBoard); let updateData = { tttBoard: newBoard, tttTurn: myRole === '1' ? '2' : '1' }; if(winner) updateData.tttWinner = winner; updateDoc(docRef, updateData); }
+        function checkTttWinner(b) { const lines = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]]; for(let i=0; i<lines.length; i++) { const [x,y,z] = lines[i]; if(b[x] && b[x] === b[y] && b[x] === b[z]) return b[x]; } if(!b.includes(null)) return 'draw'; return null; }
+        
+        let soloState = { b: [], gameOver: false, firstClick: true };
+        window.initMinesweeper = function() { soloState = { b: [], gameOver: false, firstClick: true }; const grid = document.getElementById('ms-grid'); grid.innerHTML = ''; for(let i=0; i<81; i++) soloState.b.push({ m: Math.random() < 0.15, f: false, r: false, n: 0 }); soloState.b.forEach((c, i) => { if(!c.m) { let n = 0; const r = Math.floor(i/9), col = i%9; for(let dr=-1;dr<=1;dr++) for(let dc=-1;dc<=1;dc++) { const nr = r+dr, nc = col+dc; if(nr>=0&&nr<9&&nc>=0&&nc<9 && soloState.b[nr*9+nc].m) n++; } c.n = n; } }); renderMinesweeper(); }
+        function renderMinesweeper() { const grid = document.getElementById('ms-grid'); grid.innerHTML = soloState.b.map((c, i) => { let content = '', cls = 'ms-hidden'; if(c.r) { cls = 'ms-revealed'; if(c.m) content = '<span class="text-zinc-900 dark:text-white">💣</span>'; else if(c.n>0) { content = c.n; const colors=['','text-primary','text-emerald-500','text-rose-500','text-purple-500','text-orange-500','text-teal-500','text-zinc-900','text-black']; cls += ` ${colors[c.n]}`; } } else if(c.f) { content = '🚩'; } return `<div onclick="msClick(${i})" oncontextmenu="msFlag(event, ${i})" class="ms-cell ${cls} text-lg md:text-xl transition-colors duration-150">${content}</div>`; }).join(''); }
+        window.msClick = function(i) { if(soloState.gameOver || soloState.b[i].f || soloState.b[i].r) return; vibe(10); if(soloState.firstClick && soloState.b[i].m) { initMinesweeper(); window.msClick(i); return; } soloState.firstClick = false; if(soloState.b[i].m) { vibe([100,50,200]); soloState.b.forEach(c => { if(c.m) c.r=true; }); soloState.gameOver = true; showUnifiedOverlay("BOOM! 💥"); } else { const flood = (idx) => { if(idx<0||idx>=81||soloState.b[idx].r) return; soloState.b[idx].r = true; if(soloState.b[idx].n===0) { const r=Math.floor(idx/9), c=idx%9; for(let dr=-1;dr<=1;dr++) for(let dc=-1;dc<=1;dc++) { const nr=r+dr, nc=c+dc; if(nr>=0&&nr<9&&nc>=0&&nc<9) flood(nr*9+nc); } } }; flood(i); if(soloState.b.filter(c => !c.m && !c.r).length === 0) { soloState.gameOver = true; vibe([100,100,100]); showUnifiedOverlay("You Won! 🧠"); } } renderMinesweeper(); }
+        window.msFlag = function(e, i) { e.preventDefault(); if(soloState.gameOver || soloState.b[i].r) return; vibe(20); soloState.b[i].f = !soloState.b[i].f; renderMinesweeper(); }
+        
+        let hunterScore = 0; let hunterTime = 30; let hunterInterval; let isHunterPlaying = false;
+        window.initHunter = function() { hunterScore = 0; hunterTime = 30; isHunterPlaying = false; document.getElementById('hunter-score').innerText = '0'; document.getElementById('hunter-time').innerText = '30'; document.getElementById('btn-start-hunter').classList.remove('hidden'); const grid = document.getElementById('hunter-grid'); grid.innerHTML = ''; for(let i=0; i<9; i++) { grid.innerHTML += `<div class="bg-surface-light dark:bg-surface-dark rounded-3xl shadow-inner relative overflow-hidden flex items-center justify-center border-2 border-zinc-200 dark:border-zinc-800"><div class="absolute bottom-0 w-3/4 h-4 bg-black/5 dark:bg-white/5 rounded-[100%]"></div><div id="hole-${i}" onclick="whackGhost(${i})" class="w-16 h-16 bg-primary dark:bg-primary-light rounded-full flex items-center justify-center cursor-pointer scale-0 opacity-0 absolute"><span class="material-symbols-outlined text-white dark:text-zinc-900 text-4xl pointer-events-none">sentiment_very_dissatisfied</span></div></div>`; } }
+        window.startHunter = function() { vibe(); document.getElementById('btn-start-hunter').classList.add('hidden'); isHunterPlaying = true; hunterScore = 0; hunterTime = 30; document.getElementById('hunter-score').innerText = '0'; gameTimers.push(setInterval(() => { hunterTime--; document.getElementById('hunter-time').innerText = hunterTime; if(hunterTime <= 0) { isHunterPlaying = false; clearInterval(hunterInterval); clearTimers(); vibe(200); for(let i=0; i<9; i++) { document.getElementById(`hole-${i}`).classList.add('scale-0', 'opacity-0'); } showUnifiedOverlay(`Time's Up! Score: ${hunterScore}`); } }, 1000)); const speed = 700; hunterInterval = setInterval(() => { if(!isHunterPlaying) return; const r = Math.floor(Math.random() * 9); const hole = document.getElementById(`hole-${r}`); if(hole.classList.contains('scale-0')) { hole.classList.remove('scale-0', 'opacity-0'); hole.classList.add('ghost-pop'); gameTimers.push(setTimeout(() => { if(isHunterPlaying) { hole.classList.add('scale-0', 'opacity-0'); hole.classList.remove('ghost-pop'); } }, speed - 100)); } }, speed); }
+        window.whackGhost = function(index) { if(!isHunterPlaying) return; const hole = document.getElementById(`hole-${index}`); if(!hole.classList.contains('scale-0')) { vibe(30); hunterScore += 10; document.getElementById('hunter-score').innerText = hunterScore; hole.classList.remove('ghost-pop'); hole.classList.add('whacked'); setTimeout(() => { hole.classList.add('scale-0', 'opacity-0'); hole.classList.remove('whacked'); }, 200); } }
+        
+        let memoryCards = []; let memoryFlipped = []; let memoryMatched = 0; let memoryMoves = 0; let memoryLocked = false;
+        window.initMemory = function() { memoryMoves = 0; memoryMatched = 0; memoryFlipped = []; memoryLocked = false; document.getElementById('memory-moves').innerText = '0'; const emojis = ['👽', '👻', '👾', '🤖', '💀', '🤡', '🎃', '💩']; memoryCards = [...emojis, ...emojis].sort(() => Math.random() - 0.5).map((emoji, id) => ({ id, emoji, isFlipped: false, isMatched: false })); renderMemory(); }
+        function renderMemory() { const grid = document.getElementById('memory-grid'); grid.innerHTML = memoryCards.map((c, i) => `<div onclick="flipMemoryCard(${i})" class="memory-card ${c.isFlipped || c.isMatched ? 'flipped' : ''}"><div class="memory-card-inner"><div class="memory-card-front"><span class="material-symbols-outlined text-primary opacity-50">help</span></div><div class="memory-card-back">${c.emoji}</div></div></div>`).join(''); }
+        window.flipMemoryCard = function(i) { if(memoryLocked || memoryCards[i].isFlipped || memoryCards[i].isMatched) return; vibe(10); memoryCards[i].isFlipped = true; memoryFlipped.push(i); renderMemory(); if(memoryFlipped.length === 2) { memoryMoves++; document.getElementById('memory-moves').innerText = memoryMoves; memoryLocked = true; const [i1, i2] = memoryFlipped; if(memoryCards[i1].emoji === memoryCards[i2].emoji) { vibe(30); memoryCards[i1].isMatched = true; memoryCards[i2].isMatched = true; memoryMatched += 2; memoryFlipped = []; memoryLocked = false; if(memoryMatched === 16) { vibe([100,50,200]); showUnifiedOverlay(`Won in ${memoryMoves} moves!`); } } else { setTimeout(() => { memoryCards[i1].isFlipped = false; memoryCards[i2].isFlipped = false; memoryFlipped = []; memoryLocked = false; renderMemory(); }, 800); } } }
+
+        /* ==================== 2048 Logic ==================== */
+        let b2048 = [];
+        let score2048 = 0;
+        let gameOver2048 = false;
+
+        window.init2048 = function() {
+            b2048 = Array(16).fill(0);
+            score2048 = 0;
+            gameOver2048 = false;
+            document.getElementById('score-2048').innerText = '0';
+            
+            // Draw empty grid background once
+            document.getElementById('grid-bg-2048').innerHTML = Array(16).fill('<div class="bg-zinc-200 dark:bg-zinc-600 rounded-xl w-full h-full shadow-inner"></div>').join('');
+            
+            spawn2048(); spawn2048();
+            render2048();
+        }
+
+        function spawn2048() {
+            let empty = [];
+            for(let i=0; i<16; i++) if(b2048[i] === 0) empty.push(i);
+            if(empty.length === 0) return;
+            let idx = empty[Math.floor(Math.random() * empty.length)];
+            b2048[idx] = Math.random() < 0.9 ? 2 : 4;
+            b2048.spawnIdx = idx; // Target for animation
+        }
+
+        function getTileStyle2048(val) {
+            const styles = {
+                2: 'bg-zinc-100 text-zinc-800 dark:bg-zinc-200', 
+                4: 'bg-zinc-200 text-zinc-800 dark:bg-zinc-300',
+                8: 'bg-orange-400 text-white', 
+                16: 'bg-orange-500 text-white',
+                32: 'bg-rose-400 text-white', 
+                64: 'bg-rose-500 text-white',
+                128: 'bg-yellow-400 text-white shadow-[0_0_10px_rgba(250,204,21,0.5)]', 
+                256: 'bg-yellow-500 text-white shadow-[0_0_15px_rgba(234,179,8,0.6)]',
+                512: 'bg-green-500 text-white shadow-[0_0_20px_rgba(34,197,94,0.6)]', 
+                1024: 'bg-blue-500 text-white text-3xl shadow-[0_0_20px_rgba(59,130,246,0.6)]',
+                2048: 'bg-purple-500 text-white text-3xl shadow-[0_0_25px_rgba(168,85,247,0.8)]'
+            };
+            return styles[val] || 'bg-zinc-900 text-white text-2xl';
+        }
+
+        function render2048() {
+            const container = document.getElementById('tiles-2048');
+            let html = '';
+            
+            for(let r=0; r<4; r++) {
+                for(let c=0; c<4; c++) {
+                    let idx = r*4 + c;
+                    let val = b2048[idx];
+                    if(val !== 0) {
+                        // Math to position tiles correctly over the grid cells (gap is 0.625rem/10px)
+                        let top = `calc(${r * 25}% + ${r * 0.625}rem)`; 
+                        let left = `calc(${c * 25}% + ${c * 0.625}rem)`;
+                        let w = `calc(25% - 0.46875rem)`;
+                        
+                        let animClass = (b2048.spawnIdx === idx) ? 'tile-spawn' : '';
+                        if (b2048.mergeIdx && b2048.mergeIdx.includes(idx)) animClass = 'tile-merge';
+
+                        html += `<div class="absolute tile-2048 flex items-center justify-center font-black text-4xl rounded-xl ${getTileStyle2048(val)} ${animClass}" style="top: ${top}; left: ${left}; width: ${w}; height: ${w};">${val}</div>`;
+                    }
+                }
+            }
+            container.innerHTML = html;
+            document.getElementById('score-2048').innerText = score2048;
+            b2048.spawnIdx = -1; b2048.mergeIdx = [];
+        }
+
+        window.move2048 = function(direction) {
+            if(gameOver2048 || currentActiveGame !== '2048') return;
+            let moved = false; let mergedIndices = [];
+
+            const slide = (row) => {
+                let arr = row.filter(val => val);
+                let missing = 4 - arr.length;
+                let zeros = Array(missing).fill(0);
+                return arr.concat(zeros);
+            }
+
+            const merge = (row, startIdx, step) => {
+                for(let i=0; i<3; i++) {
+                    if(row[i] !== 0 && row[i] === row[i+1]) {
+                        row[i] *= 2; score2048 += row[i];
+                        row[i+1] = 0; mergedIndices.push(startIdx + i*step);
+                    }
+                }
+                return row;
+            }
+
+            let newB = [...b2048];
+
+            if(direction === 'left') {
+                for(let r=0; r<4; r++) {
+                    let row = [newB[r*4], newB[r*4+1], newB[r*4+2], newB[r*4+3]]; let original = [...row];
+                    row = slide(row); row = merge(row, r*4, 1); row = slide(row);
+                    for(let c=0; c<4; c++) newB[r*4+c] = row[c];
+                    if(original.join(',') !== row.join(',')) moved = true;
+                }
+            } else if (direction === 'right') {
+                for(let r=0; r<4; r++) {
+                    let row = [newB[r*4+3], newB[r*4+2], newB[r*4+1], newB[r*4+0]]; let original = [...row];
+                    row = slide(row); row = merge(row, r*4+3, -1); row = slide(row);
+                    for(let c=0; c<4; c++) newB[r*4+(3-c)] = row[c];
+                    if(original.join(',') !== row.join(',')) moved = true;
+                }
+            } else if (direction === 'up') {
+                for(let c=0; c<4; c++) {
+                    let col = [newB[c], newB[4+c], newB[8+c], newB[12+c]]; let original = [...col];
+                    col = slide(col); col = merge(col, c, 4); col = slide(col);
+                    for(let r=0; r<4; r++) newB[r*4+c] = col[r];
+                    if(original.join(',') !== col.join(',')) moved = true;
+                }
+            } else if (direction === 'down') {
+                for(let c=0; c<4; c++) {
+                    let col = [newB[12+c], newB[8+c], newB[4+c], newB[c]]; let original = [...col];
+                    col = slide(col); col = merge(col, 12+c, -4); col = slide(col);
+                    for(let r=0; r<4; r++) newB[(3-r)*4+c] = col[r];
+                    if(original.join(',') !== col.join(',')) moved = true;
+                }
+            }
+
+            if(moved) {
+                b2048 = newB; b2048.mergeIdx = mergedIndices;
+                spawn2048(); render2048(); vibe(10);
+                
+                if(b2048.includes(2048)) {
+                    gameOver2048 = true; vibe([100,50,200]); showUnifiedOverlay("You Reached 2048! 🏆");
+                } else if(checkGameOver2048()) {
+                    gameOver2048 = true; vibe(500); showUnifiedOverlay(`Game Over! Score: ${score2048}`);
+                }
+            }
+        }
+
+        function checkGameOver2048() {
+            if(b2048.includes(0)) return false;
+            for(let r=0; r<4; r++) {
+                for(let c=0; c<4; c++) {
+                    let idx = r*4+c; let val = b2048[idx];
+                    if(c<3 && val === b2048[idx+1]) return false; // right
+                    if(r<3 && val === b2048[idx+4]) return false; // down
+                }
+            }
+            return true;
+        }
+
+        // 2048 Keyboard Listeners
+        window.addEventListener('keydown', (e) => {
+            if(currentActiveGame !== '2048' || gameOver2048) return;
+            if(e.key === 'ArrowUp' || e.key === 'w') { e.preventDefault(); move2048('up'); }
+            if(e.key === 'ArrowDown' || e.key === 's') { e.preventDefault(); move2048('down'); }
+            if(e.key === 'ArrowLeft' || e.key === 'a') { e.preventDefault(); move2048('left'); }
+            if(e.key === 'ArrowRight' || e.key === 'd') { e.preventDefault(); move2048('right'); }
+        });
+
+        // 2048 Touch/Swipe Listeners
+        let tStartX = 0; let tStartY = 0;
+        document.addEventListener('touchstart', e => {
+            if(currentActiveGame !== '2048' || gameOver2048) return;
+            tStartX = e.changedTouches[0].screenX; tStartY = e.changedTouches[0].screenY;
+        }, {passive: false});
+        
+        document.addEventListener('touchend', e => {
+            if(currentActiveGame !== '2048' || gameOver2048) return;
+            let tEndX = e.changedTouches[0].screenX; let tEndY = e.changedTouches[0].screenY;
+            let dx = tEndX - tStartX; let dy = tEndY - tStartY;
+            
+            // Threshold 30px to trigger swipe
+            if(Math.abs(dx) > 30 || Math.abs(dy) > 30) {
+                if(Math.abs(dx) > Math.abs(dy)) {
+                    if(dx > 0) move2048('right'); else move2048('left');
+                } else {
+                    if(dy > 0) move2048('down'); else move2048('up');
+                }
+            }
+        }, {passive: false});
+        
+        // Prevent scrolling while swiping on the 2048 board
+        document.addEventListener('touchmove', e => {
+            if(currentActiveGame === '2048' && e.target.closest('#board-2048')) {
+                e.preventDefault();
+            }
+        }, {passive: false});
+
     </script>
 </body>
 </html>
