@@ -232,7 +232,7 @@
         /* --- Global State --- */
         const state = {
             currentTab: 'main',
-            settings: { haptics: true, notifications: false, gameMode: 'concan', m1: 351, m2: 551 },
+            settings: { haptics: true, notifications: false, gameMode: 'concan', m1: 351, m2: 551, darkMode: false },
             players: [], history: [], liveGames: [],
             spectatingMatchId: null, hostChatData: [],
             activeGame: { mode: 'concan', team1: [null, null], team2: [null, null], team3: [], team4: [], rounds: [], m1Triggered: false, m2Triggered: false, gameOver: false },
@@ -241,6 +241,10 @@
         window.state = state;
 
         let debounceTimer; let onboardingAvatarBase64 = null;
+        let isLocalUpdate = false; let localUpdateTimeout = null;
+        
+        // Listeners Cleanup References
+        let unsubActiveGame = null; let unsubUsers = null; let unsubHistory = null; let unsubLiveList = null;
         let unsubLiveGame = null; let unsubLiveChat = null; let unsubHostChat = null;
 
         window.getActiveUid = function() { return localStorage.getItem('scorat_uid') || (currentUser ? currentUser.uid : null); };
@@ -358,32 +362,43 @@
         function setupListeners() {
             const uid = getActiveUid(); if (!uid) return;
 
+            // Prevent memory leaks by cleaning up previous listeners
+            if (unsubActiveGame) unsubActiveGame();
+            if (unsubUsers) unsubUsers();
+            if (unsubHistory) unsubHistory();
+            if (unsubLiveList) unsubLiveList();
+
             const sStr = localStorage.getItem('scorat_settings');
             if(sStr) state.settings = { ...state.settings, ...JSON.parse(sStr) };
             if(!state.settings.gameMode) state.settings.gameMode = 'concan';
 
-            onSnapshot(doc(db, 'artifacts', appId, 'users', uid, 'state', 'activeGame'), (snap) => {
+            unsubActiveGame = onSnapshot(doc(db, 'artifacts', appId, 'users', uid, 'state', 'activeGame'), (snap) => {
                 if (snap.exists()) { 
+                    // Prevent focus loss: Do not re-render if the user is currently typing
+                    if (isLocalUpdate) return;
+                    
                     state.activeGame = snap.data();
                     if(!state.activeGame.mode) state.activeGame.mode = 'concan';
                     if(!state.activeGame.team3) state.activeGame.team3 = [];
                     if(!state.activeGame.team4) state.activeGame.team4 = [];
                     checkMilestones(); 
                 } else { window.applyModeChange(state.settings.gameMode, true); }
-                if (state.currentTab === 'main') renderMain();
+                
+                // Only render if we are not actively typing
+                if (state.currentTab === 'main' && !isLocalUpdate) renderMain();
             });
 
-            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'users'), (snap) => {
+            unsubUsers = onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'users'), (snap) => {
                 state.players = snap.docs.map(d => ({ id: d.id, ...d.data() }));
                 if (['players', 'main', 'history', 'stats', 'leaderboard'].includes(state.currentTab)) renderActiveTab();
             });
 
-            onSnapshot(collection(db, 'artifacts', appId, 'users', uid, 'history'), (snap) => {
+            unsubHistory = onSnapshot(collection(db, 'artifacts', appId, 'users', uid, 'history'), (snap) => {
                 state.history = snap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a,b) => b.date - a.date);
                 if (['history', 'stats'].includes(state.currentTab)) renderActiveTab();
             });
 
-            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'liveGames'), (snap) => {
+            unsubLiveList = onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'liveGames'), (snap) => {
                 const games = snap.docs.map(d => ({ id: d.id, ...d.data() }));
                 state.liveGames = games.filter(g => g.id !== uid);
                 
@@ -401,7 +416,7 @@
                 const myLiveGame = games.find(g => g.id === uid);
                 if (myLiveGame && myLiveGame.updatedBy && myLiveGame.updatedBy !== uid) {
                     state.activeGame = myLiveGame.game; saveActiveGameLocalOnly(); 
-                    if(state.currentTab === 'main') renderMain();
+                    if(state.currentTab === 'main' && !isLocalUpdate) renderMain();
                 }
             });
         }
@@ -434,7 +449,8 @@
         }
 
         function saveActiveGame() {
-            const uid = getActiveUid(); if (!uid) return; clearTimeout(debounceTimer);
+            const uid = getActiveUid(); if (!uid) return; 
+            clearTimeout(debounceTimer);
             debounceTimer = setTimeout(() => {
                 setDoc(doc(db, 'artifacts', appId, 'users', uid, 'state', 'activeGame'), state.activeGame).catch(e=>console.error(e));
                 const liveRef = doc(db, 'artifacts', appId, 'public', 'data', 'liveGames', uid);
@@ -533,8 +549,14 @@
         }
 
         function renderActiveTab() {
-            const c = document.getElementById('content'); c.innerHTML = '';
-            if (state.currentTab === 'main') renderMain();
+            const c = document.getElementById('content'); 
+            
+            // Focus preservation helper for Vanilla JS
+            const activeId = document.activeElement ? document.activeElement.id : null;
+            
+            c.innerHTML = '';
+            
+            if (state.currentTab === 'main') renderMainHtml();
             else if (state.currentTab === 'players') renderPlayers();
             else if (state.currentTab === 'history') renderHistory();
             else if (state.currentTab === 'stats') renderStats();
@@ -542,6 +564,15 @@
             else if (state.currentTab === 'live') renderLiveList();
             else if (state.currentTab === 'spectate_match') renderSpectateMatch();
             else if (state.currentTab === 'leaderboard') renderLeaderboard();
+            
+            if (activeId) {
+                const el = document.getElementById(activeId);
+                if (el) el.focus();
+            }
+        }
+        
+        function renderMain() {
+            renderActiveTab();
         }
 
         function getPlayerAvatarHTML(id, teamIndex, posIndex, readOnly = false, isSmall = false) {
@@ -552,7 +583,7 @@
         }
 
         /* --- Main Scoreboard --- */
-        function renderMain() {
+        function renderMainHtml() {
             const mode = state.activeGame.mode || 'concan';
             const md = GAME_MODES[mode] || GAME_MODES['concan'];
             const isInd = md.teams === 4;
@@ -563,21 +594,22 @@
                 if(isInd) { t3 += (parseInt(r.t3)||0); t4 += (parseInt(r.t4)||0); }
                 const lblHtml = r.label ? `<span class="text-[9px] text-primary whitespace-nowrap block truncate w-full opacity-80">${r.label}</span>` : '';
                 
+                // Added IDs to inputs to preserve focus across necessary structural re-renders
                 if (isInd) {
                     return `
                     <div class="flex items-center gap-1 bg-surface-light dark:bg-surface-dark p-2 rounded-2xl mb-2 shadow-sm border border-zinc-100 dark:border-zinc-800/50">
                         <div class="w-10 text-center"><span class="font-bold text-zinc-400 text-[10px]">R${i+1}</span>${lblHtml}</div>
-                        <input type="number" value="${r.t1 !== null ? r.t1 : ''}" oninput="updateRoundData(${i}, 't1', this.value)" class="flex-1 min-w-0 text-center bg-background-light dark:bg-background-dark py-2.5 rounded-xl font-semibold focus:ring-2 focus:ring-primary outline-none select-text ${state.activeGame.gameOver?'opacity-50 pointer-events-none':''}">
-                        <input type="number" value="${r.t2 !== null ? r.t2 : ''}" oninput="updateRoundData(${i}, 't2', this.value)" class="flex-1 min-w-0 text-center bg-background-light dark:bg-background-dark py-2.5 rounded-xl font-semibold focus:ring-2 focus:ring-primary outline-none select-text ${state.activeGame.gameOver?'opacity-50 pointer-events-none':''}">
-                        <input type="number" value="${r.t3 !== null ? r.t3 : ''}" oninput="updateRoundData(${i}, 't3', this.value)" class="flex-1 min-w-0 text-center bg-background-light dark:bg-background-dark py-2.5 rounded-xl font-semibold focus:ring-2 focus:ring-primary outline-none select-text ${state.activeGame.gameOver?'opacity-50 pointer-events-none':''}">
-                        <input type="number" value="${r.t4 !== null ? r.t4 : ''}" oninput="updateRoundData(${i}, 't4', this.value)" class="flex-1 min-w-0 text-center bg-background-light dark:bg-background-dark py-2.5 rounded-xl font-semibold focus:ring-2 focus:ring-primary outline-none select-text ${state.activeGame.gameOver?'opacity-50 pointer-events-none':''}">
+                        <input id="round-${i}-t1" type="number" value="${r.t1 !== null ? r.t1 : ''}" oninput="updateRoundData(${i}, 't1', this.value)" class="flex-1 min-w-0 text-center bg-background-light dark:bg-background-dark py-2.5 rounded-xl font-semibold focus:ring-2 focus:ring-primary outline-none select-text ${state.activeGame.gameOver?'opacity-50 pointer-events-none':''}">
+                        <input id="round-${i}-t2" type="number" value="${r.t2 !== null ? r.t2 : ''}" oninput="updateRoundData(${i}, 't2', this.value)" class="flex-1 min-w-0 text-center bg-background-light dark:bg-background-dark py-2.5 rounded-xl font-semibold focus:ring-2 focus:ring-primary outline-none select-text ${state.activeGame.gameOver?'opacity-50 pointer-events-none':''}">
+                        <input id="round-${i}-t3" type="number" value="${r.t3 !== null ? r.t3 : ''}" oninput="updateRoundData(${i}, 't3', this.value)" class="flex-1 min-w-0 text-center bg-background-light dark:bg-background-dark py-2.5 rounded-xl font-semibold focus:ring-2 focus:ring-primary outline-none select-text ${state.activeGame.gameOver?'opacity-50 pointer-events-none':''}">
+                        <input id="round-${i}-t4" type="number" value="${r.t4 !== null ? r.t4 : ''}" oninput="updateRoundData(${i}, 't4', this.value)" class="flex-1 min-w-0 text-center bg-background-light dark:bg-background-dark py-2.5 rounded-xl font-semibold focus:ring-2 focus:ring-primary outline-none select-text ${state.activeGame.gameOver?'opacity-50 pointer-events-none':''}">
                     </div>`;
                 } else {
                     return `
                     <div class="flex items-center justify-between bg-surface-light dark:bg-surface-dark p-2 rounded-3xl mb-2 shadow-sm border border-zinc-100 dark:border-zinc-800/50">
-                        <input type="number" value="${r.t1 !== null ? r.t1 : ''}" oninput="updateRoundData(${i}, 't1', this.value)" class="w-24 text-center bg-transparent py-4 text-xl font-bold focus:bg-background-light dark:focus:bg-background-dark rounded-2xl outline-none select-text transition-colors ${state.activeGame.gameOver?'opacity-50 pointer-events-none':''}">
+                        <input id="round-${i}-t1" type="number" value="${r.t1 !== null ? r.t1 : ''}" oninput="updateRoundData(${i}, 't1', this.value)" class="w-24 text-center bg-transparent py-4 text-xl font-bold focus:bg-background-light dark:focus:bg-background-dark rounded-2xl outline-none select-text transition-colors ${state.activeGame.gameOver?'opacity-50 pointer-events-none':''}">
                         <div class="w-12 text-center flex flex-col"><span class="font-bold text-zinc-300 text-xs">R${i+1}</span>${lblHtml}</div>
-                        <input type="number" value="${r.t2 !== null ? r.t2 : ''}" oninput="updateRoundData(${i}, 't2', this.value)" class="w-24 text-center bg-transparent py-4 text-xl font-bold focus:bg-background-light dark:focus:bg-background-dark rounded-2xl outline-none select-text transition-colors ${state.activeGame.gameOver?'opacity-50 pointer-events-none':''}">
+                        <input id="round-${i}-t2" type="number" value="${r.t2 !== null ? r.t2 : ''}" oninput="updateRoundData(${i}, 't2', this.value)" class="w-24 text-center bg-transparent py-4 text-xl font-bold focus:bg-background-light dark:focus:bg-background-dark rounded-2xl outline-none select-text transition-colors ${state.activeGame.gameOver?'opacity-50 pointer-events-none':''}">
                     </div>`;
                 }
             }).join('');
@@ -654,14 +686,23 @@
         }
 
         window.updateRoundData = function(index, team, value) {
+            // Flag to suspend Firebase snapshot re-renders temporarily while typing
+            isLocalUpdate = true;
+            clearTimeout(localUpdateTimeout);
+            localUpdateTimeout = setTimeout(() => { isLocalUpdate = false; }, 1500); 
+
             state.activeGame.rounds[index][team] = value === '' ? null : parseInt(value);
             saveActiveGame();
+            
+            // Manual local DOM update for scores
             let t1=0, t2=0, t3=0, t4=0;
             state.activeGame.rounds.forEach(r => { t1+=(r.t1||0); t2+=(r.t2||0); t3+=(r.t3||0); t4+=(r.t4||0); });
+            
             const h1 = document.getElementById('t1-total'); if(h1) h1.innerText = t1;
             const h2 = document.getElementById('t2-total'); if(h2) h2.innerText = t2;
             const h3 = document.getElementById('t3-total'); if(h3) h3.innerText = t3;
             const h4 = document.getElementById('t4-total'); if(h4) h4.innerText = t4;
+            
             checkMilestones();
         }
 
@@ -729,7 +770,7 @@
 
             const kingdomText = (kingdomIndex < 4) ? `Kingdom ${kingdomIndex + 1} / 4` : `Extra Kingdom ${kingdomIndex + 1}`;
 
-            showModal("🧮 Smart Calculator", `
+            showModal("👑 Smart Calculator", `
                 <div class="flex-1 overflow-y-auto max-h-[60vh] pb-4 pr-1">
                     <div class="mb-5">
                         <div class="flex justify-between items-center mb-2">
@@ -989,10 +1030,14 @@
         window.openSpectate = function(hostId) {
             const uid = getActiveUid();
             state.spectatingMatchId = hostId; switchTab('spectate_match');
+            
+            if (unsubLiveGame) unsubLiveGame();
             unsubLiveGame = onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'liveGames', hostId), (snap) => {
                 if (snap.exists()) { renderSpectateScoreboard(snap.data().game); } 
                 else { showToast("Match ended."); switchTab('live'); }
             });
+            
+            if (unsubLiveChat) unsubLiveChat();
             unsubLiveChat = onSnapshot(query(collection(db, 'artifacts', appId, 'public', 'data', 'liveGames', hostId, 'chat'), orderBy('timestamp', 'asc')), (snap) => {
                 const box = document.getElementById('spectate-chat');
                 const chats = snap.docs.map(d => ({ id: d.id, ...d.data() }));
@@ -1106,6 +1151,16 @@
             const box = document.getElementById('spectate-chat'); if(!box) return;
             box.innerHTML = generateChatHTML(chatData);
             requestAnimationFrame(() => box.scrollTop = box.scrollHeight);
+        }
+        
+        function generateChatHTML(chatArray) {
+            const uid = getActiveUid();
+            return chatArray.map(c => `
+                <div class="mb-3 ${c.uid === uid ? 'text-right' : 'text-left'}">
+                    <span class="text-[9px] font-bold text-zinc-400 px-1 uppercase">${c.name}</span>
+                    <div class="inline-block mt-1 px-4 py-2 rounded-2xl text-sm ${c.uid === uid ? 'bg-primary text-white rounded-br-none shadow-sm' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 rounded-bl-none shadow-sm'}">${c.text}</div>
+                </div>
+            `).join('');
         }
 
         window.sendChatMessage = async function() {
