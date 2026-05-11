@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Scorat - كونكان أونلاين</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts & Material Symbols -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
+
+    <script>
+        const savedTheme = localStorage.getItem('scorat_theme');
+        const isDark = savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        if (isDark) document.documentElement.classList.add('dark');
+        
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Tajawal', 'sans-serif'] },
+                    colors: {
+                        primary: '#2563eb',
+                        'primary-light': '#eff6ff',
+                        surface: { light: '#ffffff', dark: '#18181b' },
+                        background: { light: '#f4f4f5', dark: '#09090b' },
+                        table: '#064e3b' // لون طاولة كازينو خضراء
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { font-family: 'Tajawal', sans-serif; -webkit-tap-highlight-color: transparent; overscroll-behavior: none; }
+        ::-webkit-scrollbar { height: 6px; width: 6px; }
+        ::-webkit-scrollbar-thumb { background-color: rgba(156, 163, 175, 0.5); border-radius: 10px; }
+        
+        .page-enter { animation: fadeSlideUp 0.3s ease-out forwards; }
+        @keyframes fadeSlideUp { 0% { opacity: 0; transform: translateY(15px); } 100% { opacity: 1; transform: translateY(0); } }
+
+        /* Card Styling for Hand */
+        .card-item {
+            transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s;
+            margin-right: -2.5rem; /* تداخل الأوراق للموبايل */
+            cursor: pointer;
+            position: relative;
+        }
+        .card-item:last-child { margin-right: 0; }
+        .card-selected {
+            transform: translateY(-15px);
+            box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.5);
+            border: 2px solid #2563eb;
+            z-index: 50 !important;
+        }
+
+        /* Card Styling for Table Melds */
+        .meld-card { margin-right: -1.5rem; }
+        .meld-card:last-child { margin-right: 0; }
+
+        .wood-border {
+            border: 8px solid #78350f;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+        }
+    </style>
+</head>
+<body class="bg-background-light text-zinc-900 dark:bg-background-dark dark:text-zinc-100 transition-colors duration-300 h-screen flex flex-col select-none overflow-hidden">
+
+    <!-- شاشة اللوبي (الغرف) -->
+    <div id="view-lobby" class="max-w-md mx-auto w-full flex-1 flex flex-col pt-10 px-6 page-enter">
+        <header class="flex flex-col items-center mb-10 text-center">
+            <div class="w-20 h-20 bg-primary text-white rounded-3xl flex items-center justify-center shadow-lg mb-4 transform -rotate-6">
+                <span class="material-symbols-outlined text-5xl">playing_cards</span>
+            </div>
+            <h1 class="text-3xl font-black tracking-tight">لعبة الكونكان</h1>
+            <p class="text-zinc-500 mt-2 font-medium">العب مع أصدقائك (2 - 4 لاعبين)</p>
+        </header>
+
+        <div class="bg-surface-light dark:bg-surface-dark p-6 rounded-[32px] shadow-lg border border-zinc-200 dark:border-zinc-800 flex flex-col gap-5">
+            <div>
+                <label class="block text-xs font-bold text-zinc-500 mb-2">اسمك في اللعبة</label>
+                <input type="text" id="player-name" placeholder="أدخل اسمك..." class="w-full bg-background-light dark:bg-background-dark border border-zinc-200 dark:border-zinc-800 px-4 py-3.5 rounded-2xl font-bold outline-none focus:ring-2 focus:ring-primary text-center">
+            </div>
+            
+            <button onclick="createRoom()" class="w-full bg-primary text-white py-4 rounded-2xl font-black text-lg shadow-md active:scale-95 transition-all">إنشاء غرفة جديدة</button>
+            
+            <div class="relative flex items-center py-2">
+                <div class="flex-grow border-t border-zinc-200 dark:border-zinc-700"></div>
+                <span class="flex-shrink-0 mx-4 text-zinc-400 text-xs font-bold uppercase">أو انضم لغرفة</span>
+                <div class="flex-grow border-t border-zinc-200 dark:border-zinc-700"></div>
+            </div>
+
+            <div class="flex gap-2">
+                <input type="number" id="room-code-input" placeholder="كود الغرفة..." class="flex-1 bg-background-light dark:bg-background-dark border border-zinc-200 dark:border-zinc-800 px-4 py-3.5 rounded-2xl font-black text-center tracking-widest outline-none focus:ring-2 focus:ring-zinc-400">
+                <button onclick="joinRoom()" class="bg-zinc-800 dark:bg-zinc-200 text-white dark:text-zinc-900 px-6 py-3.5 rounded-2xl font-black shadow-md active:scale-95 transition-all">دخول</button>
+            </div>
+            <div id="lobby-status" class="text-center text-rose-500 font-bold text-sm hidden"></div>
+        </div>
+    </div>
+
+    <!-- شاشة الانتظار -->
+    <div id="view-waiting" class="hidden max-w-md mx-auto w-full flex-1 flex-col items-center justify-center px-6 page-enter">
+        <div class="bg-surface-light dark:bg-surface-dark p-8 rounded-[32px] shadow-lg text-center w-full border border-zinc-200 dark:border-zinc-800">
+            <h2 class="text-xl font-black mb-2">غرفة الانتظار</h2>
+            <p class="text-sm text-zinc-500 mb-6">شارك هذا الكود مع أصدقائك</p>
+            <div class="bg-background-light dark:bg-background-dark py-4 rounded-2xl mb-8 border border-zinc-200 dark:border-zinc-800 border-dashed">
+                <span id="display-room-code" class="text-5xl font-black tracking-[0.25em] text-primary">----</span>
+            </div>
+            
+            <div class="text-right mb-6">
+                <h3 class="text-xs font-bold text-zinc-500 uppercase mb-3">اللاعبون المتصلون:</h3>
+                <div id="waiting-players-list" class="flex flex-col gap-2">
+                    <!-- يتم إضافتهم برمجياً -->
+                </div>
+            </div>
+
+            <button id="btn-start-game" onclick="startGame()" class="w-full bg-emerald-500 text-white py-4 rounded-2xl font-black text-lg shadow-md active:scale-95 transition-all mb-4 hidden">بدء اللعبة الان</button>
+            <button onclick="exitGame()" class="text-rose-500 font-bold active:scale-95 transition-transform hover:underline text-sm">مغادرة الغرفة</button>
+        </div>
+    </div>
+
+    <!-- شاشة اللعب (الطاولة) -->
+    <div id="view-game" class="hidden flex-1 flex-col bg-zinc-900 w-full h-full relative">
+        
+        <!-- الشريط العلوي (الخصوم ومعلومات الغرفة) -->
+        <header class="bg-zinc-950 p-2 flex justify-between items-center z-20 shadow-md">
+            <div class="flex items-center gap-2">
+                <button onclick="exitGame()" class="w-8 h-8 rounded-full bg-zinc-800 text-zinc-300 flex items-center justify-center active:scale-95"><span class="material-symbols-outlined text-[18px]">close</span></button>
+                <div class="text-xs font-bold text-zinc-400">غرفة: <span id="game-room-id" class="text-primary-light">----</span></div>
+            </div>
+            <div id="opponents-area" class="flex gap-2" dir="ltr">
+                <!-- صور وأسماء الخصوم وعدد أوراقهم -->
+            </div>
+        </header>
+
+        <!-- الطاولة (خضراء) -->
+        <div class="flex-1 bg-table wood-border relative overflow-hidden flex flex-col">
+            
+            <!-- منطقة المجموعات (الإنزالات) -->
+            <div id="table-melds" class="flex-1 p-4 overflow-y-auto flex flex-wrap content-start gap-6 pb-24">
+                <!-- المجموعات التي نزلها اللاعبون ستظهر هنا -->
+            </div>
+
+            <!-- الكومة والرمي (في منتصف الطاولة) -->
+            <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex items-center gap-8 z-10 bg-black/30 p-4 rounded-3xl backdrop-blur-sm border border-white/10">
+                <!-- كومة السحب -->
+                <div class="flex flex-col items-center">
+                    <div onclick="drawFromDeck()" class="relative w-16 h-24 rounded-lg bg-indigo-900 border-2 border-white/50 cursor-pointer hover:-translate-y-2 transition-transform shadow-[0_4px_15px_rgba(0,0,0,0.5)] flex items-center justify-center" style="background-image: repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(255,255,255,.1) 5px, rgba(255,255,255,.1) 10px);">
+                        <span class="material-symbols-outlined text-white/50 text-3xl">playing_cards</span>
+                        <div class="absolute -top-3 -right-3 bg-zinc-900 text-white text-[10px] px-2 py-0.5 rounded-full font-bold border border-zinc-700" id="deck-count">104</div>
+                    </div>
+                    <span class="text-[10px] text-white/80 font-bold mt-2 bg-black/50 px-2 py-1 rounded-full">سحب ورقة</span>
+                </div>
+
+                <!-- كومة الرمي (المكشوفة) -->
+                <div class="flex flex-col items-center">
+                    <div id="discard-pile" onclick="drawFromDiscard()" class="relative w-16 h-24 rounded-lg border-2 border-dashed border-white/30 cursor-pointer hover:-translate-y-2 transition-transform flex items-center justify-center">
+                        <span class="text-white/30 text-xs font-bold">فارغ</span>
+                    </div>
+                    <span class="text-[10px] text-white/80 font-bold mt-2 bg-black/50 px-2 py-1 rounded-full">آخر رمية</span>
+                </div>
+            </div>
+
+            <!-- مؤشر الدور -->
+            <div id="turn-indicator" class="absolute top-4 left-1/2 transform -translate-x-1/2 bg-yellow-500 text-zinc-900 px-6 py-1.5 rounded-full font-black text-sm shadow-lg z-20 transition-all duration-300">
+                دورك الآن!
+            </div>
+
+        </div>
+
+        <!-- منطقة اللاعب (أوراقه والأزرار) -->
+        <div class="h-44 bg-zinc-900 flex flex-col z-20 border-t border-zinc-800 pb-4">
+            <!-- الأزرار -->
+            <div class="flex justify-center gap-2 py-2 px-2 bg-zinc-950">
+                <button id="btn-meld" onclick="meldSelectedCards()" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white py-2 rounded-xl font-bold text-sm shadow-md active:scale-95 disabled:opacity-30 disabled:active:scale-100 transition-all flex items-center justify-center gap-1">
+                    <span class="material-symbols-outlined text-[18px]">publish</span> إنزال مجموعة
+                </button>
+                <button id="btn-add-meld" onclick="addToExistingMeld()" class="flex-1 bg-blue-600 hover:bg-blue-500 text-white py-2 rounded-xl font-bold text-sm shadow-md active:scale-95 disabled:opacity-30 disabled:active:scale-100 transition-all flex items-center justify-center gap-1 hidden">
+                    <span class="material-symbols-outlined text-[18px]">library_add</span> تركيب بورقة
+                </button>
+                <button id="btn-discard" onclick="discardSelectedCard()" class="flex-1 bg-rose-600 hover:bg-rose-500 text-white py-2 rounded-xl font-bold text-sm shadow-md active:scale-95 disabled:opacity-30 disabled:active:scale-100 transition-all flex items-center justify-center gap-1">
+                    <span class="material-symbols-outlined text-[18px]">delete</span> رمي (إنهاء الدور)
+                </button>
+            </div>
+            
+            <!-- الأوراق في اليد -->
+            <div class="flex-1 overflow-x-auto overflow-y-visible flex items-center px-6 pt-4 pb-2" id="my-hand" dir="ltr">
+                <!-- البطاقات تضاف هنا -->
+            </div>
+        </div>
+
+    </div>
+
+    <!-- نافذة منبثقة للرسائل -->
+    <div id="game-overlay" class="absolute inset-0 z-50 bg-black/90 backdrop-blur-sm hidden flex-col items-center justify-center">
+        <h1 id="overlay-text" class="text-4xl md:text-5xl font-black mb-8 text-center px-4 leading-tight text-white"></h1>
+        <button onclick="exitGame()" class="bg-primary text-white px-8 py-3 rounded-2xl font-black text-lg shadow-md active:scale-95 mb-4 border border-white/20">العودة للوبي</button>
+    </div>
+
+    <!-- Scripts -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, onSnapshot, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Firebase Config
+        const firebaseConfig = {
+            apiKey: "AIzaSyAiX6ipa161rB1o715EfmtzfrHiz9zgChQ",
+            authDomain: "dottech-scorat.firebaseapp.com",
+            projectId: "dottech-scorat",
+            storageBucket: "dottech-scorat.firebasestorage.app",
+            messagingSenderId: "324240314924",
+            appId: "1:324240314924:web:12866f2c25908f82fb7789"
+        };
+
+        const appId = 'scorat-concan';
+        let db, auth, currentUser;
+
+        // حالة اللعبة المحلية
+        let currentRoomCode = null;
+        let unsubRoom = null;
+        let myPlayerId = null;
+        let myName = localStorage.getItem('scorat_player_name') || '';
+        let roomState = null;
+        let selectedCards = []; // الكروت التي ضغط عليها اللاعب في يده
+        let hasDrawnThisTurn = false;
+
+        document.getElementById('player-name').value = myName;
+
+        window.vibe = function(ms = 30) { if (navigator.vibrate) navigator.vibrate(ms); };
+
+        async function init() {
+            try {
+                const app = initializeApp(firebaseConfig);
+                auth = getAuth(app); db = getFirestore(app);
+                await signInAnonymously(auth);
+                onAuthStateChanged(auth, user => { 
+                    if(user) { currentUser = user; myPlayerId = user.uid; } 
+                });
+            } catch (error) { console.error("Init Error:", error); }
+        }
+        init();
+
+        /* ==================== 1. نظام الغرف (Lobby) ==================== */
+        window.createRoom = async function() {
+            vibe();
+            const nameInput = document.getElementById('player-name').value.trim();
+            if(!nameInput) return alert("الرجاء إدخال اسمك أولاً!");
+            if(!currentUser) return alert("جاري الاتصال بالسيرفر...");
+            
+            myName = nameInput;
+            localStorage.setItem('scorat_player_name', myName);
+
+            const code = Math.floor(1000 + Math.random() * 9000).toString();
+            currentRoomCode = code;
+
+            const initialData = {
+                hostId: currentUser.uid,
+                status: 'waiting',
+                players: [{ uid: currentUser.uid, name: myName, cardCount: 0 }],
+                deck: [], discard: [], tableMelds: [],
+                turn: currentUser.uid,
+                hands: { [currentUser.uid]: [] },
+                winner: null
+            };
+
+            try {
+                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'concan_rooms', code), initialData);
+                showWaitingRoom(code);
+                listenToRoom();
+            } catch (e) { alert("فشل إنشاء الغرفة"); }
+        }
+
+        window.joinRoom = async function() {
+            vibe();
+            const nameInput = document.getElementById('player-name').value.trim();
+            if(!nameInput) return alert("الرجاء إدخال اسمك أولاً!");
+            const code = document.getElementById('room-code-input').value.trim();
+            if(code.length !== 4) return alert("كود الغرفة 4 أرقام");
+            
+            myName = nameInput;
+            localStorage.setItem('scorat_player_name', myName);
+            
+            const statusEl = document.getElementById('lobby-status');
+            statusEl.innerText = 'جاري البحث...'; statusEl.classList.remove('hidden');
+
+            try {
+                const roomRef = doc(db, 'artifacts', appId, 'public', 'data', 'concan_rooms', code);
+                const snap = await getDoc(roomRef);
+                if (!snap.exists()) return statusEl.innerText = 'الغرفة غير موجودة!';
+                
+                let data = snap.data();
+                if (data.status !== 'waiting') return statusEl.innerText = 'الغرفة بدأت اللعب بالفعل!';
+                if (data.players.length >= 4) return statusEl.innerText = 'الغرفة ممتلئة (المتصلون 4/4)';
+                if (data.players.find(p => p.uid === currentUser.uid)) return statusEl.innerText = 'أنت متصل بالفعل!';
+
+                // إضافة اللاعب
+                let newPlayers = [...data.players, { uid: currentUser.uid, name: myName, cardCount: 0 }];
+                let newHands = { ...data.hands, [currentUser.uid]: [] };
+                
+                await updateDoc(roomRef, { players: newPlayers, hands: newHands });
+                currentRoomCode = code;
+                showWaitingRoom(code);
+                listenToRoom();
+            } catch (e) { statusEl.innerText = "خطأ في الاتصال"; }
+        }
+
+        function showWaitingRoom(code) {
+            document.getElementById('display-room-code').innerText = code;
+            document.getElementById('view-lobby').classList.add('hidden');
+            document.getElementById('view-waiting').classList.remove('hidden');
+            document.getElementById('view-waiting').classList.add('flex');
+        }
+
+        window.exitGame = async function() {
+            vibe();
+            if (unsubRoom) unsubRoom();
+            if (currentRoomCode && roomState) {
+                if (roomState.hostId === myPlayerId) {
+                    // إذا كان المضيف غادر، نحذف الغرفة
+                    deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'concan_rooms', currentRoomCode)).catch(e=>{});
+                } else if(roomState.status === 'waiting') {
+                    // إذا غادر الضيف قبل البدء، نزيله من المصفوفة
+                    let newPlayers = roomState.players.filter(p => p.uid !== myPlayerId);
+                    let newHands = { ...roomState.hands }; delete newHands[myPlayerId];
+                    updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'concan_rooms', currentRoomCode), { players: newPlayers, hands: newHands }).catch(e=>{});
+                }
+            }
+            document.getElementById('view-waiting').classList.add('hidden'); document.getElementById('view-waiting').classList.remove('flex');
+            document.getElementById('view-game').classList.add('hidden'); document.getElementById('view-game').classList.remove('flex');
+            document.getElementById('game-overlay').classList.add('hidden'); document.getElementById('game-overlay').classList.remove('flex');
+            document.getElementById('view-lobby').classList.remove('hidden');
+            currentRoomCode = null; roomState = null; selectedCards = [];
+        }
+
+        /* ==================== 2. تجهيز ورق اللعب ==================== */
+        function generateConcanDeck() {
+            const suits = ['h','d','c','s']; // قلوب، ديناري، سباتي، شيريا
+            const vals = ['2','3','4','5','6','7','8','9','10','j','q','k','a'];
+            let deck = [];
+            // مجموعتين كاملتين
+            for(let i=0; i<2; i++) {
+                suits.forEach(s => vals.forEach(v => deck.push(v+s)));
+                deck.push('jk'); // جوكر
+            }
+            // Shuffle (Fisher-Yates)
+            for(let i = deck.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [deck[i], deck[j]] = [deck[j], deck[i]];
+            }
+            return deck;
+        }
+
+        /* ==================== 3. المزامنة واللعب ==================== */
+        function listenToRoom() {
+            if (unsubRoom) unsubRoom();
+            unsubRoom = onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'concan_rooms', currentRoomCode), (snap) => {
+                if (!snap.exists()) {
+                    alert("تم إغلاق الغرفة من قبل المضيف.");
+                    return exitGame();
+                }
+                roomState = snap.data();
+                
+                if (roomState.status === 'waiting') {
+                    renderWaitingRoom();
+                } else if (roomState.status === 'playing' || roomState.status === 'finished') {
+                    document.getElementById('view-waiting').classList.add('hidden'); document.getElementById('view-waiting').classList.remove('flex');
+                    document.getElementById('view-game').classList.remove('hidden'); document.getElementById('view-game').classList.add('flex');
+                    renderGameBoard();
+                }
+            });
+        }
+
+        function renderWaitingRoom() {
+            const list = document.getElementById('waiting-players-list');
+            list.innerHTML = roomState.players.map((p, i) => `
+                <div class="bg-background-light dark:bg-background-dark p-3 rounded-xl flex items-center justify-between border border-zinc-200 dark:border-zinc-800">
+                    <span class="font-bold flex items-center gap-2"><div class="w-2 h-2 rounded-full ${p.uid===roomState.hostId?'bg-primary':'bg-emerald-500'}"></div> ${p.name} ${p.uid===myPlayerId?'(أنت)':''}</span>
+                </div>
+            `).join('');
+
+            const btnStart = document.getElementById('btn-start-game');
+            if (myPlayerId === roomState.hostId && roomState.players.length >= 2) {
+                btnStart.classList.remove('hidden');
+            } else {
+                btnStart.classList.add('hidden');
+            }
+        }
+
+        window.startGame = async function() {
+            vibe();
+            if (myPlayerId !== roomState.hostId) return;
+            
+            let deck = generateConcanDeck();
+            let hands = { ...roomState.hands };
+            let players = [...roomState.players];
+
+            // التوزيع: 14 كرت لكل لاعب، و 15 كرت للأول (المضيف)
+            players.forEach((p, index) => {
+                let count = (index === 0) ? 15 : 14;
+                let pHand = [];
+                for(let i=0; i<count; i++) pHand.push(deck.pop());
+                hands[p.uid] = pHand;
+                p.cardCount = count;
+            });
+
+            // كرت البداية في سلة الرمي (اختياري، في الكونكان نادراً ما نبدأ بكرت مكشوف لأن اللاعب الأول لديه 15، سنتركه فارغاً)
+
+            await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'concan_rooms', currentRoomCode), {
+                status: 'playing',
+                deck: deck,
+                hands: hands,
+                players: players,
+                turn: players[0].uid // المضيف يبدأ
+            });
+        }
+
+        /* --- أدوات رسم البطاقات --- */
+        function getCardHTML(code, isSelected = false, index = null, isOpponent = false) {
+            if(!code) return '';
+            if (isOpponent) {
+                return `<div class="w-6 h-8 bg-blue-800 rounded border border-white/20 shadow-sm" style="margin-right: -10px; background-image: repeating-linear-gradient(45deg, transparent, transparent 3px, rgba(255,255,255,.1) 3px, rgba(255,255,255,.1) 6px);"></div>`;
+            }
+
+            let selClass = isSelected ? 'card-selected' : '';
+            let clickAttr = index !== null ? `onclick="toggleCardSelect(${index})"` : '';
+            
+            return `<img src="./Playing Cards/${code}.png" onerror="this.outerHTML='<div class=\\'w-14 h-20 md:w-16 md:h-24 rounded shadow-md bg-white border border-zinc-300 flex items-center justify-center font-black text-xl text-zinc-800 card-item ${selClass}\\' ${clickAttr}>${code.toUpperCase()}</div>'" class="w-14 h-20 md:w-16 md:h-24 rounded shadow-md bg-white object-cover border border-zinc-200 dark:border-zinc-700 card-item ${selClass}" ${clickAttr}>`;
+        }
+
+        window.toggleCardSelect = function(index) {
+            vibe(10);
+            const pos = selectedCards.indexOf(index);
+            if (pos > -1) selectedCards.splice(pos, 1);
+            else selectedCards.push(index);
+            renderGameBoard(); // إعادة رسم اليد فقط
+        }
+
+        function renderGameBoard() {
+            document.getElementById('game-room-id').innerText = currentRoomCode;
+            
+            // 1. الخصوم
+            const oppArea = document.getElementById('opponents-area');
+            oppArea.innerHTML = roomState.players.filter(p => p.uid !== myPlayerId).map(p => `
+                <div class="flex flex-col items-center bg-black/40 p-1.5 rounded-lg border ${roomState.turn === p.uid ? 'border-yellow-500 shadow-[0_0_10px_rgba(234,179,8,0.5)]' : 'border-zinc-800'}">
+                    <span class="text-[10px] font-bold text-white mb-1">${p.name}</span>
+                    <div class="flex">${Array(Math.min(p.cardCount, 20)).fill('').map(() => getCardHTML('back', false, null, true)).join('')}</div>
+                    <span class="text-[9px] text-zinc-400 mt-1">${p.cardCount} كروت</span>
+                </div>
+            `).join('');
+
+            // 2. مؤشر الدور
+            const turnEl = document.getElementById('turn-indicator');
+            const isMyTurn = roomState.turn === myPlayerId;
+            if (isMyTurn) {
+                turnEl.innerText = "دورك الآن!"; turnEl.className = "absolute top-4 left-1/2 transform -translate-x-1/2 bg-yellow-500 text-zinc-900 px-6 py-1.5 rounded-full font-black text-sm shadow-[0_0_15px_rgba(234,179,8,0.5)] z-20";
+            } else {
+                let currentPlayer = roomState.players.find(p => p.uid === roomState.turn);
+                turnEl.innerText = `دور: ${currentPlayer ? currentPlayer.name : '...'}`; turnEl.className = "absolute top-4 left-1/2 transform -translate-x-1/2 bg-zinc-800 text-white px-6 py-1.5 rounded-full font-bold text-xs shadow-lg z-20 opacity-80";
+            }
+
+            // 3. الطاولة (الكومة والرمي)
+            document.getElementById('deck-count').innerText = roomState.deck.length;
+            const discardPile = document.getElementById('discard-pile');
+            if (roomState.discard.length > 0) {
+                let topDiscard = roomState.discard[roomState.discard.length - 1];
+                discardPile.innerHTML = `<img src="./Playing Cards/${topDiscard}.png" class="w-full h-full object-cover rounded-lg shadow-lg">`;
+                discardPile.className = "relative w-16 h-24 rounded-lg cursor-pointer hover:-translate-y-2 transition-transform border border-zinc-400";
+            } else {
+                discardPile.innerHTML = `<span class="text-white/30 text-xs font-bold">فارغ</span>`;
+                discardPile.className = "relative w-16 h-24 rounded-lg border-2 border-dashed border-white/30 cursor-pointer flex items-center justify-center";
+            }
+
+            // 4. المجموعات المنزلة على الطاولة (Melds)
+            const tableArea = document.getElementById('table-melds');
+            tableArea.innerHTML = roomState.tableMelds.map((meld, mIdx) => `
+                <div class="flex bg-black/20 p-2 rounded-xl border border-white/10 hover:border-blue-400 cursor-pointer transition-colors shadow-lg" onclick="addSelectedToMeld(${mIdx})">
+                    ${meld.map(card => `<div class="meld-card w-12 h-16"><img src="./Playing Cards/${card}.png" class="w-full h-full object-cover rounded shadow-md border border-zinc-300"></div>`).join('')}
+                </div>
+            `).join('');
+
+            // 5. يدي (My Hand)
+            const myHandContainer = document.getElementById('my-hand');
+            let myCards = roomState.hands[myPlayerId] || [];
+            
+            // ترتيب تلقائي بسيط (اختياري)
+            myHandContainer.innerHTML = myCards.map((card, idx) => {
+                let isSelected = selectedCards.includes(idx);
+                return getCardHTML(card, isSelected, idx, false);
+            }).join('');
+
+            // 6. التحكم بالأزرار
+            document.getElementById('btn-meld').disabled = !isMyTurn || selectedCards.length < 3;
+            document.getElementById('btn-discard').disabled = !isMyTurn || selectedCards.length !== 1 || !hasDrawnThisTurn;
+            document.getElementById('btn-add-meld').style.display = (isMyTurn && selectedCards.length > 0 && roomState.tableMelds.length > 0) ? 'flex' : 'none';
+
+            // حالة الفوز
+            if (roomState.winner) {
+                let wName = roomState.players.find(p => p.uid === roomState.winner)?.name;
+                document.getElementById('overlay-text').innerText = roomState.winner === myPlayerId ? "مبروك! لقد فزت 🎉" : `لقد فاز ${wName} 💔`;
+                document.getElementById('game-overlay').classList.remove('hidden'); document.getElementById('game-overlay').classList.add('flex');
+            }
+        }
+
+        /* ==================== 4. حركات اللعب ==================== */
+        
+        async function applyTurnUpdate(updates) {
+            try {
+                await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'concan_rooms', currentRoomCode), updates);
+                selectedCards = [];
+            } catch(e) { alert("حدث خطأ في الشبكة!"); }
+        }
+
+        // 1. سحب من الكومة المقلوبة
+        window.drawFromDeck = function() {
+            if (roomState.turn !== myPlayerId || hasDrawnThisTurn || roomState.deck.length === 0) return vibe(50);
+            vibe(15);
+            let deck = [...roomState.deck];
+            let myHand = [...roomState.hands[myPlayerId]];
+            let card = deck.pop();
+            myHand.push(card);
+            
+            let players = [...roomState.players];
+            let p = players.find(x => x.uid === myPlayerId); p.cardCount = myHand.length;
+
+            hasDrawnThisTurn = true;
+            applyTurnUpdate({ deck: deck, [`hands.${myPlayerId}`]: myHand, players: players });
+        }
+
+        // 2. سحب من كومة الرمي (بشرط أن تنزل بها مجموعة فوراً وفقاً لقوانين الكونكان المعقدة، لكن هنا للتسهيل سنسمح بسحبها)
+        window.drawFromDiscard = function() {
+            if (roomState.turn !== myPlayerId || hasDrawnThisTurn || roomState.discard.length === 0) return vibe(50);
+            vibe(15);
+            let discard = [...roomState.discard];
+            let myHand = [...roomState.hands[myPlayerId]];
+            let card = discard.pop();
+            myHand.push(card);
+            
+            let players = [...roomState.players];
+            let p = players.find(x => x.uid === myPlayerId); p.cardCount = myHand.length;
+
+            hasDrawnThisTurn = true;
+            applyTurnUpdate({ discard: discard, [`hands.${myPlayerId}`]: myHand, players: players });
+        }
+
+        // 3. إنزال مجموعة جديدة على الطاولة
+        window.meldSelectedCards = function() {
+            if (roomState.turn !== myPlayerId || selectedCards.length < 3) return;
+            vibe(20);
+            
+            let myHand = [...roomState.hands[myPlayerId]];
+            let meldCards = [];
+            
+            // سحب الكروت المحددة، يجب الفرز العكسي لكي لا يختل الـ Index
+            selectedCards.sort((a,b) => b-a).forEach(idx => {
+                meldCards.push(myHand[idx]);
+                myHand.splice(idx, 1);
+            });
+
+            // ترتيب المجموعة المنزلة حسب القيمة (تجميلي فقط)
+            meldCards.reverse();
+
+            let tableMelds = [...roomState.tableMelds];
+            tableMelds.push(meldCards);
+
+            let players = [...roomState.players];
+            let p = players.find(x => x.uid === myPlayerId); p.cardCount = myHand.length;
+
+            applyTurnUpdate({ tableMelds: tableMelds, [`hands.${myPlayerId}`]: myHand, players: players });
+        }
+
+        // 4. التركيب بورقة على مجموعة موجودة أصلاً
+        window.addSelectedToMeld = function(meldIndex) {
+            if (roomState.turn !== myPlayerId || selectedCards.length === 0) return;
+            vibe(15);
+
+            let myHand = [...roomState.hands[myPlayerId]];
+            let tableMelds = [...roomState.tableMelds];
+            let targetMeld = [...tableMelds[meldIndex]];
+
+            selectedCards.sort((a,b) => b-a).forEach(idx => {
+                targetMeld.push(myHand[idx]);
+                myHand.splice(idx, 1);
+            });
+
+            tableMelds[meldIndex] = targetMeld;
+
+            let players = [...roomState.players];
+            let p = players.find(x => x.uid === myPlayerId); p.cardCount = myHand.length;
+
+            // في حال ركب ورقة وخلص ورقه كله بدون أن يرمي (قانونياً لا يجوز في الكونكان إلا إذا رمى، لكن سنسمح بإنهاء اللعبة)
+            let winner = null;
+            if (myHand.length === 0) winner = myPlayerId;
+
+            applyTurnUpdate({ tableMelds: tableMelds, [`hands.${myPlayerId}`]: myHand, players: players, winner: winner });
+        }
+
+        // 5. رمي ورقة وإنهاء الدور
+        window.discardSelectedCard = function() {
+            if (roomState.turn !== myPlayerId || selectedCards.length !== 1 || !hasDrawnThisTurn) return;
+            vibe(30);
+
+            let myHand = [...roomState.hands[myPlayerId]];
+            let discard = [...roomState.discard];
+            
+            let cardToDiscard = myHand[selectedCards[0]];
+            myHand.splice(selectedCards[0], 1);
+            discard.push(cardToDiscard);
+
+            let players = [...roomState.players];
+            let p = players.find(x => x.uid === myPlayerId); p.cardCount = myHand.length;
+
+            let winner = null;
+            if (myHand.length === 0) {
+                winner = myPlayerId; // فوز رسمي (تسكيرة)
+            }
+
+            // نقل الدور للاعب التالي
+            let currentIdx = players.findIndex(x => x.uid === myPlayerId);
+            let nextIdx = (currentIdx + 1) % players.length;
+            let nextTurnUid = players[nextIdx].uid;
+
+            hasDrawnThisTurn = false;
+
+            applyTurnUpdate({ 
+                discard: discard, 
+                [`hands.${myPlayerId}`]: myHand, 
+                players: players, 
+                turn: nextTurnUid,
+                winner: winner
+            });
+        }
+    </script>
+</body>
+</html>
