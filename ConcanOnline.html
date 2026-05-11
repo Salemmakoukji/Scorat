@@ -14,6 +14,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
 
+    <!-- Sortable JS للسحب والإفلات -->
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+
     <script>
         const savedTheme = localStorage.getItem('scorat_theme');
         const isDark = savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches);
@@ -47,13 +50,14 @@
         /* Card Styling for Hand */
         .card-item {
             transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s;
-            margin-right: -1.25rem; /* تم تقليل التداخل لتظهر مساحة أكبر من كل كرت */
+            margin-right: -25px; /* تداخل محسّن للأوراق */
             cursor: pointer;
             position: relative;
+            flex-shrink: 0; /* منع انكماش البطاقات */
         }
         .card-item:last-child { margin-right: 0; }
         .card-selected {
-            transform: translateY(-15px);
+            transform: translateY(-20px);
             box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.5);
             border: 2px solid #2563eb;
             z-index: 50 !important;
@@ -176,20 +180,23 @@
         <!-- منطقة اللاعب (أوراقه والأزرار) -->
         <div class="h-44 bg-zinc-900 flex flex-col z-20 border-t border-zinc-800 pb-4">
             <!-- الأزرار -->
-            <div class="flex justify-center gap-2 py-2 px-2 bg-zinc-950">
+            <div class="flex justify-center gap-2 py-2 px-2 bg-zinc-950 flex-wrap">
+                <button id="btn-undo" onclick="undoAction()" class="flex-1 bg-amber-600 hover:bg-amber-500 text-white py-2 rounded-xl font-bold text-sm shadow-md active:scale-95 transition-all items-center justify-center gap-1 hidden">
+                    <span class="material-symbols-outlined text-[18px]">undo</span> تراجع
+                </button>
                 <button id="btn-meld" onclick="meldSelectedCards()" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white py-2 rounded-xl font-bold text-sm shadow-md active:scale-95 disabled:opacity-30 disabled:active:scale-100 transition-all flex items-center justify-center gap-1">
                     <span class="material-symbols-outlined text-[18px]">publish</span> إنزال مجموعة
                 </button>
                 <button id="btn-add-meld" onclick="addToExistingMeld()" class="flex-1 bg-blue-600 hover:bg-blue-500 text-white py-2 rounded-xl font-bold text-sm shadow-md active:scale-95 disabled:opacity-30 disabled:active:scale-100 transition-all flex items-center justify-center gap-1 hidden">
-                    <span class="material-symbols-outlined text-[18px]">library_add</span> تركيب بورقة
+                    <span class="material-symbols-outlined text-[18px]">library_add</span> تركيب
                 </button>
                 <button id="btn-discard" onclick="discardSelectedCard()" class="flex-1 bg-rose-600 hover:bg-rose-500 text-white py-2 rounded-xl font-bold text-sm shadow-md active:scale-95 disabled:opacity-30 disabled:active:scale-100 transition-all flex items-center justify-center gap-1">
-                    <span class="material-symbols-outlined text-[18px]">delete</span> رمي (إنهاء الدور)
+                    <span class="material-symbols-outlined text-[18px]">delete</span> رمي (إنهاء)
                 </button>
             </div>
             
             <!-- الأوراق في اليد -->
-            <div class="flex-1 overflow-x-auto overflow-y-visible flex items-center px-6 pt-4 pb-2" id="my-hand" dir="ltr">
+            <div class="flex-1 overflow-x-auto overflow-y-visible flex items-center px-6 pt-6 pb-2" id="my-hand" dir="ltr">
                 <!-- البطاقات تضاف هنا -->
             </div>
         </div>
@@ -229,6 +236,8 @@
         let roomState = null;
         let selectedCards = []; // الكروت التي ضغط عليها اللاعب في يده
         let hasDrawnThisTurn = false;
+        let undoStack = []; // حفظ حالة اللعب للتراجع
+        let handSortable = null; // مدير السحب والإفلات
 
         document.getElementById('player-name').value = myName;
 
@@ -335,7 +344,7 @@
             document.getElementById('view-game').classList.add('hidden'); document.getElementById('view-game').classList.remove('flex');
             document.getElementById('game-overlay').classList.add('hidden'); document.getElementById('game-overlay').classList.remove('flex');
             document.getElementById('view-lobby').classList.remove('hidden');
-            currentRoomCode = null; roomState = null; selectedCards = [];
+            currentRoomCode = null; roomState = null; selectedCards = []; undoStack = [];
         }
 
         /* ==================== 2. تجهيز ورق اللعب ==================== */
@@ -421,24 +430,24 @@
         }
 
         /* --- أدوات رسم البطاقات --- */
-        function getCardHTML(code, isSelected = false, index = null, isOpponent = false) {
+        function getCardHTML(code, isSelected = false, isOpponent = false) {
             if(!code) return '';
             if (isOpponent) {
                 return `<div class="w-6 h-8 bg-blue-800 rounded border border-white/20 shadow-sm" style="margin-right: -10px; background-image: repeating-linear-gradient(45deg, transparent, transparent 3px, rgba(255,255,255,.1) 3px, rgba(255,255,255,.1) 6px);"></div>`;
             }
 
             let selClass = isSelected ? 'card-selected' : '';
-            let clickAttr = index !== null ? `onclick="toggleCardSelect(${index})"` : '';
+            let clickAttr = `onclick="toggleCardSelect('${code}')"`;
             
-            /* تم تصغير حجم الكرت في الموبايل إلى w-12 h-16 ليناسب 15 ورقة براحة */
-            return `<img src="./assets/cards/${code}.png" onerror="this.outerHTML='<div class=\\'w-12 h-16 md:w-16 md:h-24 rounded shadow-md bg-white border border-zinc-300 flex items-center justify-center font-black text-lg text-zinc-800 card-item ${selClass}\\' ${clickAttr}>${code.toUpperCase()}</div>'" class="w-12 h-16 md:w-16 md:h-24 rounded shadow-md bg-white object-cover border border-zinc-200 dark:border-zinc-700 card-item ${selClass}" ${clickAttr}>`;
+            /* تم تكبير وتوضيح الكرت ليناسب الشاشة، مع الحفاظ على التداخل */
+            return `<img src="./assets/cards/${code}.png" onerror="this.outerHTML='<div class=\\'w-14 h-20 md:w-16 md:h-24 rounded shadow-[0_2px_8px_rgba(0,0,0,0.5)] bg-white border border-zinc-300 flex items-center justify-center font-black text-lg text-zinc-800 card-item ${selClass}\\' ${clickAttr}>${code.toUpperCase()}</div>'" class="w-14 h-20 md:w-16 md:h-24 rounded shadow-[0_2px_8px_rgba(0,0,0,0.5)] bg-white object-cover border border-zinc-200 dark:border-zinc-700 card-item ${selClass}" ${clickAttr} data-id="${code}">`;
         }
 
-        window.toggleCardSelect = function(index) {
+        window.toggleCardSelect = function(cardCode) {
             vibe(10);
-            const pos = selectedCards.indexOf(index);
+            const pos = selectedCards.indexOf(cardCode);
             if (pos > -1) selectedCards.splice(pos, 1);
-            else selectedCards.push(index);
+            else selectedCards.push(cardCode);
             renderGameBoard(); // إعادة رسم اليد فقط
         }
 
@@ -470,7 +479,7 @@
             const discardPile = document.getElementById('discard-pile');
             if (roomState.discard.length > 0) {
                 let topDiscard = roomState.discard[roomState.discard.length - 1];
-                discardPile.innerHTML = `<img src="./Playing Cards/${topDiscard}.png" class="w-full h-full object-cover rounded-lg shadow-lg">`;
+                discardPile.innerHTML = `<img src="./assets/cards/${topDiscard}.png" class="w-full h-full object-cover rounded-lg shadow-lg">`;
                 discardPile.className = "relative w-16 h-24 rounded-lg cursor-pointer hover:-translate-y-2 transition-transform border border-zinc-400";
             } else {
                 discardPile.innerHTML = `<span class="text-white/30 text-xs font-bold">فارغ</span>`;
@@ -481,7 +490,7 @@
             const tableArea = document.getElementById('table-melds');
             tableArea.innerHTML = roomState.tableMelds.map((meld, mIdx) => `
                 <div class="flex bg-black/20 p-2 rounded-xl border border-white/10 hover:border-blue-400 cursor-pointer transition-colors shadow-lg" onclick="addSelectedToMeld(${mIdx})">
-                    ${meld.map(card => `<div class="meld-card w-12 h-16"><img src="./Playing Cards/${card}.png" class="w-full h-full object-cover rounded shadow-md border border-zinc-300"></div>`).join('')}
+                    ${meld.map(card => `<div class="meld-card w-12 h-16"><img src="./assets/cards/${card}.png" class="w-full h-full object-cover rounded shadow-md border border-zinc-300"></div>`).join('')}
                 </div>
             `).join('');
 
@@ -489,16 +498,34 @@
             const myHandContainer = document.getElementById('my-hand');
             let myCards = roomState.hands[myPlayerId] || [];
             
-            // ترتيب تلقائي بسيط (اختياري)
-            myHandContainer.innerHTML = myCards.map((card, idx) => {
-                let isSelected = selectedCards.includes(idx);
-                return getCardHTML(card, isSelected, idx, false);
+            myHandContainer.innerHTML = myCards.map((card) => {
+                let isSelected = selectedCards.includes(card);
+                return getCardHTML(card, isSelected, false);
             }).join('');
+
+            // تفعيل السحب والإفلات لترتيب الورق (SortableJS)
+            if (!handSortable) {
+                handSortable = new Sortable(myHandContainer, {
+                    animation: 150,
+                    delay: 150, // ضغطة مطولة لتفعيل السحب (للموبايل)
+                    delayOnTouchOnly: true,
+                    onEnd: function (evt) {
+                        let currentCards = roomState.hands[myPlayerId] || [];
+                        const item = currentCards.splice(evt.oldIndex, 1)[0];
+                        currentCards.splice(evt.newIndex, 0, item);
+                        roomState.hands[myPlayerId] = currentCards; // تحديث محلي
+                        updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'concan_rooms', currentRoomCode), {
+                            [`hands.${myPlayerId}`]: currentCards
+                        });
+                    }
+                });
+            }
 
             // 6. التحكم بالأزرار
             document.getElementById('btn-meld').disabled = !isMyTurn || selectedCards.length < 3;
             document.getElementById('btn-discard').disabled = !isMyTurn || selectedCards.length !== 1 || !hasDrawnThisTurn;
             document.getElementById('btn-add-meld').style.display = (isMyTurn && selectedCards.length > 0 && roomState.tableMelds.length > 0) ? 'flex' : 'none';
+            document.getElementById('btn-undo').style.display = (undoStack.length > 0 && isMyTurn) ? 'flex' : 'none';
 
             // حالة الفوز
             if (roomState.winner) {
@@ -517,10 +544,22 @@
             } catch(e) { alert("حدث خطأ في الشبكة!"); }
         }
 
+        window.undoAction = function() {
+            if (undoStack.length === 0 || roomState.turn !== myPlayerId) return;
+            vibe(20);
+            let lastState = undoStack.pop();
+            applyTurnUpdate({
+                tableMelds: lastState.tableMelds,
+                [`hands.${myPlayerId}`]: lastState.myHand
+            });
+        }
+
         // 1. سحب من الكومة المقلوبة
         window.drawFromDeck = function() {
             if (roomState.turn !== myPlayerId || hasDrawnThisTurn || roomState.deck.length === 0) return vibe(50);
             vibe(15);
+            undoStack = []; // مسح تاريخ التراجع عند السحب
+            
             let deck = [...roomState.deck];
             let myHand = [...roomState.hands[myPlayerId]];
             let card = deck.pop();
@@ -537,6 +576,8 @@
         window.drawFromDiscard = function() {
             if (roomState.turn !== myPlayerId || hasDrawnThisTurn || roomState.discard.length === 0) return vibe(50);
             vibe(15);
+            undoStack = []; // مسح تاريخ التراجع عند السحب
+            
             let discard = [...roomState.discard];
             let myHand = [...roomState.hands[myPlayerId]];
             let card = discard.pop();
@@ -554,17 +595,20 @@
             if (roomState.turn !== myPlayerId || selectedCards.length < 3) return;
             vibe(20);
             
+            // حفظ الحالة للتراجع
+            undoStack.push({ tableMelds: JSON.parse(JSON.stringify(roomState.tableMelds)), myHand: JSON.parse(JSON.stringify(roomState.hands[myPlayerId])) });
+            
             let myHand = [...roomState.hands[myPlayerId]];
             let meldCards = [];
             
-            // سحب الكروت المحددة، يجب الفرز العكسي لكي لا يختل الـ Index
-            selectedCards.sort((a,b) => b-a).forEach(idx => {
-                meldCards.push(myHand[idx]);
-                myHand.splice(idx, 1);
+            // سحب الكروت المحددة (باستخدام الأكواد)
+            selectedCards.forEach(cardCode => {
+                let idx = myHand.indexOf(cardCode);
+                if(idx > -1) {
+                    meldCards.push(cardCode);
+                    myHand.splice(idx, 1);
+                }
             });
-
-            // ترتيب المجموعة المنزلة حسب القيمة (تجميلي فقط)
-            meldCards.reverse();
 
             let tableMelds = [...roomState.tableMelds];
             tableMelds.push(meldCards);
@@ -580,13 +624,19 @@
             if (roomState.turn !== myPlayerId || selectedCards.length === 0) return;
             vibe(15);
 
+            // حفظ الحالة للتراجع
+            undoStack.push({ tableMelds: JSON.parse(JSON.stringify(roomState.tableMelds)), myHand: JSON.parse(JSON.stringify(roomState.hands[myPlayerId])) });
+
             let myHand = [...roomState.hands[myPlayerId]];
             let tableMelds = [...roomState.tableMelds];
             let targetMeld = [...tableMelds[meldIndex]];
 
-            selectedCards.sort((a,b) => b-a).forEach(idx => {
-                targetMeld.push(myHand[idx]);
-                myHand.splice(idx, 1);
+            selectedCards.forEach(cardCode => {
+                let idx = myHand.indexOf(cardCode);
+                if(idx > -1) {
+                    targetMeld.push(cardCode);
+                    myHand.splice(idx, 1);
+                }
             });
 
             tableMelds[meldIndex] = targetMeld;
@@ -609,8 +659,10 @@
             let myHand = [...roomState.hands[myPlayerId]];
             let discard = [...roomState.discard];
             
-            let cardToDiscard = myHand[selectedCards[0]];
-            myHand.splice(selectedCards[0], 1);
+            let cardToDiscard = selectedCards[0];
+            let idx = myHand.indexOf(cardToDiscard);
+            if(idx > -1) myHand.splice(idx, 1);
+            
             discard.push(cardToDiscard);
 
             let players = [...roomState.players];
@@ -627,6 +679,7 @@
             let nextTurnUid = players[nextIdx].uid;
 
             hasDrawnThisTurn = false;
+            undoStack = []; // مسح تاريخ التراجع لانتهاء الدور
 
             applyTurnUpdate({ 
                 discard: discard, 
