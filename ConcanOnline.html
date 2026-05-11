@@ -14,7 +14,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
 
-    <!-- Sortable JS -->
+    <!-- Sortable JS للسحب والإفلات -->
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
 
     <script>
@@ -47,6 +47,7 @@
         .page-enter { animation: fadeSlideUp 0.3s ease-out forwards; }
         @keyframes fadeSlideUp { 0% { opacity: 0; transform: translateY(15px); } 100% { opacity: 1; transform: translateY(0); } }
 
+        /* Card Styling */
         .card-item {
             transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s;
             margin-right: -2rem; 
@@ -86,7 +87,7 @@
         <div class="bg-surface-light dark:bg-surface-dark p-6 rounded-[32px] shadow-lg border border-zinc-200 dark:border-zinc-800 flex flex-col gap-5">
             <div>
                 <label class="block text-xs font-bold text-zinc-500 mb-2">اسمك في اللعبة</label>
-                <input type="text" id="player-name" placeholder="أدخل اسمك..." class="w-full bg-background-light dark:bg-background-dark border border-zinc-200 dark:border-zinc-800 px-4 py-3.5 rounded-2xl font-bold outline-none focus:ring-2 focus:ring-primary text-center">
+                <input type="text" id="player-name" placeholder="أدخل اسمك..." class="w-full bg-background-light dark:bg-background-dark border border-zinc-200 dark:border-zinc-800 px-4 py-3.5 rounded-2xl font-bold outline-none focus:ring-2 focus:ring-primary text-center transition-opacity">
             </div>
 
             <div>
@@ -126,7 +127,7 @@
                 <div id="waiting-players-list" class="flex flex-col gap-2"></div>
             </div>
 
-            <button id="btn-start-game" onclick="startGame()" class="w-full bg-emerald-500 text-white py-4 rounded-2xl font-black text-lg shadow-md active:scale-95 transition-all mb-4 hidden">بدء الجولة</button>
+            <button id="btn-start-game" onclick="startGame()" class="w-full bg-emerald-500 text-white py-4 rounded-2xl font-black text-lg shadow-md active:scale-95 transition-all mb-4 hidden">بدء الجولة وتوزيع الورق</button>
             <button onclick="exitGame()" class="text-rose-500 font-bold active:scale-95 transition-transform hover:underline text-sm">مغادرة الغرفة</button>
         </div>
     </div>
@@ -142,7 +143,7 @@
 
         <div class="flex-1 bg-table wood-border relative overflow-hidden flex flex-col">
             
-            <!-- شرط النزول اللحظي (Ta'liya Indicator) -->
+            <!-- شرط النزول اللحظي -->
             <div class="absolute top-2 left-2 bg-black/50 text-white px-3 py-1.5 rounded-lg text-xs font-bold border border-white/20 z-10 flex flex-col">
                 <span class="text-[9px] text-zinc-400">شرط النزول (خصم / شريك):</span>
                 <span id="taliya-indicator" class="text-yellow-400">51 / 51</span>
@@ -170,7 +171,6 @@
         <!-- منطقة اللاعب -->
         <div class="h-56 md:h-64 bg-zinc-900 flex flex-col z-20 border-t border-zinc-800 pb-2 relative">
             
-            <!-- عداد نقاط الكروت المحددة -->
             <div id="selection-points-badge" class="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white px-4 py-1 rounded-full text-xs font-bold shadow-md hidden border border-blue-400 z-30">
                 مجموع التحديد: <span id="selection-points-val">0</span>
             </div>
@@ -207,7 +207,7 @@
                 <div id="sb-players-list" class="flex flex-col gap-3"></div>
             </div>
             <div class="p-4 bg-zinc-950 flex gap-2">
-                <button id="btn-next-round" onclick="startNextRound()" class="flex-1 bg-primary text-white py-3.5 rounded-xl font-bold active:scale-95 hidden">الجولة التالية</button>
+                <button id="btn-next-round" onclick="startGame()" class="flex-1 bg-primary text-white py-3.5 rounded-xl font-bold active:scale-95 hidden">توزيع جديد</button>
                 <button onclick="exitGame()" class="flex-1 bg-zinc-800 text-white py-3.5 rounded-xl font-bold active:scale-95">خروج للوبي</button>
             </div>
         </div>
@@ -237,7 +237,8 @@
         let myPlayerId = localStorage.getItem('scorat_uid');
         let myName = '';
         let roomState = null;
-        let selectedCards = []; 
+        
+        let selectedCards = []; // نستخدم الـ (Index) للحفاظ على فرادة التحديد
         let hasDrawnThisTurn = false;
         let undoStack = []; 
         let handSortable = null; 
@@ -367,10 +368,9 @@
             return deck;
         }
 
-        // حساب قيمة البطاقة وفقاً لقوانين الكونكان
         function getConcanValue(code, inHand = true) {
             if(!code || code === 'back') return 0;
-            if(code === 'jk') return inHand ? 25 : 10; // 25 في اليد، 10 قيمة افتراضية للإنزال
+            if(code === 'jk') return inHand ? 25 : 10;
             let val = code.replace(/[hdcs]/g, '');
             if(['a','j','q','k'].includes(val)) return 10;
             return parseInt(val) || 0;
@@ -417,35 +417,53 @@
         }
 
         window.startGame = async function() {
-            vibe(); if (myPlayerId !== roomState.hostId) return;
-            startNextRound();
-        }
-
-        window.startNextRound = async function() {
+            vibe(); 
             if (myPlayerId !== roomState.hostId) return;
-            let deck = generateConcanDeck();
-            let hands = { ...roomState.hands };
-            let players = [...roomState.players];
-            let hasMelded = {};
+            
+            try {
+                let deck = generateConcanDeck();
+                let newHands = {};
+                let newPlayers = [...roomState.players];
+                let newHasMelded = {};
 
-            players.forEach((p, index) => {
-                let count = (index === 0) ? 15 : 14;
-                let pHand = []; for(let i=0; i<count; i++) pHand.push(deck.pop());
-                hands[p.uid] = pHand; p.cardCount = count;
-                hasMelded[p.uid] = false;
-            });
+                // تفريغ الكروت القديمة وتوزيع جديد
+                newPlayers.forEach((p, index) => {
+                    let count = (index === 0) ? 15 : 14;
+                    let pHand = []; 
+                    for(let i=0; i<count; i++) pHand.push(deck.pop());
+                    newHands[p.uid] = pHand; 
+                    p.cardCount = count;
+                    newHasMelded[p.uid] = false;
+                });
 
-            await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'concan_rooms', currentRoomCode), {
-                status: 'playing', deck: deck, discard: [], tableMelds: [], hands: hands, players: players,
-                turn: players[0].uid, hasMelded: hasMelded, highestMeld: 51, highestMeldTeam: null, roundWinner: null, isJokerClose: false
-            });
+                // تصفير حالة الطاولة
+                await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'concan_rooms', currentRoomCode), {
+                    status: 'playing', 
+                    deck: deck, 
+                    discard: [], 
+                    tableMelds: [], 
+                    hands: newHands, 
+                    players: newPlayers,
+                    turn: newPlayers[0].uid, 
+                    hasMelded: newHasMelded, 
+                    highestMeld: 51, 
+                    highestMeldTeam: null, 
+                    roundWinner: null, 
+                    isJokerClose: false
+                });
+            } catch (e) {
+                console.error(e);
+                alert("حدث خطأ أثناء توزيع الأوراق! حاول مرة أخرى.");
+            }
         }
 
         function getCardHTML(code, isSelected = false, index = null, isOpponent = false) {
             if(!code) return '';
             if (isOpponent) return `<div class="w-6 h-8 bg-blue-800 rounded border border-white/20 shadow-sm" style="margin-right: -10px; background-image: repeating-linear-gradient(45deg, transparent, transparent 3px, rgba(255,255,255,.1) 3px, rgba(255,255,255,.1) 6px);"></div>`;
+            
             let selClass = isSelected ? 'card-selected' : '';
             let clickAttr = index !== null ? `onclick="window.toggleCardSelect(${index})"` : '';
+            
             return `
             <div ${clickAttr} class="w-16 h-24 md:w-20 md:h-32 rounded-lg shadow-[0_2px_8px_rgba(0,0,0,0.5)] bg-white border border-zinc-200 dark:border-zinc-700 card-item ${selClass} flex items-center justify-center overflow-hidden" data-id="${code}">
                 <span class="absolute inset-0 flex items-center justify-center font-black text-xl text-zinc-300 z-0 select-none pointer-events-none">${code.toUpperCase()}</span>
@@ -455,9 +473,12 @@
 
         window.toggleCardSelect = function(index) {
             if (index === null || index === undefined) return; vibe(10);
+            
+            // Toggle selection logic using Index
             const pos = selectedCards.indexOf(index);
             if (pos > -1) selectedCards.splice(pos, 1);
             else selectedCards.push(index);
+            
             renderGameBoard(); 
         }
 
@@ -505,12 +526,17 @@
                 </div>
             `).join('');
 
-            // 5. يدي
+            // 5. يدي (تأمين عدم اختفاء الكروت)
             const myHandContainer = document.getElementById('my-hand');
             let myCards = roomState.hands[myPlayerId] || [];
-            myHandContainer.innerHTML = myCards.map((card, idx) => getCardHTML(card, selectedCards.includes(idx), idx, false)).join('');
+            
+            if (myCards.length === 0) {
+                myHandContainer.innerHTML = `<div class="w-full text-center text-zinc-500 font-bold text-sm">جاري التوزيع...</div>`;
+            } else {
+                myHandContainer.innerHTML = myCards.map((card, idx) => getCardHTML(card, selectedCards.includes(idx), idx, false)).join('');
+            }
 
-            if (!handSortable) {
+            if (!handSortable && myCards.length > 0) {
                 handSortable = new Sortable(myHandContainer, {
                     animation: 150, delay: 150, delayOnTouchOnly: true,
                     onEnd: function (evt) {
@@ -518,7 +544,7 @@
                         const item = currentCards.splice(evt.oldIndex, 1)[0];
                         currentCards.splice(evt.newIndex, 0, item);
                         roomState.hands[myPlayerId] = currentCards; 
-                        selectedCards = []; 
+                        selectedCards = []; // إعادة التعيين لتجنب اختلاط الفهارس (Indexes)
                         updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'concan_rooms', currentRoomCode), { [`hands.${myPlayerId}`]: currentCards });
                         renderGameBoard();
                     }
@@ -529,7 +555,7 @@
             const badge = document.getElementById('selection-points-badge');
             if (selectedCards.length > 0) {
                 let selCardsCodes = selectedCards.map(idx => myCards[idx]);
-                let pts = calculatePoints(selCardsCodes, false); // false لأننا نحسبها بنية الإنزال
+                let pts = calculatePoints(selCardsCodes, false); 
                 document.getElementById('selection-points-val').innerText = pts;
                 badge.classList.remove('hidden');
                 
@@ -585,7 +611,7 @@
         /* ==================== 4. حركات اللعب ==================== */
         async function applyTurnUpdate(updates) {
             try { await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'concan_rooms', currentRoomCode), updates); selectedCards = []; } 
-            catch(e) { alert("حدث خطأ في الشبكة!"); }
+            catch(e) { alert("حدث خطأ في الشبكة! تأكد من الاتصال."); }
         }
 
         window.undoAction = function() {
@@ -615,23 +641,20 @@
             
             let myHand = [...roomState.hands[myPlayerId]];
             let meldCards = [];
+            
+            // الفرز التنازلي يضمن عدم تغير الفهارس (Indexes) أثناء الحذف
             selectedCards.sort((a,b) => b - a).forEach(idx => { meldCards.push(myHand[idx]); myHand.splice(idx, 1); });
 
             let points = calculatePoints(meldCards, false);
             let myTeam = roomState.players.find(p => p.uid === myPlayerId)?.team;
             
             let updates = {};
-            // التحقق من قانون الـ 51 والتعلية للنزلة الأولى
             if (!roomState.hasMelded[myPlayerId]) {
                 let required = 51;
                 if (roomState.highestMeldTeam && roomState.highestMeldTeam !== myTeam) required = roomState.highestMeld + 1;
-                
                 if (points < required) { vibe(50); return alert(`نقاط مجموعتك (${points}) أقل من المطلوب (${required})!`); }
-                
                 updates[`hasMelded.${myPlayerId}`] = true;
-                if (points >= required && points > roomState.highestMeld) {
-                    updates.highestMeld = points; updates.highestMeldTeam = myTeam;
-                }
+                if (points >= required && points > roomState.highestMeld) { updates.highestMeld = points; updates.highestMeldTeam = myTeam; }
             }
 
             undoStack.push({ tableMelds: JSON.parse(JSON.stringify(roomState.tableMelds)), myHand: JSON.parse(JSON.stringify(roomState.hands[myPlayerId])), hasMelded: roomState.hasMelded[myPlayerId], highestMeld: roomState.highestMeld, highestMeldTeam: roomState.highestMeldTeam });
@@ -645,7 +668,7 @@
 
         window.addSelectedToMeld = function(meldIndex) {
             if (roomState.turn !== myPlayerId || selectedCards.length === 0) return;
-            if (!roomState.hasMelded[myPlayerId]) return alert("يجب أن تنزل أولاً (بمجموع 51) قبل التركيب على مجموعات الآخرين!");
+            if (!roomState.hasMelded[myPlayerId]) return alert("يجب أن تنزل أولاً قبل التركيب!");
             vibe(15);
 
             undoStack.push({ tableMelds: JSON.parse(JSON.stringify(roomState.tableMelds)), myHand: JSON.parse(JSON.stringify(roomState.hands[myPlayerId])), hasMelded: roomState.hasMelded[myPlayerId], highestMeld: roomState.highestMeld, highestMeldTeam: roomState.highestMeldTeam });
@@ -655,7 +678,8 @@
             tableMelds[meldIndex] = { cards: targetMeld };
             let players = [...roomState.players]; let p = players.find(x => x.uid === myPlayerId); p.cardCount = myHand.length;
 
-            applyTurnUpdate({ tableMelds: tableMelds, [`hands.${myPlayerId}`]: myHand, players: players });
+            let winner = null; if (myHand.length === 0) winner = myPlayerId;
+            applyTurnUpdate({ tableMelds: tableMelds, [`hands.${myPlayerId}`]: myHand, players: players, roundWinner: winner, status: winner ? 'round_end' : 'playing' });
         }
 
         window.discardSelectedCard = function() {
@@ -667,21 +691,16 @@
 
             let players = [...roomState.players]; let p = players.find(x => x.uid === myPlayerId); p.cardCount = myHand.length;
 
-            // حساب الفوز ونهاية الجولة
             if (myHand.length === 0) {
                 let isJokerClose = cardToDiscard === 'jk';
                 let newScores = { ...roomState.scores };
-                
                 players.forEach(player => {
                     if (player.uid !== myPlayerId) {
-                        let penalty = 0;
-                        if (!roomState.hasMelded[player.uid]) penalty = 100;
-                        else penalty = calculatePoints(roomState.hands[player.uid], true);
+                        let penalty = !roomState.hasMelded[player.uid] ? 100 : calculatePoints(roomState.hands[player.uid], true);
                         if (isJokerClose) penalty *= 2;
                         newScores[player.uid] = (newScores[player.uid] || 0) + penalty;
                     }
                 });
-
                 applyTurnUpdate({ discard: discard, [`hands.${myPlayerId}`]: myHand, players: players, status: 'round_end', roundWinner: myPlayerId, isJokerClose: isJokerClose, scores: newScores });
                 hasDrawnThisTurn = false; undoStack = []; return;
             }
