@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Scorat | Tartousieh</title>
+    <title>Scorat | Concan</title>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -238,7 +238,7 @@
         let myPlayerId = localStorage.getItem('scorat_uid');
         let myName = '';
         let roomState = null;
-        let selectedCards = []; // الكروت التي ضغط عليها اللاعب في يده
+        let selectedCards = []; // الكروت (أرقام الفهارس) التي ضغط عليها اللاعب في يده
         let hasDrawnThisTurn = false;
         let undoStack = []; // حفظ حالة اللعب للتراجع
         let handSortable = null; // مدير السحب والإفلات
@@ -446,27 +446,29 @@
         }
 
         /* --- أدوات رسم البطاقات بأمان --- */
-        function getCardHTML(code, isSelected = false, isOpponent = false) {
+        function getCardHTML(code, isSelected = false, index = null, isOpponent = false) {
             if(!code) return '';
             if (isOpponent) {
                 return `<div class="w-6 h-8 bg-blue-800 rounded border border-white/20 shadow-sm" style="margin-right: -10px; background-image: repeating-linear-gradient(45deg, transparent, transparent 3px, rgba(255,255,255,.1) 3px, rgba(255,255,255,.1) 6px);"></div>`;
             }
 
             let selClass = isSelected ? 'card-selected' : '';
+            let clickAttr = index !== null ? `onclick="window.toggleCardSelect(${index})"` : '';
             
             // استخدام div حاوية لحماية الـ HTML ومنع الأخطاء عند فشل تحميل الصورة
             return `
-            <div onclick="window.toggleCardSelect('${code}')" class="w-12 h-16 md:w-16 md:h-24 rounded shadow-[0_2px_8px_rgba(0,0,0,0.5)] bg-white border border-zinc-200 dark:border-zinc-700 card-item ${selClass} flex items-center justify-center overflow-hidden" data-id="${code}">
-                <span class="absolute inset-0 flex items-center justify-center font-black text-lg text-zinc-300 z-0 select-none">${code.toUpperCase()}</span>
+            <div ${clickAttr} class="w-12 h-16 md:w-16 md:h-24 rounded shadow-[0_2px_8px_rgba(0,0,0,0.5)] bg-white border border-zinc-200 dark:border-zinc-700 card-item ${selClass} flex items-center justify-center overflow-hidden" data-id="${code}">
+                <span class="absolute inset-0 flex items-center justify-center font-black text-lg text-zinc-300 z-0 select-none pointer-events-none">${code.toUpperCase()}</span>
                 <img src="./assets/cards/${code}.png" onerror="this.style.display='none'" class="absolute inset-0 w-full h-full object-cover z-10 pointer-events-none select-none">
             </div>`;
         }
 
-        window.toggleCardSelect = function(cardCode) {
+        window.toggleCardSelect = function(index) {
+            if (index === null || index === undefined) return;
             vibe(10);
-            const pos = selectedCards.indexOf(cardCode);
+            const pos = selectedCards.indexOf(index);
             if (pos > -1) selectedCards.splice(pos, 1);
-            else selectedCards.push(cardCode);
+            else selectedCards.push(index);
             renderGameBoard(); // إعادة رسم اليد فقط
         }
 
@@ -478,7 +480,7 @@
             oppArea.innerHTML = roomState.players.filter(p => p.uid !== myPlayerId).map(p => `
                 <div class="flex flex-col items-center bg-black/40 p-1.5 rounded-lg border ${roomState.turn === p.uid ? 'border-yellow-500 shadow-[0_0_10px_rgba(234,179,8,0.5)]' : 'border-zinc-800'}">
                     <span class="text-[10px] font-bold text-white mb-1">${p.name}</span>
-                    <div class="flex">${Array(Math.min(p.cardCount, 20)).fill('').map(() => getCardHTML('back', false, true)).join('')}</div>
+                    <div class="flex">${Array(Math.min(p.cardCount, 20)).fill('').map(() => getCardHTML('back', false, null, true)).join('')}</div>
                     <span class="text-[9px] text-zinc-400 mt-1">${p.cardCount} كروت</span>
                 </div>
             `).join('');
@@ -515,7 +517,7 @@
                 <div class="flex bg-black/20 p-2 rounded-xl border border-white/10 hover:border-blue-400 cursor-pointer transition-colors shadow-lg" onclick="window.addSelectedToMeld(${mIdx})">
                     ${(meldObj.cards || []).map(card => `
                         <div class="meld-card w-10 h-14 md:w-12 md:h-16 relative bg-white rounded shadow-md border border-zinc-300 flex items-center justify-center overflow-hidden">
-                            <span class="absolute text-zinc-300 font-bold select-none">${card.toUpperCase()}</span>
+                            <span class="absolute text-zinc-300 font-bold select-none pointer-events-none">${card.toUpperCase()}</span>
                             <img src="./assets/cards/${card}.png" onerror="this.style.display='none'" class="w-full h-full object-cover absolute inset-0 z-10 pointer-events-none select-none">
                         </div>
                     `).join('')}
@@ -526,9 +528,9 @@
             const myHandContainer = document.getElementById('my-hand');
             let myCards = roomState.hands[myPlayerId] || [];
             
-            myHandContainer.innerHTML = myCards.map((card) => {
-                let isSelected = selectedCards.includes(card);
-                return getCardHTML(card, isSelected, false);
+            myHandContainer.innerHTML = myCards.map((card, idx) => {
+                let isSelected = selectedCards.includes(idx);
+                return getCardHTML(card, isSelected, idx, false);
             }).join('');
 
             // تفعيل السحب والإفلات لترتيب الورق (SortableJS)
@@ -542,9 +544,13 @@
                         const item = currentCards.splice(evt.oldIndex, 1)[0];
                         currentCards.splice(evt.newIndex, 0, item);
                         roomState.hands[myPlayerId] = currentCards; // تحديث محلي
+                        
+                        selectedCards = []; // مسح التحديد بعد السحب لكي لا يحدث خلل في الأرقام
+
                         updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'concan_rooms', currentRoomCode), {
                             [`hands.${myPlayerId}`]: currentCards
                         });
+                        renderGameBoard();
                     }
                 });
             }
@@ -644,13 +650,10 @@
             let myHand = [...roomState.hands[myPlayerId]];
             let meldCards = [];
             
-            // سحب الكروت المحددة (باستخدام الأكواد)
-            selectedCards.forEach(cardCode => {
-                let idx = myHand.indexOf(cardCode);
-                if(idx > -1) {
-                    meldCards.push(cardCode);
-                    myHand.splice(idx, 1);
-                }
+            // ترتيب عكسي للفهارس لكي لا تتغير أماكن الأوراق عند حذفها من اليد
+            selectedCards.sort((a,b) => b - a).forEach(idx => {
+                meldCards.push(myHand[idx]);
+                myHand.splice(idx, 1);
             });
 
             // الاعتماد على كائنات لتجنب خطأ المصفوفات المتداخلة في Firebase
@@ -675,12 +678,9 @@
             let tableMelds = [...roomState.tableMelds];
             let targetMeld = [...(tableMelds[meldIndex].cards || [])];
 
-            selectedCards.forEach(cardCode => {
-                let idx = myHand.indexOf(cardCode);
-                if(idx > -1) {
-                    targetMeld.push(cardCode);
-                    myHand.splice(idx, 1);
-                }
+            selectedCards.sort((a,b) => b - a).forEach(idx => {
+                targetMeld.push(myHand[idx]);
+                myHand.splice(idx, 1);
             });
 
             // تغليف المصفوفة داخل كائن
@@ -704,9 +704,9 @@
             let myHand = [...roomState.hands[myPlayerId]];
             let discard = [...roomState.discard];
             
-            let cardToDiscard = selectedCards[0];
-            let idx = myHand.indexOf(cardToDiscard);
-            if(idx > -1) myHand.splice(idx, 1);
+            let targetIdx = selectedCards[0];
+            let cardToDiscard = myHand[targetIdx];
+            myHand.splice(targetIdx, 1);
             
             discard.push(cardToDiscard);
 
