@@ -494,10 +494,11 @@
             }
 
             // 4. المجموعات المنزلة على الطاولة (Melds)
+            // استخدام Object بدلا من Array للمجموعات لتفادي مشاكل الحفظ في Firebase
             const tableArea = document.getElementById('table-melds');
-            tableArea.innerHTML = roomState.tableMelds.map((meld, mIdx) => `
+            tableArea.innerHTML = roomState.tableMelds.map((meldObj, mIdx) => `
                 <div class="flex bg-black/20 p-2 rounded-xl border border-white/10 hover:border-blue-400 cursor-pointer transition-colors shadow-lg" onclick="window.addSelectedToMeld(${mIdx})">
-                    ${meld.map(card => `
+                    ${(meldObj.cards || []).map(card => `
                         <div class="meld-card w-10 h-14 md:w-12 md:h-16 relative bg-white rounded shadow-md border border-zinc-300 flex items-center justify-center overflow-hidden">
                             <span class="absolute text-zinc-300 font-bold select-none">${card.toUpperCase()}</span>
                             <img src="./assets/cards/${card}.png" onerror="this.style.display='none'" class="w-full h-full object-cover absolute inset-0 z-10 pointer-events-none select-none">
@@ -565,7 +566,10 @@
             try {
                 await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'concan_rooms', currentRoomCode), updates);
                 selectedCards = [];
-            } catch(e) { alert("حدث خطأ في الشبكة!"); }
+            } catch(e) {
+                console.error("Firebase Update Error:", e);
+                alert("حدث خطأ في الشبكة! يرجى التحقق من اتصالك والمحاولة مجدداً."); 
+            }
         }
 
         window.undoAction = function() {
@@ -634,8 +638,9 @@
                 }
             });
 
+            // الاعتماد على كائنات لتجنب خطأ المصفوفات المتداخلة في Firebase
             let tableMelds = [...roomState.tableMelds];
-            tableMelds.push(meldCards);
+            tableMelds.push({ cards: meldCards });
 
             let players = [...roomState.players];
             let p = players.find(x => x.uid === myPlayerId); p.cardCount = myHand.length;
@@ -653,7 +658,7 @@
 
             let myHand = [...roomState.hands[myPlayerId]];
             let tableMelds = [...roomState.tableMelds];
-            let targetMeld = [...tableMelds[meldIndex]];
+            let targetMeld = [...(tableMelds[meldIndex].cards || [])];
 
             selectedCards.forEach(cardCode => {
                 let idx = myHand.indexOf(cardCode);
@@ -663,7 +668,8 @@
                 }
             });
 
-            tableMelds[meldIndex] = targetMeld;
+            // تغليف المصفوفة داخل كائن
+            tableMelds[meldIndex] = { cards: targetMeld };
 
             let players = [...roomState.players];
             let p = players.find(x => x.uid === myPlayerId); p.cardCount = myHand.length;
