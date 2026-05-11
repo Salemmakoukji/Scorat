@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Scorat - كونكان أونلاين</title>
+    <title>Scorat | Tartousieh</title>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -229,20 +229,19 @@
         };
 
         const appId = 'scorat-concan';
+        const mainAppId = 'scorat-app';
         let db, auth, currentUser;
 
         // حالة اللعبة المحلية
         let currentRoomCode = null;
         let unsubRoom = null;
-        let myPlayerId = null;
-        let myName = localStorage.getItem('scorat_player_name') || '';
+        let myPlayerId = localStorage.getItem('scorat_uid');
+        let myName = '';
         let roomState = null;
         let selectedCards = []; // الكروت التي ضغط عليها اللاعب في يده
         let hasDrawnThisTurn = false;
         let undoStack = []; // حفظ حالة اللعب للتراجع
         let handSortable = null; // مدير السحب والإفلات
-
-        document.getElementById('player-name').value = myName;
 
         window.vibe = function(ms = 30) { if (navigator.vibrate) navigator.vibrate(ms); };
 
@@ -251,8 +250,24 @@
                 const app = initializeApp(firebaseConfig);
                 auth = getAuth(app); db = getFirestore(app);
                 await signInAnonymously(auth);
-                onAuthStateChanged(auth, user => { 
-                    if(user) { currentUser = user; myPlayerId = user.uid; } 
+                onAuthStateChanged(auth, async user => { 
+                    if(user) { 
+                        currentUser = user; 
+                        if (!myPlayerId) myPlayerId = user.uid; 
+                        
+                        // جلب بيانات اللاعب من الصفحة الرئيسية
+                        if (myPlayerId) {
+                            try {
+                                const userDoc = await getDoc(doc(db, 'artifacts', mainAppId, 'public', 'data', 'users', myPlayerId));
+                                if (userDoc.exists()) {
+                                    myName = userDoc.data().name;
+                                    document.getElementById('player-name').value = myName;
+                                    document.getElementById('player-name').disabled = true; // قفل الحقل لأن الاسم مسجل
+                                    document.getElementById('player-name').classList.add('opacity-70', 'cursor-not-allowed');
+                                }
+                            } catch(e) { console.error(e); }
+                        }
+                    } 
                 });
             } catch (error) { console.error("Init Error:", error); }
         }
@@ -263,21 +278,20 @@
             vibe();
             const nameInput = document.getElementById('player-name').value.trim();
             if(!nameInput) return alert("الرجاء إدخال اسمك أولاً!");
-            if(!currentUser) return alert("جاري الاتصال بالسيرفر...");
+            if(!myPlayerId) return alert("جاري الاتصال بالسيرفر...");
             
             myName = nameInput;
-            localStorage.setItem('scorat_player_name', myName);
 
             const code = Math.floor(1000 + Math.random() * 9000).toString();
             currentRoomCode = code;
 
             const initialData = {
-                hostId: currentUser.uid,
+                hostId: myPlayerId,
                 status: 'waiting',
-                players: [{ uid: currentUser.uid, name: myName, cardCount: 0 }],
+                players: [{ uid: myPlayerId, name: myName, cardCount: 0 }],
                 deck: [], discard: [], tableMelds: [],
-                turn: currentUser.uid,
-                hands: { [currentUser.uid]: [] },
+                turn: myPlayerId,
+                hands: { [myPlayerId]: [] },
                 winner: null
             };
 
@@ -292,11 +306,12 @@
             vibe();
             const nameInput = document.getElementById('player-name').value.trim();
             if(!nameInput) return alert("الرجاء إدخال اسمك أولاً!");
+            if(!myPlayerId) return alert("جاري الاتصال بالسيرفر...");
+            
             const code = document.getElementById('room-code-input').value.trim();
             if(code.length !== 4) return alert("كود الغرفة 4 أرقام");
             
             myName = nameInput;
-            localStorage.setItem('scorat_player_name', myName);
             
             const statusEl = document.getElementById('lobby-status');
             statusEl.innerText = 'جاري البحث...'; statusEl.classList.remove('hidden');
@@ -309,11 +324,11 @@
                 let data = snap.data();
                 if (data.status !== 'waiting') return statusEl.innerText = 'الغرفة بدأت اللعب بالفعل!';
                 if (data.players.length >= 4) return statusEl.innerText = 'الغرفة ممتلئة (المتصلون 4/4)';
-                if (data.players.find(p => p.uid === currentUser.uid)) return statusEl.innerText = 'أنت متصل بالفعل!';
+                if (data.players.find(p => p.uid === myPlayerId)) return statusEl.innerText = 'أنت متصل بالفعل!';
 
                 // إضافة اللاعب
-                let newPlayers = [...data.players, { uid: currentUser.uid, name: myName, cardCount: 0 }];
-                let newHands = { ...data.hands, [currentUser.uid]: [] };
+                let newPlayers = [...data.players, { uid: myPlayerId, name: myName, cardCount: 0 }];
+                let newHands = { ...data.hands, [myPlayerId]: [] };
                 
                 await updateDoc(roomRef, { players: newPlayers, hands: newHands });
                 currentRoomCode = code;
