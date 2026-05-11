@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Scorat - كونكان أونلاين</title>
+    <title>Scorat Tartousieh</title>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -430,7 +430,7 @@
             let selClass = isSelected ? 'card-selected' : '';
             let clickAttr = index !== null ? `onclick="toggleCardSelect(${index})"` : '';
             
-            return `<img src="./Playing Cards/${code}.png" onerror="this.outerHTML='<div class=\\'w-14 h-20 md:w-16 md:h-24 rounded shadow-md bg-white border border-zinc-300 flex items-center justify-center font-black text-xl text-zinc-800 card-item ${selClass}\\' ${clickAttr}>${code.toUpperCase()}</div>'" class="w-14 h-20 md:w-16 md:h-24 rounded shadow-md bg-white object-cover border border-zinc-200 dark:border-zinc-700 card-item ${selClass}" ${clickAttr}>`;
+            return `<img src="./assets/cards/${code}.png" onerror="this.outerHTML='<div class=\\'w-14 h-20 md:w-16 md:h-24 rounded shadow-md bg-white border border-zinc-300 flex items-center justify-center font-black text-xl text-zinc-800 card-item ${selClass}\\' ${clickAttr}>${code.toUpperCase()}</div>'" class="w-14 h-20 md:w-16 md:h-24 rounded shadow-md bg-white object-cover border border-zinc-200 dark:border-zinc-700 card-item ${selClass}" ${clickAttr}>`;
         }
 
         window.toggleCardSelect = function(index) {
