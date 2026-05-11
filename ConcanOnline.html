@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Scorat Tartousieh</title>
+    <title>Scorat - كونكان أونلاين</title>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -47,7 +47,7 @@
         /* Card Styling for Hand */
         .card-item {
             transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s;
-            margin-right: -2.5rem; /* تداخل الأوراق للموبايل */
+            margin-right: -1.25rem; /* تم تقليل التداخل لتظهر مساحة أكبر من كل كرت */
             cursor: pointer;
             position: relative;
         }
@@ -430,7 +430,8 @@
             let selClass = isSelected ? 'card-selected' : '';
             let clickAttr = index !== null ? `onclick="toggleCardSelect(${index})"` : '';
             
-            return `<img src="./assets/cards/${code}.png" onerror="this.outerHTML='<div class=\\'w-14 h-20 md:w-16 md:h-24 rounded shadow-md bg-white border border-zinc-300 flex items-center justify-center font-black text-xl text-zinc-800 card-item ${selClass}\\' ${clickAttr}>${code.toUpperCase()}</div>'" class="w-14 h-20 md:w-16 md:h-24 rounded shadow-md bg-white object-cover border border-zinc-200 dark:border-zinc-700 card-item ${selClass}" ${clickAttr}>`;
+            /* تم تصغير حجم الكرت في الموبايل إلى w-12 h-16 ليناسب 15 ورقة براحة */
+            return `<img src="./assets/cards/${code}.png" onerror="this.outerHTML='<div class=\\'w-12 h-16 md:w-16 md:h-24 rounded shadow-md bg-white border border-zinc-300 flex items-center justify-center font-black text-lg text-zinc-800 card-item ${selClass}\\' ${clickAttr}>${code.toUpperCase()}</div>'" class="w-12 h-16 md:w-16 md:h-24 rounded shadow-md bg-white object-cover border border-zinc-200 dark:border-zinc-700 card-item ${selClass}" ${clickAttr}>`;
         }
 
         window.toggleCardSelect = function(index) {
