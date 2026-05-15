@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Scorat - البطولات</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts & Material Symbols -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
+
+    <script>
+        // إعدادات المظهر الأساسية
+        const savedTheme = localStorage.getItem('scorat_theme');
+        const isDark = savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        if (isDark) document.documentElement.classList.add('dark');
+        
+        const savedColor = localStorage.getItem('scorat_color') || 'blue';
+        const colors = {
+            blue: { primary: '#2563eb', light: '#eff6ff', dark: '#3b82f6' },
+            emerald: { primary: '#10b981', light: '#ecfdf5', dark: '#34d399' },
+            purple: { primary: '#8b5cf6', light: '#f5f3ff', dark: '#a78bfa' },
+            rose: { primary: '#f43f5e', light: '#fff1f2', dark: '#fb7185' }
+        };
+        const c = colors[savedColor] || colors.blue;
+        document.documentElement.style.setProperty('--color-primary', c.primary);
+        document.documentElement.style.setProperty('--color-primary-light', c.light);
+        document.documentElement.style.setProperty('--color-primary-dark', c.dark);
+
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Tajawal', 'sans-serif'] },
+                    colors: {
+                        primary: 'var(--color-primary)',
+                        'primary-light': 'var(--color-primary-light)',
+                        surface: { light: '#ffffff', dark: '#18181b' },
+                        background: { light: '#f4f4f5', dark: '#09090b' }
+                    },
+                    boxShadow: { 'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.05)' }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { font-family: 'Tajawal', sans-serif; -webkit-tap-highlight-color: transparent; overscroll-behavior: none; }
+        ::-webkit-scrollbar { display: none; }
+        .page-enter { animation: fadeSlideUp 0.3s cubic-bezier(0.2, 1, 0.3, 1) forwards; }
+        @keyframes fadeSlideUp { 0% { opacity: 0; transform: translateY(15px); } 100% { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="bg-background-light text-zinc-900 dark:bg-background-dark dark:text-zinc-100 transition-colors duration-300 min-h-screen flex flex-col select-none pb-10">
+
+    <div class="max-w-md mx-auto w-full relative min-h-screen flex flex-col pt-6 px-5">
+        
+        <!-- الهيدر الموحد -->
+        <header class="flex justify-between items-center mb-6">
+            <h1 class="text-2xl font-black tracking-tight flex items-center gap-2 text-primary">
+                <span class="material-symbols-outlined text-3xl">emoji_events</span>
+                البطولات
+            </h1>
+            <button onclick="location.href='./index.html'" class="w-10 h-10 rounded-full flex items-center justify-center bg-surface-light dark:bg-surface-dark shadow-sm hover:scale-105 active:scale-95 transition-all text-zinc-500 border border-zinc-200 dark:border-zinc-800">
+                <span class="material-symbols-outlined text-[20px]">close</span>
+            </button>
+        </header>
+
+        <!-- منطقة المحتوى الرئيسية -->
+        <main id="content" class="flex-1 flex flex-col overflow-hidden relative">
+            
+            <!-- 1. قائمة البطولات (Lobby) -->
+            <div id="view-list" class="flex-1 flex flex-col page-enter">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-bold tracking-tight">البطولات الحالية</h2>
+                    <button onclick="openCreateView()" class="bg-primary text-white text-xs font-bold px-4 py-2 rounded-xl shadow-md active:scale-95 transition-transform flex items-center gap-1">
+                        <span class="material-symbols-outlined text-[16px]">add</span> بطولة جديدة
+                    </button>
+                </div>
+                <div id="tournaments-list" class="flex-1 overflow-y-auto pb-4 space-y-3 pr-1">
+                    <!-- يتم حشوها برمجياً -->
+                </div>
+            </div>
+
+            <!-- 2. إنشاء بطولة (Create) -->
+            <div id="view-create" class="hidden flex-1 flex-col page-enter">
+                <div class="flex items-center mb-4">
+                    <button onclick="showList()" class="w-10 h-10 flex items-center justify-center text-zinc-500 hover:text-primary transition-colors active:scale-95"><span class="material-symbols-outlined">arrow_forward</span></button>
+                    <h2 class="text-xl font-bold tracking-tight mr-2">إنشاء بطولة</h2>
+                </div>
+                
+                <div class="bg-primary-light dark:bg-primary/10 text-primary p-4 rounded-2xl mb-4 text-sm font-semibold border border-primary/20 shadow-sm">
+                    اختر اللاعبين المشاركين (يجب اختيار عدد زوجي، 4 على الأقل). سيتم توزيعهم في فرق ثنائية عشوائياً.
+                </div>
+
+                <div class="flex justify-between items-center mb-2 px-1">
+                    <span class="text-xs font-bold text-zinc-500 uppercase tracking-widest">قائمة اللاعبين</span>
+                    <span id="selected-count" class="text-xs font-bold bg-zinc-200 dark:bg-zinc-800 px-2 py-1 rounded-md text-zinc-600 dark:text-zinc-300">محدد: 0</span>
+                </div>
+
+                <div id="users-selection-list" class="flex-1 overflow-y-auto pr-1 space-y-2 mb-4">
+                    <!-- يتم حشوها باللاعبين -->
+                </div>
+
+                <button onclick="generateTournament()" class="w-full bg-primary text-white py-4 rounded-2xl font-black text-lg shadow-md active:scale-95 transition-all">توزيع الفرق وبدء البطولة</button>
+            </div>
+
+            <!-- 3. تفاصيل البطولة (Dashboard) -->
+            <div id="view-details" class="hidden flex-1 flex-col page-enter">
+                <div class="flex justify-between items-center mb-4">
+                    <div class="flex items-center">
+                        <button onclick="showList()" class="w-10 h-10 flex items-center justify-center text-zinc-500 hover:text-primary transition-colors active:scale-95"><span class="material-symbols-outlined">arrow_forward</span></button>
+                        <h2 class="text-lg font-bold mr-2" id="tour-title">بطولة</h2>
+                    </div>
+                    <button onclick="confirmDeleteTournament()" class="w-10 h-10 flex items-center justify-center text-rose-500 bg-rose-50 dark:bg-rose-900/20 rounded-xl hover:scale-105 active:scale-95 transition-transform"><span class="material-symbols-outlined text-[18px]">delete</span></button>
+                </div>
+
+                <!-- التبويبات الداخلية -->
+                <div class="flex bg-surface-light dark:bg-surface-dark rounded-2xl p-1.5 mb-4 shadow-sm border border-zinc-200 dark:border-zinc-800">
+                    <button onclick="switchTourTab('standings')" id="tab-standings" class="flex-1 py-2.5 rounded-xl text-sm font-bold bg-primary text-white transition-all shadow-sm">الترتيب والفرق</button>
+                    <button onclick="switchTourTab('matches')" id="tab-matches" class="flex-1 py-2.5 rounded-xl text-sm font-bold text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all">المباريات</button>
+                </div>
+
+                <div id="tour-tab-content" class="flex-1 overflow-y-auto pb-4 pr-1"></div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- نافذة منبثقة (Modal) -->
+    <div id="modal-container" class="fixed inset-0 z-50 hidden bg-zinc-900/40 backdrop-blur-sm flex items-center justify-center px-4">
+        <div id="modal-content" class="bg-surface-light dark:bg-surface-dark w-full max-w-sm rounded-[32px] shadow-2xl p-6 transform scale-95 opacity-0 transition-all duration-200 border border-zinc-200 dark:border-zinc-800">
+            <h2 id="modal-title" class="text-xl font-bold mb-4">تأكيد</h2>
+            <div id="modal-inner" class="text-sm font-medium text-zinc-600 dark:text-zinc-300 mb-6"></div>
+            <div id="modal-actions" class="flex gap-3"></div>
+        </div>
+    </div>
+
+    <!-- الإشعارات -->
+    <div id="toast-container" class="fixed top-6 left-1/2 -translate-x-1/2 z-[100] flex flex-col gap-2 w-[calc(100%-2.5rem)] max-w-sm pointer-events-none"></div>
+
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, doc, setDoc, getDocs, onSnapshot, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // إعدادات Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyAiX6ipa161rB1o715EfmtzfrHiz9zgChQ",
+            authDomain: "dottech-scorat.firebaseapp.com",
+            projectId: "dottech-scorat",
+            storageBucket: "dottech-scorat.firebasestorage.app",
+            messagingSenderId: "324240314924",
+            appId: "1:324240314924:web:12866f2c25908f82fb7789"
+        };
+
+        const appId = 'scorat-app';
+        let db, auth;
+
+        // حالة التطبيق
+        let allUsers = [];
+        let usersMap = {};
+        let allTournaments = [];
+        let selectedPlayerIds = [];
+        let activeTourId = null;
+        let activeTourTab = 'standings';
+
+        window.vibe = function(ms = 30) { if (navigator.vibrate) navigator.vibrate(ms); };
+
+        async function init() {
+            try {
+                const app = initializeApp(firebaseConfig);
+                auth = getAuth(app); db = getFirestore(app);
+                await signInAnonymously(auth);
+                fetchUsers();
+                listenToTournaments();
+            } catch (error) { showToast("خطأ في الاتصال بالسيرفر", "error"); }
+        }
+
+        /* --- جلب البيانات --- */
+        async function fetchUsers() {
+            const snap = await getDocs(collection(db, 'artifacts', appId, 'public', 'data', 'users'));
+            allUsers = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            allUsers.forEach(u => usersMap[u.id] = u);
+        }
+
+        function listenToTournaments() {
+            onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'tournaments'), (snap) => {
+                allTournaments = snap.docs.map(d => ({ docId: d.id, ...d.data() }));
+                allTournaments.sort((a, b) => b.createdAt - a.createdAt);
+                
+                // تحديث الواجهة النشطة حالياً
+                if (!document.getElementById('view-list').classList.contains('hidden')) {
+                    renderList();
+                } else if (!document.getElementById('view-details').classList.contains('hidden') && activeTourId) {
+                    let t = allTournaments.find(x => x.docId === activeTourId);
+                    if (t) renderTournamentDetails(t);
+                    else showList(); // إذا تم حذفها
+                }
+            });
+        }
+
+        /* --- التنقل بين الشاشات --- */
+        window.showList = function() {
+            vibe(); activeTourId = null;
+            document.getElementById('view-create').classList.add('hidden');
+            document.getElementById('view-details').classList.add('hidden');
+            document.getElementById('view-list').classList.remove('hidden');
+            renderList();
+        }
+
+        window.openCreateView = function() {
+            vibe(); selectedPlayerIds = [];
+            document.getElementById('view-list').classList.add('hidden');
+            document.getElementById('view-details').classList.add('hidden');
+            document.getElementById('view-create').classList.remove('hidden');
+            renderUsersSelection();
+            updateSelectedCount();
+        }
+
+        window.openTournament = function(id) {
+            vibe(); activeTourId = id;
+            document.getElementById('view-list').classList.add('hidden');
+            document.getElementById('view-details').classList.remove('hidden');
+            let t = allTournaments.find(x => x.docId === activeTourId);
+            if(t) {
+                document.getElementById('tour-title').innerText = `بطولة #${t.code}`;
+                switchTourTab('standings');
+            }
+        }
+
+        window.switchTourTab = function(tabName) {
+            vibe(15); activeTourTab = tabName;
+            const btnSt = document.getElementById('tab-standings');
+            const btnMa = document.getElementById('tab-matches');
+            
+            if (tabName === 'standings') {
+                btnSt.className = "flex-1 py-2.5 rounded-xl text-sm font-bold bg-primary text-white transition-all shadow-sm";
+                btnMa.className = "flex-1 py-2.5 rounded-xl text-sm font-bold text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all";
+            } else {
+                btnMa.className = "flex-1 py-2.5 rounded-xl text-sm font-bold bg-primary text-white transition-all shadow-sm";
+                btnSt.className = "flex-1 py-2.5 rounded-xl text-sm font-bold text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all";
+            }
+            
+            let t = allTournaments.find(x => x.docId === activeTourId);
+            if(t) renderTournamentDetails(t);
+        }
+
+        /* --- واجهة اختيار اللاعبين --- */
+        function renderUsersSelection() {
+            const list = document.getElementById('users-selection-list');
+            if(allUsers.length === 0) { list.innerHTML = '<div class="text-center text-zinc-400 mt-10">لا يوجد لاعبين مسجلين</div>'; return; }
+            
+            list.innerHTML = allUsers.map(u => `
+                <div id="user-row-${u.id}" onclick="togglePlayerSelect('${u.id}')" class="flex items-center justify-between p-3 bg-surface-light dark:bg-surface-dark rounded-2xl cursor-pointer hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors border border-zinc-200 dark:border-zinc-800">
+                    <div class="flex items-center gap-3">
+                        <img src="${u.avatar || 'https://api.dicebear.com/7.x/initials/svg?seed=' + u.name}" class="w-10 h-10 rounded-full object-cover border border-zinc-200 dark:border-zinc-700 shadow-sm">
+                        <span class="font-bold text-sm text-zinc-800 dark:text-zinc-100">${u.name}</span>
+                    </div>
+                    <div id="check-${u.id}" class="w-6 h-6 rounded-full border-2 border-zinc-300 dark:border-zinc-600 flex items-center justify-center transition-colors"></div>
+                </div>
+            `).join('');
+        }
+
+        window.togglePlayerSelect = function(uid) {
+            vibe(10);
+            const idx = selectedPlayerIds.indexOf(uid);
+            const row = document.getElementById(`user-row-${uid}`);
+            const check = document.getElementById(`check-${uid}`);
+
+            if (idx > -1) {
+                selectedPlayerIds.splice(idx, 1);
+                row.classList.remove('border-primary', 'bg-primary-light', 'dark:bg-primary/10');
+                row.classList.add('border-zinc-200', 'dark:border-zinc-800', 'bg-surface-light', 'dark:bg-surface-dark');
+                check.classList.remove('bg-primary', 'border-primary');
+                check.classList.add('border-zinc-300', 'dark:border-zinc-600');
+                check.innerHTML = '';
+            } else {
+                selectedPlayerIds.push(uid);
+                row.classList.add('border-primary', 'bg-primary-light', 'dark:bg-primary/10');
+                row.classList.remove('border-zinc-200', 'dark:border-zinc-800', 'bg-surface-light', 'dark:bg-surface-dark');
+                check.classList.add('bg-primary', 'border-primary');
+                check.classList.remove('border-zinc-300', 'dark:border-zinc-600');
+                check.innerHTML = '<span class="material-symbols-outlined text-white text-[16px] font-bold">check</span>';
+            }
+            updateSelectedCount();
+        }
+
+        function updateSelectedCount() {
+            document.getElementById('selected-count').innerText = `محدد: ${selectedPlayerIds.length}`;
+        }
+
+        /* --- خوارزمية التوليد (Round Robin) --- */
+        window.generateTournament = async function() {
+            vibe(30);
+            if (selectedPlayerIds.length < 4 || selectedPlayerIds.length % 2 !== 0) {
+                return showToast("الرجاء اختيار عدد زوجي من اللاعبين (4 على الأقل)!", "error");
+            }
+
+            // 1. خلط اللاعبين وتقسيمهم لفرق ثنائية
+            let shuffled = [...selectedPlayerIds].sort(() => Math.random() - 0.5);
+            let teams = [];
+            for (let i = 0; i < shuffled.length; i += 2) {
+                teams.push({
+                    id: 'T' + (i / 2 + 1),
+                    players: [shuffled[i], shuffled[i+1]],
+                    wins: 0, losses: 0
+                });
+            }
+
+            // 2. توليد جدول الدوري (Round Robin)
+            let numTeams = teams.length;
+            let matches = [];
+            let t = [...teams];
+            
+            // إذا كان عدد الفرق فردياً، نضيف فريقاً وهمياً (Bye)
+            if (numTeams % 2 !== 0) { t.push({ id: 'bye' }); numTeams++; }
+
+            for (let round = 0; round < numTeams - 1; round++) {
+                for (let i = 0; i < numTeams / 2; i++) {
+                    let home = t[i];
+                    let away = t[numTeams - 1 - i];
+                    
+                    if (home.id !== 'bye' && away.id !== 'bye') {
+                        matches.push({
+                            id: 'm_' + round + '_' + i,
+                            round: round + 1,
+                            team1Id: home.id,
+                            team2Id: away.id,
+                            winnerId: null
+                        });
+                    }
+                }
+                // تدوير الدائرة (Circle Rotation) بإبقاء الأول ثابت وتدوير الباقي
+                t.splice(1, 0, t.pop());
+            }
+
+            // 3. بناء هيكل البطولة
+            const code = Math.floor(1000 + Math.random() * 9000).toString();
+            const tourData = {
+                code: code,
+                status: 'active',
+                createdAt: Date.now(),
+                teams: teams,
+                matches: matches,
+                tieBreakerMatch: null
+            };
+
+            // 4. الحفظ في Firebase
+            try {
+                const docRef = doc(collection(db, 'artifacts', appId, 'public', 'data', 'tournaments'));
+                await setDoc(docRef, tourData);
+                showToast("تم إنشاء البطولة بنجاح!");
+                openTournament(docRef.id);
+            } catch(e) { showToast("خطأ أثناء الحفظ", "error"); }
+        }
+
+        /* --- واجهات البطولة والتصيير --- */
+        function renderList() {
+            const list = document.getElementById('tournaments-list');
+            if (allTournaments.length === 0) {
+                list.innerHTML = `
+                <div class="flex flex-col items-center justify-center py-20 text-zinc-400">
+                    <span class="material-symbols-outlined text-6xl mb-4 opacity-50">emoji_events</span>
+                    <p class="font-bold text-sm">لا يوجد بطولات حالياً</p>
+                </div>`;
+                return;
+            }
+
+            list.innerHTML = allTournaments.map(t => {
+                const isCompleted = t.status === 'completed';
+                const statusHtml = isCompleted 
+                    ? `<span class="bg-emerald-50 text-emerald-600 text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wider">مكتملة</span>`
+                    : `<span class="bg-blue-50 text-primary text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wider">نشطة</span>`;
+
+                return `
+                <div onclick="openTournament('${t.docId}')" class="bg-surface-light dark:bg-surface-dark p-4 rounded-3xl shadow-soft border ${isCompleted ? 'border-emerald-500/30' : 'border-zinc-200 dark:border-zinc-800'} cursor-pointer hover:-translate-y-1 active:scale-[0.98] transition-all relative overflow-hidden">
+                    ${isCompleted ? '<div class="absolute top-0 right-0 w-2 h-full bg-emerald-500"></div>' : '<div class="absolute top-0 right-0 w-2 h-full bg-primary animate-pulse"></div>'}
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="font-black text-lg">بطولة #${t.code}</h3>
+                        ${statusHtml}
+                    </div>
+                    <div class="flex justify-between text-xs text-zinc-500 font-bold">
+                        <span>الفرق: ${t.teams.length}</span>
+                        <span>المباريات: ${t.matches.length}</span>
+                        <span>${new Date(t.createdAt).toLocaleDateString('ar-EG')}</span>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function getTeamNameHTML(team) {
+            let p1 = usersMap[team.players[0]];
+            let p2 = usersMap[team.players[1]];
+            if(!p1 || !p2) return '<div class="text-sm font-bold text-zinc-400">فريق غير معروف</div>';
+
+            return `
+            <div class="flex items-center gap-2">
+                <div class="flex pl-2">
+                    <img src="${p1.avatar || 'https://api.dicebear.com/7.x/initials/svg?seed=' + p1.name}" class="w-8 h-8 rounded-full object-cover border-2 border-surface-light dark:border-surface-dark -ml-3 z-10 shadow-sm">
+                    <img src="${p2.avatar || 'https://api.dicebear.com/7.x/initials/svg?seed=' + p2.name}" class="w-8 h-8 rounded-full object-cover border-2 border-surface-light dark:border-surface-dark shadow-sm">
+                </div>
+                <div class="flex flex-col text-right">
+                    <span class="text-xs font-bold leading-tight w-24 truncate">${p1.name.split(' ')[0]} + ${p2.name.split(' ')[0]}</span>
+                    <span class="text-[9px] text-primary font-bold">فريق ${team.id.replace('T', '')}</span>
+                </div>
+            </div>`;
+        }
+
+        function renderTournamentDetails(tour) {
+            const container = document.getElementById('tour-tab-content');
+            
+            // تحديث الترتيب ديناميكياً لتجنب الأخطاء
+            let teams = tour.teams.map(t => ({ ...t, wins: 0, losses: 0 }));
+            tour.matches.forEach(m => {
+                if (m.winnerId) {
+                    let w = teams.find(x => x.id === m.winnerId);
+                    let l = teams.find(x => x.id === (m.team1Id === m.winnerId ? m.team2Id : m.team1Id));
+                    if (w) w.wins++; if (l) l.losses++;
+                }
+            });
+            if (tour.tieBreakerMatch && tour.tieBreakerMatch.winnerId) {
+                let w = teams.find(x => x.id === tour.tieBreakerMatch.winnerId);
+                let l = teams.find(x => x.id === (tour.tieBreakerMatch.team1Id === tour.tieBreakerMatch.winnerId ? tour.tieBreakerMatch.team2Id : tour.tieBreakerMatch.team1Id));
+                if(w) w.wins++; if(l) l.losses++;
+            }
+            teams.sort((a, b) => b.wins - a.wins);
+
+            if (activeTourTab === 'standings') {
+                let isTie = tour.tieBreakerMatch && !tour.tieBreakerMatch.winnerId;
+                let topNotice = '';
+                
+                if (tour.status === 'completed') {
+                    topNotice = `
+                    <div class="bg-gradient-to-r from-yellow-500 to-amber-500 p-6 rounded-3xl mb-4 text-center text-white shadow-lg relative overflow-hidden">
+                        <span class="material-symbols-outlined absolute -right-4 -bottom-4 text-8xl text-white/20">emoji_events</span>
+                        <h3 class="text-xs font-black uppercase tracking-widest mb-1 text-yellow-100">البطل</h3>
+                        <div class="flex justify-center mb-3 scale-110 mt-3">${getTeamNameHTML(teams[0])}</div>
+                    </div>`;
+                } else if (isTie) {
+                    topNotice = `
+                    <div class="bg-rose-500 p-4 rounded-3xl mb-4 text-center text-white shadow-lg flex items-center justify-between">
+                        <span class="material-symbols-outlined text-3xl">local_fire_department</span>
+                        <div class="flex-1 px-4">
+                            <h3 class="font-black text-sm">يوجد تعادل في المركز الأول!</h3>
+                            <p class="text-xs text-rose-100">اذهب للمباريات لحسم كسر التعادل.</p>
+                        </div>
+                    </div>`;
+                }
+
+                let tbody = teams.map((t, i) => `
+                    <tr class="border-b border-zinc-100 dark:border-zinc-800 last:border-0 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors">
+                        <td class="p-3">
+                            <div class="flex items-center gap-3">
+                                <span class="font-black text-lg ${i===0 ? 'text-yellow-500' : 'text-zinc-300 dark:text-zinc-600'} w-4 text-center">${i+1}</span>
+                                ${getTeamNameHTML(t)}
+                            </div>
+                        </td>
+                        <td class="p-3 text-center font-black text-lg text-emerald-500">${t.wins}</td>
+                        <td class="p-3 text-center font-black text-lg text-rose-500">${t.losses}</td>
+                    </tr>
+                `).join('');
+
+                container.innerHTML = `
+                    ${topNotice}
+                    <div class="bg-surface-light dark:bg-surface-dark rounded-3xl shadow-sm border border-zinc-200 dark:border-zinc-800 overflow-hidden">
+                        <table class="w-full text-right">
+                            <thead class="bg-background-light dark:bg-background-dark border-b border-zinc-200 dark:border-zinc-800 text-[10px] text-zinc-500 uppercase tracking-widest">
+                                <tr><th class="p-4">الفريق</th><th class="p-4 text-center w-16">W</th><th class="p-4 text-center w-16">L</th></tr>
+                            </thead>
+                            <tbody>${tbody}</tbody>
+                        </table>
+                    </div>
+                `;
+            } else {
+                // تبويب المباريات
+                let html = '';
+                
+                // إضافة مباراة كسر التعادل إن وجدت
+                if (tour.tieBreakerMatch) {
+                    let m = tour.tieBreakerMatch;
+                    let t1 = tour.teams.find(x => x.id === m.team1Id);
+                    let t2 = tour.teams.find(x => x.id === m.team2Id);
+                    html += buildMatchCardHtml(m, t1, t2, 'كسر التعادل 🔥', true);
+                }
+
+                tour.matches.forEach(m => {
+                    let t1 = tour.teams.find(x => x.id === m.team1Id);
+                    let t2 = tour.teams.find(x => x.id === m.team2Id);
+                    html += buildMatchCardHtml(m, t1, t2, `الجولة ${m.round}`);
+                });
+
+                container.innerHTML = html;
+            }
+        }
+
+        function buildMatchCardHtml(match, t1, t2, roundLabel, isTieBreaker = false) {
+            let t1NameHtml = getTeamNameHTML(t1);
+            let t2NameHtml = getTeamNameHTML(t2);
+            let borderColor = isTieBreaker ? 'border-rose-500 shadow-rose-500/20' : 'border-zinc-200 dark:border-zinc-800';
+            
+            let winnerSection = '';
+            if (match.winnerId) {
+                let wTeam = match.winnerId === t1.id ? t1 : t2;
+                winnerSection = `
+                    <div class="mt-4 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 text-xs font-bold text-center py-2.5 rounded-xl border border-emerald-200 dark:border-emerald-800/30">
+                        🏆 الفائز: فريق ${wTeam.id.replace('T','')}
+                    </div>
+                    <button onclick="setWinner('${match.id}', null)" class="w-full text-center mt-2 text-[10px] text-zinc-400 font-bold underline hover:text-primary transition-colors">تعديل / إلغاء النتيجة</button>
+                `;
+            } else {
+                winnerSection = `
+                    <div class="flex gap-2 mt-4">
+                        <button onclick="setWinner('${match.id}', '${t1.id}')" class="flex-1 bg-background-light dark:bg-background-dark hover:bg-primary hover:text-white hover:border-primary border border-zinc-200 dark:border-zinc-700 py-3 rounded-xl text-xs font-bold transition-all active:scale-95 text-zinc-700 dark:text-zinc-300 shadow-sm">فوز فريق ${t1.id.replace('T','')}</button>
+                        <button onclick="setWinner('${match.id}', '${t2.id}')" class="flex-1 bg-background-light dark:bg-background-dark hover:bg-primary hover:text-white hover:border-primary border border-zinc-200 dark:border-zinc-700 py-3 rounded-xl text-xs font-bold transition-all active:scale-95 text-zinc-700 dark:text-zinc-300 shadow-sm">فوز فريق ${t2.id.replace('T','')}</button>
+                    </div>
+                `;
+            }
+
+            return `
+            <div class="bg-surface-light dark:bg-surface-dark p-5 rounded-3xl mb-3 shadow-sm border ${borderColor} relative overflow-hidden">
+                ${isTieBreaker ? '<div class="absolute top-0 right-0 w-2 h-full bg-rose-500 animate-pulse"></div>' : ''}
+                <div class="mb-4">
+                    <span class="text-[9px] font-bold ${isTieBreaker?'text-rose-600 bg-rose-100 dark:bg-rose-900/30':'text-zinc-500 bg-background-light dark:bg-background-dark'} px-2.5 py-1.5 rounded-lg tracking-wider">${roundLabel}</span>
+                </div>
+                <div class="flex items-center justify-between gap-1">
+                    <div class="flex-1 flex justify-center">${t1NameHtml}</div>
+                    <div class="text-xs text-primary font-black bg-primary-light px-2 py-1 rounded-full">VS</div>
+                    <div class="flex-1 flex justify-center" style="direction: ltr">${t2NameHtml}</div>
+                </div>
+                ${winnerSection}
+            </div>`;
+        }
+
+        /* --- تقييم حالة البطولة الذكي --- */
+        function evaluateTournamentState(tourData) {
+            let teams = tourData.teams.map(t => ({...t, wins: 0, losses: 0}));
+            
+            tourData.matches.forEach(m => {
+                if(m.winnerId) {
+                    let w = teams.find(t=>t.id === m.winnerId);
+                    let l = teams.find(t=>t.id === (m.team1Id === m.winnerId ? m.team2Id : m.team1Id));
+                    if(w) w.wins++; if(l) l.losses++;
+                }
+            });
+            teams.sort((a, b) => b.wins - a.wins);
+
+            let allMatchesDone = tourData.matches.every(m => m.winnerId !== null);
+            
+            if (allMatchesDone) {
+                let tiedTeams = teams.filter(t => t.wins === teams[0].wins);
+                if (tiedTeams.length >= 2) {
+                    // يوجد تعادل
+                    if (!tourData.tieBreakerMatch) {
+                        tourData.tieBreakerMatch = { id: 'tb_1', team1Id: tiedTeams[0].id, team2Id: tiedTeams[1].id, winnerId: null };
+                    } else {
+                        // إذا تغير التعادل بسبب تعديل نتيجة سابقة
+                        if (tourData.tieBreakerMatch.team1Id !== tiedTeams[0].id || tourData.tieBreakerMatch.team2Id !== tiedTeams[1].id) {
+                            tourData.tieBreakerMatch = { id: 'tb_1', team1Id: tiedTeams[0].id, team2Id: tiedTeams[1].id, winnerId: null };
+                        }
+                    }
+                    tourData.status = tourData.tieBreakerMatch.winnerId ? 'completed' : 'active';
+                } else {
+                    tourData.tieBreakerMatch = null;
+                    tourData.status = 'completed';
+                }
+            } else {
+                tourData.tieBreakerMatch = null;
+                tourData.status = 'active';
+            }
+            
+            return tourData;
+        }
+
+        window.setWinner = async function(matchId, winnerId) {
+            vibe();
+            let tour = JSON.parse(JSON.stringify(allTournaments.find(t => t.docId === activeTourId)));
+            if(!tour) return;
+            
+            if (matchId === 'tb_1') {
+                tour.tieBreakerMatch.winnerId = winnerId;
+            } else {
+                let m = tour.matches.find(x => x.id === matchId);
+                if(m) m.winnerId = winnerId;
+            }
+            
+            tour = evaluateTournamentState(tour);
+            
+            try {
+                await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'tournaments', tour.docId), tour);
+                if (winnerId && tour.status === 'completed') showToast("تم انتهاء البطولة وتتويج البطل! 🏆");
+            } catch(e) { showToast("خطأ في الاتصال", "error"); }
+        }
+
+        /* --- الحذف --- */
+        window.confirmDeleteTournament = function() {
+            showModal("حذف البطولة", "سيتم مسح هذه البطولة وجميع نتائجها نهائياً. هل أنت متأكد؟", [
+                `<button onclick="closeModal()" class="flex-1 bg-background-light dark:bg-background-dark py-3 rounded-xl font-bold text-zinc-600 transition-colors hover:bg-zinc-200">إلغاء</button>`,
+                `<button onclick="executeDeleteTour()" class="flex-1 bg-rose-600 text-white py-3 rounded-xl font-bold shadow-md hover:bg-rose-500 transition-colors">حذف نهائي</button>`
+            ].join(''));
+        }
+
+        window.executeDeleteTour = async function() {
+            if(!activeTourId) return;
+            try {
+                await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'tournaments', activeTourId));
+                showToast("تم الحذف بنجاح");
+                closeModal();
+                showList();
+            } catch(e) { showToast("فشل الحذف", "error"); }
+        }
+
+        /* --- أدوات الواجهة --- */
+        function showModal(title, content, actionsHtml = '') {
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('modal-inner').innerHTML = content;
+            document.getElementById('modal-actions').innerHTML = actionsHtml;
+            const container = document.getElementById('modal-container');
+            const modContent = document.getElementById('modal-content');
+            container.classList.remove('hidden');
+            setTimeout(() => { modContent.classList.remove('scale-95', 'opacity-0'); }, 10);
+        }
+
+        window.closeModal = function() {
+            const container = document.getElementById('modal-container'); 
+            const modContent = document.getElementById('modal-content');
+            modContent.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => { container.classList.add('hidden'); }, 200);
+        }
+
+        window.showToast = function(msg, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            const bgColor = type === 'success' ? 'bg-zinc-900 text-white dark:bg-white dark:text-zinc-900' : 'bg-rose-600 text-white';
+            
+            toast.className = `${bgColor} px-5 py-4 rounded-2xl shadow-lg flex items-center justify-center transform transition-all duration-300 -translate-y-10 opacity-0`;
+            toast.innerHTML = `<span class="font-bold text-sm">${msg}</span>`;
+            
+            container.appendChild(toast);
+            requestAnimationFrame(() => toast.classList.remove('-translate-y-10', 'opacity-0'));
+            setTimeout(() => { toast.classList.add('-translate-y-10', 'opacity-0'); setTimeout(() => toast.remove(), 300); }, 3000);
+        }
+
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
