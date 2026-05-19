@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مساعد الكونكان الذكي</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 p-4">
+    <div class="max-w-xl mx-auto bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
+        <h1 class="text-2xl font-bold mb-6 text-slate-800">مساعد الكونكان الذكي 🎴</h1>
+        
+        <div id="response" class="mb-6 p-4 text-slate-600 rounded-xl bg-slate-100 min-h-[150px] overflow-y-auto border border-slate-200">
+            أنا جاهز لتحليل أوراقك بناءً على قوانين الكونكان التي زودتني بها.
+        </div>
+
+        <input type="file" id="imageInput" accept="image/*" class="mb-4 block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer">
+        
+        <textarea id="msg" class="w-full border p-3 mb-4 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" placeholder="اسألني عن أفضل خطوة للعب..."></textarea>
+        
+        <button id="send" class="w-full bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-xl font-bold transition-all">تحليل الأوراق</button>
+    </div>
+
+    <script>
+        const API_KEY = "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";
+        
+        // هنا تضع قوانين اللعبة الخاصة بكم
+        const CONCAN_RULES = `
+            قوانين كونكان طرطوسية - نظام الشراكة
+
+تعتمد هذه النسخة على التعاون الوثيق بين الشريكين (اللاعب 1 و3 ضد اللاعب 2 و4) لتحقيق الهدف المشترك قبل الخصم.
+
+1. التوزيع والهدف
+
+عدد الأوراق: تُستخدم مجموعتان كاملتان من أوراق اللعب (مع الجوكرات).
+
+التوزيع: يتم توزيع 14 ورقة لكل لاعب.
+
+الهدف: التخلص من جميع الأوراق في اليد من خلال "الفتح" أو "التسكير" (الخروج) قبل الخصوم.
+
+2. قواعد الشراكة
+
+المشاركة: يمكن لأي من الشريكين إضافة أوراق إلى "فتح" شريكه (مثلاً: إذا فتح شريكك "سلسلة" من 5-6-7، يمكنك أنت إضافة 4 أو 8 إليها).
+
+الفتح المشترك: لا يمكن الفتح إلا إذا كان مجموع نقاط الأوراق التي تفتحها في دورك يتجاوز الحد الأدنى المطلوب (حسب الاتفاق، مثلاً 50 أو 60 نقطة).
+
+التواصل: يُمنع إعطاء إشارات صريحة للأوراق، لكن التعاون الاستراتيجي (مثل رمي ورقة يحتاجها شريكك) هو جوهر اللعبة.
+
+3. آلية اللعب (الدور)
+
+السحب: السحب من الكومة أو من الورقة الأخيرة المرمية على الأرض.
+
+الفتح: يمكنك الفتح إذا امتلكت مجموعات (ثلاث أوراق من نفس الرقم أو سلسلة من نفس النوع).
+
+الرمي: ينتهي الدور برمي ورقة واحدة على الأرض.
+
+4. الحالات الخاصة
+
+الجوكر: ورقة مرنة يمكن استخدامها كأي ورقة. (قاعدة: يُفضل الاحتفاظ به للضرورة القصوى أو للفتح).
+
+التسكير: خروج اللاعب وتوقف اللعبة. يتم حساب نقاط أوراق الخصم المتبقية في أيديهم كخسارة لهم.
+
+5. الاستراتيجيات التي سنتبعها كفريق
+
+مبدأ التغطية: إذا فتح شريكك مجموعة، حاول في أدوارك التالية مساعدته في إكمالها بدلاً من البدء بمجموعة جديدة غير مكتملة.
+
+المراقبة: مراقبة الأوراق التي يسحبها الخصم لمعرفة ما يجمعونه ومنعهم من الحصول عليها.
+
+إدارة النقاط: في حال استشعار قرب الخصم من "التسكير"، يجب التخلص من الأوراق العالية القيمة في يدك لتقليل الخسارة.
+
+ملاحظة: هذه القوانين قابلة للتعديل بناءً على "العرف الطرطوسي" الذي قد تتبعه في جلستك الخاصة.
+        `;
+
+        let base64Image = null;
+
+        document.getElementById('imageInput').onchange = (e) => {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                base64Image = reader.result.split(',')[1];
+                document.getElementById('response').textContent = "تم تحميل الصورة. اضغط تحليل الأوراق.";
+            };
+            reader.readAsDataURL(file);
+        };
+
+        document.getElementById('send').onclick = async () => {
+            const responseDiv = document.getElementById('response');
+            const userMsg = document.getElementById('msg').value || "ما هي أفضل حركة يمكنني القيام بها؟";
+            
+            responseDiv.textContent = "جاري التفكير في قوانين الكونكان...";
+
+            const payload = {
+                model: "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free",
+                messages: [
+                    { role: "system", content: CONCAN_RULES },
+                    { 
+                        role: "user", 
+                        content: [
+                            { type: "text", text: userMsg },
+                            ...(base64Image ? [{ type: "image_url", image_url: { url: `data:image/jpeg;base64,${base64Image}` } }] : [])
+                        ]
+                    }
+                ]
+            };
+
+            try {
+                const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${API_KEY}`
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+                responseDiv.textContent = data.choices[0].message.content;
+            } catch (err) {
+                responseDiv.textContent = "خطأ في الاتصال، حاول مجدداً.";
+            }
+        };
+    </script>
+</body>
+</html>
